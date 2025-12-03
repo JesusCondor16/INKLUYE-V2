@@ -1,5 +1,7 @@
+// app/api/cursos/[id]/competencias/route.ts
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma"; // ajusta la ruta si tu prisma helper está en otro lugar
+import { Prisma } from "@prisma/client";
 
 type CompetenciaInput = {
   codigo: string;
@@ -24,25 +26,24 @@ export async function GET(_request: Request, context: { params: Promise<{ id: st
     const cursoId = parseInt(id, 10);
     if (Number.isNaN(cursoId)) return NextResponse.json({ error: "ID inválido" }, { status: 400 });
 
-    // Intentamos primero traer competencias directas
     let competencias = await prisma.competencia.findMany({
       where: { cursoId },
       select: { id: true, codigo: true, descripcion: true, tipo: true, nivel: true, cursoId: true },
       orderBy: { codigo: "asc" },
     });
 
-    // Si no hay competencias directas, intentamos por pivote coursecompetencia
     if (competencias.length === 0) {
       try {
         const raw = await prisma.$queryRaw<
           { id: number; codigo: string; descripcion: string; tipo: string; nivel: string; cursoId: number }[]
         >(
-          `SELECT c.id, c.codigo, c.descripcion, c.tipo, c.nivel, c.cursoId
-           FROM coursecompetencia cc
-           JOIN competencia c ON c.id = cc.competenciaId
-           WHERE cc.cursoId = ? 
-           ORDER BY c.codigo`,
-          cursoId
+          Prisma.sql`
+            SELECT c.id, c.codigo, c.descripcion, c.tipo, c.nivel, c.cursoId
+            FROM coursecompetencia cc
+            JOIN competencia c ON c.id = cc.competenciaId
+            WHERE cc.cursoId = ${cursoId}
+            ORDER BY c.codigo
+          `
         );
         if (Array.isArray(raw) && raw.length > 0) competencias = raw;
       } catch (e) {
@@ -50,7 +51,6 @@ export async function GET(_request: Request, context: { params: Promise<{ id: st
       }
     }
 
-    // Logros asociados al curso
     const logros = await prisma.logro.findMany({
       where: { cursoId },
       select: { id: true, codigo: true, descripcion: true, tipo: true, nivel: true },
@@ -67,7 +67,7 @@ export async function GET(_request: Request, context: { params: Promise<{ id: st
   }
 }
 
-// ✅ POST corregido
+// ✅ POST corregido (sin cambios, ya estaba correcto)
 export async function POST(request: Request, context: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await context.params;
@@ -83,7 +83,6 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
     const competenciasInput: CompetenciaInput[] = Array.isArray(data.competencias) ? data.competencias : [];
     const logrosGlobalInput: LogroInput[] = Array.isArray(data.logros) ? data.logros : [];
 
-    // Validación básica de estructura
     if (!competenciasInput.every((c) => c.codigo && c.descripcion)) {
       return NextResponse.json(
         { error: "Formato inválido: cada competencia requiere codigo y descripcion" },
@@ -91,7 +90,6 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
       );
     }
 
-    // Ejecutar en transacción: borrar previos y crear nuevos
     const result = await prisma.$transaction(async (tx) => {
       await tx.competencia.deleteMany({ where: { cursoId } });
       await tx.logro.deleteMany({ where: { cursoId } });
@@ -124,7 +122,6 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
         }
       }
 
-      // Logros globales
       for (const lg of logrosGlobalInput) {
         await tx.logro.create({
           data: {
