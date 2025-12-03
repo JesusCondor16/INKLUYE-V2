@@ -1,4 +1,3 @@
-// app/(auth)/login/LoginForm.tsx
 'use client';
 
 import React, { useRef, useState } from 'react';
@@ -19,7 +18,7 @@ export default function LoginForm() {
   const liveRegionRef = useRef<HTMLDivElement | null>(null);
   const helpHeadingRef = useRef<HTMLHeadingElement | null>(null);
 
-  async function onSubmit(e: React.FormEvent) {
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setErrorMsg('');
     setSubmitting(true);
@@ -33,17 +32,20 @@ export default function LoginForm() {
       }
 
       setErrorMsg('Autenticación exitosa pero no se proporcionó ruta.');
-    } catch (err: any) {
+    } catch (err: unknown) {
+      // Type guard completo
+      let errorMessage = 'Error inesperado. Intenta de nuevo.';
       if (err instanceof AuthError) {
-        setErrorMsg(err.publicMessage);
-      } else {
-        setErrorMsg('Error inesperado. Intenta de nuevo.');
+        errorMessage = err.publicMessage;
+      } else if (err instanceof Error) {
+        errorMessage = err.message;
       }
 
+      setErrorMsg(errorMessage);
       setTimeout(() => errorRef.current?.focus(), 0);
 
       if (liveRegionRef.current) {
-        liveRegionRef.current.textContent = err?.message ?? '';
+        liveRegionRef.current.textContent = errorMessage;
       }
     } finally {
       setSubmitting(false);
@@ -89,7 +91,9 @@ export default function LoginForm() {
           className={styles.input}
           type="email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            setEmail(e.target.value)
+          }
           required
           aria-required="true"
         />
@@ -102,7 +106,9 @@ export default function LoginForm() {
           className={styles.input}
           type="password"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            setPassword(e.target.value)
+          }
           required
           aria-required="true"
         />
