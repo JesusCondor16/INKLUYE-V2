@@ -1,41 +1,37 @@
 // app/api/cursos/[id]/capacidades/route.ts
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Capacidad, ProgramacionContenido } from "@prisma/client";
 
 declare global {
-  // avoid multiple PrismaClient instances in dev due to hot reload
-  // eslint-disable-next-line no-var
   var prisma: PrismaClient | undefined;
 }
 const prisma = global.prisma ?? new PrismaClient();
 if (process.env.NODE_ENV !== "production") global.prisma = prisma;
 
+/** Tipos parciales para mapCapacidad */
+type CapacidadConProgramacion = Capacidad & { programacioncontenido?: ProgramacionContenido[] };
+
 /** Normaliza una capacidad para la respuesta */
-function mapCapacidad(cap: any) {
+function mapCapacidad(cap: CapacidadConProgramacion) {
   return {
     id: cap.id,
     nombre: cap.nombre,
     descripcion: cap.descripcion,
-    // no incluir 'logro' porque la tabla capacidad en tu DB no lo tiene
     filas:
       Array.isArray(cap.programacioncontenido) && cap.programacioncontenido.length > 0
-        ? cap.programacioncontenido.map((p: any) => ({
+        ? cap.programacioncontenido.map((p) => ({
             id: p.id ?? null,
             sem: p.semana ?? "",
             contenido: p.contenido ?? "",
             actividades: p.actividades ?? "",
             recursos: p.recursos ?? "",
             estrategias: p.estrategias ?? "",
-            fixed: Boolean((p as any).fixed ?? false),
+            fixed: Boolean(p.fixed ?? false),
           }))
         : [],
   };
 }
 
-/**
- * GET /api/cursos/:id/capacidades
- * Devuelve las capacidades y su programación de contenidos (filas)
- */
 export async function GET(
   _req: Request,
   { params }: { params: { id?: string } }
@@ -55,26 +51,13 @@ export async function GET(
     const mapped = capacidades.map(mapCapacidad);
 
     return NextResponse.json({ cursoId, capacidades: mapped }, { status: 200 });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("❌ GET /api/cursos/:id/capacidades error:", error);
-    return NextResponse.json({ error: "Error al obtener capacidades", detalle: error.message }, { status: 500 });
+    const message = error instanceof Error ? error.message : "Error desconocido";
+    return NextResponse.json({ error: "Error al obtener capacidades", detalle: message }, { status: 500 });
   }
 }
 
-/**
- * POST /api/cursos/:id/capacidades
- * Reemplaza las capacidades del curso (delete many + create many con programación).
- *
- * Body esperado: array de unidades:
- * [
- *   {
- *     nombre: string,
- *     descripcion: string,
- *     filas?: [{ sem?: string, contenido?: string, actividades?: string, recursos?: string, estrategias?: string, fixed?: boolean }]
- *   },
- *   ...
- * ]
- */
 export async function POST(
   req: Request,
   { params }: { params: { id?: string } }
@@ -90,29 +73,30 @@ export async function POST(
       return NextResponse.json({ error: "Payload inválido: se espera un array de capacidades" }, { status: 400 });
     }
 
-    // Validación básica de contenido y normalización
-    const unidades = body.map((u: any) => ({
-      nombre: String(u.nombre ?? "").trim(),
-      descripcion: String(u.descripcion ?? "").trim(),
-      filas: Array.isArray(u.filas)
-        ? u.filas.map((f: any) => ({
-            semana: f.sem ?? f.semana ?? "",
-            contenido: f.contenido ?? "",
-            actividades: f.actividades ?? "",
-            recursos: f.recursos ?? "",
-            estrategias: f.estrategias ?? "",
-            fixed: Boolean(f.fixed ?? false),
-          }))
-        : [],
-    }));
+    const unidades = body.map((u: unknown) => {
+      const unidad = u as { nombre?: string; descripcion?: string; filas?: unknown[] };
+      return {
+        nombre: String(unidad.nombre ?? "").trim(),
+        descripcion: String(unidad.descripcion ?? "").trim(),
+        filas: Array.isArray(unidad.filas)
+          ? unidad.filas.map((f: unknown) => {
+              const fila = f as { sem?: string; semana?: string; contenido?: string; actividades?: string; recursos?: string; estrategias?: string; fixed?: boolean };
+              return {
+                semana: fila.sem ?? fila.semana ?? "",
+                contenido: fila.contenido ?? "",
+                actividades: fila.actividades ?? "",
+                recursos: fila.recursos ?? "",
+                estrategias: fila.estrategias ?? "",
+                fixed: Boolean(fila.fixed ?? false),
+              };
+            })
+          : [],
+      };
+    });
 
-    // Transacción: borrar capacidades previas y crear las nuevas con programación
-    // Nota: usamos deleteMany + múltiples create(). Si tienes muchos registros y quieres optimizar,
-    // puedes crear arrays para createMany, pero createMany no soporta nested create (programacioncontenido).
-    const ops: any[] = [];
+    const ops: Promise<unknown>[] = [];
     ops.push(prisma.capacidad.deleteMany({ where: { cursoId } }));
 
-    // crear cada capacidad con nested programacioncontenido.create
     for (const u of unidades) {
       ops.push(
         prisma.capacidad.create({
@@ -121,13 +105,12 @@ export async function POST(
             descripcion: u.descripcion,
             cursoId,
             programacioncontenido: {
-              create: u.filas.map((f: any) => ({
-                semana: f.semana ?? f.sem ?? "",
+              create: u.filas.map((f) => ({
+                semana: f.semana ?? "",
                 contenido: f.contenido ?? "",
                 actividades: f.actividades ?? "",
                 recursos: f.recursos ?? "",
                 estrategias: f.estrategias ?? "",
-                // solo incluir fixed si ese campo existe en tu schema programacioncontenido
                 ...(typeof f.fixed === "boolean" ? { fixed: f.fixed } : {}),
               })),
             },
@@ -138,10 +121,8 @@ export async function POST(
 
     const results = await prisma.$transaction(ops);
 
-    // results[0] = { count: X } del deleteMany, results[1..] = created capacidades
-    const createdCaps = results.slice(1) as any[];
+    const createdCaps = results.slice(1) as CapacidadConProgramacion[];
 
-    // Para devolver, volverse a consultar las capacidades creadas completas (más seguro)
     const createdIds = createdCaps.map((c) => c.id).filter(Boolean);
     const freshCaps =
       createdIds.length > 0
@@ -155,11 +136,12 @@ export async function POST(
     const mapped = freshCaps.map(mapCapacidad);
 
     return NextResponse.json(
-      { message: "Capacidades reemplazadas correctamente", deleted: (results[0] as any).count ?? 0, capacidades: mapped },
+      { message: "Capacidades reemplazadas correctamente", deleted: (results[0] as { count?: number }).count ?? 0, capacidades: mapped },
       { status: 200 }
     );
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("❌ POST /api/cursos/:id/capacidades error:", error);
-    return NextResponse.json({ error: "Error al guardar capacidades", detalle: error.message }, { status: 500 });
+    const message = error instanceof Error ? error.message : "Error desconocido";
+    return NextResponse.json({ error: "Error al guardar capacidades", detalle: message }, { status: 500 });
   }
 }
