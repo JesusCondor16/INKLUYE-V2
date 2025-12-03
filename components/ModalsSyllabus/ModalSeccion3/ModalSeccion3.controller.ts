@@ -34,7 +34,12 @@ export function useModalSeccion3Controller() {
         let capsArray: Capacidad[] = [];
         if (Array.isArray(data)) {
           capsArray = data as Capacidad[];
-        } else if (data && typeof data === 'object' && 'capacidades' in data && Array.isArray((data as any).capacidades)) {
+        } else if (
+          data &&
+          typeof data === 'object' &&
+          'capacidades' in data &&
+          Array.isArray((data as { capacidades?: unknown }).capacidades)
+        ) {
           capsArray = (data as { capacidades: Capacidad[] }).capacidades;
         }
 

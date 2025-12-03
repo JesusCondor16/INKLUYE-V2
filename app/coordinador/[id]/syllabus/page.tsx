@@ -32,25 +32,20 @@ export default function SyllabusCursoPage() {
       }
 
       try {
-        // Llamamos a tu controller; asumimos que puede devolver { success?: boolean, pdfUrl?: string }
-        // Si tu generarPDF no devuelve nada, se entiende que si no lanza error fue exitoso.
         const result = await generarPDF(lang);
 
-        // Si generarPDF devuelve una URL, abrimos el PDF en nueva pestaña
         const pdfUrl = result?.pdfUrl ?? null;
         if (pdfUrl) {
           try {
             window.open(pdfUrl, "_blank");
-          } catch (e) {
+          } catch (_e) {
             // si no se pudo abrir, no rompe todo
-            console.warn("No se pudo abrir PDF automáticamente:", e);
+            console.warn("No se pudo abrir PDF automáticamente:", _e);
           }
         }
 
-        // Notificar a otras pestañas: BroadcastChannel (recomendado)
         if (typeof window !== "undefined") {
           try {
-            // Crear y postear mensaje
             const bc = new BroadcastChannel("syllabus_channel");
             bc.postMessage({
               type: "updated",
@@ -58,10 +53,8 @@ export default function SyllabusCursoPage() {
               pdfUrl: pdfUrl,
               ts: Date.now(),
             });
-            // cerrar el canal para liberar recursos
             bc.close();
-          } catch (e) {
-            // Fallback a localStorage (dispara evento 'storage' en otras pestañas)
+          } catch (_err) {
             try {
               const payload = {
                 type: "updated",
@@ -70,17 +63,15 @@ export default function SyllabusCursoPage() {
                 ts: Date.now(),
               };
               localStorage.setItem("syllabus_updated", JSON.stringify(payload));
-              // opcional: eliminar después para no acumular claves
-              // localStorage.removeItem("syllabus_updated");
-            } catch (err) {
-              console.warn("No se pudo notificar vía localStorage", err);
+            } catch (_err2) {
+              console.warn("No se pudo notificar vía localStorage", _err2);
             }
           }
         }
-      } catch (err: any) {
-        console.error("Error generando syllabus:", err);
-        // Puedes usar tu propio UI de errores; dejo alert para visibilidad inmediata
-        alert("Error al generar syllabus: " + (err?.message ?? "Error desconocido"));
+      } catch (err: unknown) {
+        const error = err instanceof Error ? err : new Error('Error desconocido');
+        console.error("Error generando syllabus:", error);
+        alert("Error al generar syllabus: " + error.message);
       }
     },
     [cursoId, generarPDF]
@@ -123,15 +114,10 @@ export default function SyllabusCursoPage() {
             </tr>
           </thead>
           <tbody>
-            {[
-              { id: 1, desc: "Información general, Sumilla", modal: "s1" },
+            {[{ id: 1, desc: "Información general, Sumilla", modal: "s1" },
               { id: 2, desc: "Competencias y Logros", modal: "s2" },
               { id: 3, desc: "Capacidades y Programación", modal: "s3" },
-              {
-                id: 4,
-                desc: "Estrategia didáctica, Evaluación, Matriz y Bibliografía",
-                modal: "s4",
-              },
+              { id: 4, desc: "Estrategia didáctica, Evaluación, Matriz y Bibliografía", modal: "s4" },
             ].map((item) => (
               <tr key={item.id}>
                 <td>{item.id}</td>
