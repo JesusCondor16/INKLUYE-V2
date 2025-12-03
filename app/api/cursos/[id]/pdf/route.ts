@@ -37,16 +37,16 @@ export async function GET(_req: Request, context: { params: Params | Promise<Par
 
     if (!curso) return NextResponse.json({ error: 'Curso no encontrado' }, { status: 404 });
 
-    // Relaciones con filtrado correcto
+    // Relaciones con filtrado correcto según tu modelo
     const competencias = await prisma.competencia.findMany({ where: { cursoId } });
     const logros = await prisma.logro.findMany({ where: { cursoId } });
-    const matriz = await prisma.matrizevaluacion.findMany({ where: { course: { id: cursoId } } });
-    const bibliografia = await prisma.bibliografia.findMany({ where: { course: { id: cursoId } } });
-    const estrategia = await prisma.estrategiadidactica.findMany({ where: { course: { id: cursoId } } });
-    const recursos = await prisma.recurso.findMany({ where: { course: { id: cursoId } } });
+    const matriz = await prisma.matrizevaluacion.findMany({ where: { courseId: cursoId } });
+    const bibliografia = await prisma.bibliografia.findMany({ where: { courseId: cursoId } });
+    const estrategia = await prisma.estrategiadidactica.findMany({ where: { courseId: cursoId } });
+    const recursos = await prisma.recurso.findMany({ where: { courseId: cursoId } });
     const capacidades = await prisma.capacidad.findMany({ where: { cursoId } });
     const programacion = await prisma.programacioncontenido.findMany({ where: { capacidad: { cursoId } } });
-    const prerequisites = await prisma.prerequisite.findMany({ where: { course: { id: cursoId } } });
+    const prerequisites = await prisma.prerequisite.findMany({ where: { courseId: cursoId } });
     const cursodocente = await prisma.cursodocente.findMany({ where: { courseId: cursoId } });
 
     const docenteIds = cursodocente.map(cd => cd.userId).filter((id): id is number => Boolean(id));
