@@ -1,7 +1,7 @@
 // app/api/coordinador/[id]/generarSyllabus/route.ts
 
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Course, CursoDocente, Competencia, Capacidad } from "@prisma/client";
 import fs from "fs";
 import path from "path";
 import jsPDF from "jspdf";
@@ -9,8 +9,15 @@ import autoTable from "jspdf-autotable";
 
 const prisma = new PrismaClient();
 
+// Tipos parciales para lo que necesitamos en el PDF
+type CursoConRelaciones = Course & {
+  cursodocente?: (CursoDocente & { user?: { name: string } })[];
+  competencia?: Competencia[];
+  capacidad?: Capacidad[];
+};
+
 // Función para generar PDF local en public/syllabus
-async function generarPDF(curso: any): Promise<string> {
+async function generarPDF(curso: CursoConRelaciones): Promise<string> {
   const doc = new jsPDF();
 
   // Título
@@ -26,7 +33,7 @@ async function generarPDF(curso: any): Promise<string> {
 
   // Docentes
   const docentes = (curso.cursodocente || [])
-    .map((cd: any) => cd.user?.name)
+    .map((cd) => cd.user?.name)
     .filter(Boolean)
     .join(", ");
   doc.text(`Docentes: ${docentes || "—"}`, 14, 54);
@@ -39,7 +46,7 @@ async function generarPDF(curso: any): Promise<string> {
     doc.text("Competencias", 14, yOffset);
     yOffset += 6;
 
-    const compData = curso.competencia.map((c: any) => [c.codigo, c.descripcion || ""]);
+    const compData = curso.competencia.map((c) => [c.codigo, c.descripcion || ""]);
     autoTable(doc, {
       head: [["Código", "Descripción"]],
       body: compData,
@@ -47,7 +54,8 @@ async function generarPDF(curso: any): Promise<string> {
       styles: { fontSize: 10 },
       headStyles: { fillColor: [41, 128, 185], textColor: 255 },
     });
-    yOffset = (doc as any).lastAutoTable.finalY + 10;
+
+    yOffset = (doc as any).lastAutoTable.finalY + 10; // jsPDF no tiene tipado para lastAutoTable
   }
 
   // Capacidades
@@ -56,7 +64,7 @@ async function generarPDF(curso: any): Promise<string> {
     doc.text("Capacidades", 14, yOffset);
     yOffset += 6;
 
-    const capData = curso.capacidad.map((c: any) => [c.nombre, c.descripcion || ""]);
+    const capData = curso.capacidad.map((c) => [c.nombre, c.descripcion || ""]);
     autoTable(doc, {
       head: [["Nombre", "Descripción"]],
       body: capData,
@@ -64,6 +72,7 @@ async function generarPDF(curso: any): Promise<string> {
       styles: { fontSize: 10 },
       headStyles: { fillColor: [39, 174, 96], textColor: 255 },
     });
+
     yOffset = (doc as any).lastAutoTable.finalY + 10;
   }
 
@@ -87,7 +96,10 @@ export async function POST(
   try {
     const courseId = parseInt(params.id);
     if (isNaN(courseId)) {
-      return NextResponse.json({ success: false, error: "ID de curso inválido" }, { status: 400 });
+      return NextResponse.json(
+        { success: false, error: "ID de curso inválido" },
+        { status: 400 }
+      );
     }
 
     // Traer curso con relaciones necesarias
@@ -102,11 +114,14 @@ export async function POST(
     });
 
     if (!curso) {
-      return NextResponse.json({ success: false, error: "Curso no encontrado" }, { status: 404 });
+      return NextResponse.json(
+        { success: false, error: "Curso no encontrado" },
+        { status: 404 }
+      );
     }
 
     // Generar PDF local y obtener ruta pública
-    const pdfUrl = await generarPDF(curso);
+    const pdfUrl = await generarPDF(curso as CursoConRelaciones);
 
     // Guardar o actualizar en BD
     await prisma.syllabus.upsert({
@@ -116,10 +131,13 @@ export async function POST(
     });
 
     return NextResponse.json({ success: true, pdfUrl });
-  } catch (err: any) {
-    console.error(err);
+  } catch (err: unknown) {
+    console.error("❌ Error POST /api/coordinador/[id]/generarSyllabus:", err);
+
+    const message = err instanceof Error ? err.message : "Error desconocido";
+
     return NextResponse.json(
-      { success: false, error: err.message || "Error desconocido" },
+      { success: false, error: message },
       { status: 500 }
     );
   }

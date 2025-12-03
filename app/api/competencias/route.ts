@@ -1,5 +1,7 @@
+// app/api/competencias/route.ts
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
+
 const prisma = new PrismaClient();
 
 export async function GET() {
@@ -8,9 +10,13 @@ export async function GET() {
       select: { codigo: true, descripcion: true, tipo: true, nivel: true },
       orderBy: { codigo: 'asc' },
     });
+
     return NextResponse.json(competencias);
-  } catch (error: any) {
-    console.error(error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    console.error('❌ Error GET /api/competencias:', error);
+
+    const message = error instanceof Error ? error.message : 'Error desconocido';
+
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
