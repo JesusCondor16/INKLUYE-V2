@@ -14,7 +14,6 @@ export async function GET(_req: Request, context: { params: Params | Promise<Par
   if (Number.isNaN(cursoId)) return NextResponse.json({ error: 'ID inválido' }, { status: 400 });
 
   try {
-    // Traer datos principales del curso
     const curso = await prisma.course.findUnique({
       where: { id: cursoId },
       select: {
@@ -38,24 +37,24 @@ export async function GET(_req: Request, context: { params: Params | Promise<Par
 
     if (!curso) return NextResponse.json({ error: 'Curso no encontrado' }, { status: 404 });
 
-    // Relaciones necesarias para el syllabus
+    // Relaciones con filtrado correcto
     const competencias = await prisma.competencia.findMany({ where: { cursoId } });
     const logros = await prisma.logro.findMany({ where: { cursoId } });
-    const matriz = await prisma.matrizevaluacion.findMany({ where: { courseId: cursoId } });
-    const bibliografia = await prisma.bibliografia.findMany({ where: { courseId: cursoId } });
-    const estrategia = await prisma.estrategiadidactica.findMany({ where: { cursoId } });
-    const recursos = await prisma.recurso.findMany({ where: { courseId: cursoId } });
+    const matriz = await prisma.matrizevaluacion.findMany({ where: { course: { id: cursoId } } });
+    const bibliografia = await prisma.bibliografia.findMany({ where: { course: { id: cursoId } } });
+    const estrategia = await prisma.estrategiadidactica.findMany({ where: { course: { id: cursoId } } });
+    const recursos = await prisma.recurso.findMany({ where: { course: { id: cursoId } } });
     const capacidades = await prisma.capacidad.findMany({ where: { cursoId } });
     const programacion = await prisma.programacioncontenido.findMany({ where: { capacidad: { cursoId } } });
-    const prerequisites = await prisma.prerequisite.findMany({ where: { courseId: cursoId } });
+    const prerequisites = await prisma.prerequisite.findMany({ where: { course: { id: cursoId } } });
     const cursodocente = await prisma.cursodocente.findMany({ where: { courseId: cursoId } });
+
     const docenteIds = cursodocente.map(cd => cd.userId).filter((id): id is number => Boolean(id));
     const docentes = docenteIds.length
       ? await prisma.user.findMany({ where: { id: { in: docenteIds } } })
       : [];
 
-    // ✅ Eliminamos generación de PDF para evitar errores de tipado
-    const pdfUrl = null;
+    const pdfUrl = null; // no generamos PDF por ahora
 
     return NextResponse.json({
       curso,
@@ -70,7 +69,7 @@ export async function GET(_req: Request, context: { params: Params | Promise<Par
       prerequisites,
       cursodocente: docentes,
       url: pdfUrl,
-      generated: false, // indicamos que no se generó PDF
+      generated: false,
     });
   } catch (err: unknown) {
     console.error('Error en generarSyllabus route:', err);
