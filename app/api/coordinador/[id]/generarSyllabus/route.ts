@@ -94,12 +94,15 @@ async function generarPDF(curso: CursoConRelaciones): Promise<string> {
   return `/syllabus/${curso.id}.pdf`;
 }
 
+// ✅ POST corregido para Next.js App Router en Vercel
 export async function POST(
   req: NextRequest,
-  { params }: { params: { id: string } } // ✅ Tipo corregido
+  context: { params: Promise<{ id: string }> } // Next.js espera Promise aquí
 ) {
   try {
-    const courseId = parseInt(params.id);
+    const { id } = await context.params; // ⚠️ await necesario
+    const courseId = parseInt(id);
+
     if (isNaN(courseId)) {
       return NextResponse.json(
         { success: false, error: "ID de curso inválido" },
