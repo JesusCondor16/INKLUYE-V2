@@ -1,6 +1,5 @@
-// app/api/cursos/[id]/capacidades/route.ts
 import { NextResponse } from "next/server";
-import { PrismaClient, Capacidad, ProgramacionContenido } from "@prisma/client";
+import { PrismaClient, capacidad, programacioncontenido } from "@prisma/client";
 
 declare global {
   var prisma: PrismaClient | undefined;
@@ -9,7 +8,7 @@ const prisma = global.prisma ?? new PrismaClient();
 if (process.env.NODE_ENV !== "production") global.prisma = prisma;
 
 /** Tipos parciales para mapCapacidad */
-type CapacidadConProgramacion = Capacidad & { programacioncontenido?: ProgramacionContenido[] };
+type CapacidadConProgramacion = capacidad & { programacioncontenido?: programacioncontenido[] };
 
 /** Normaliza una capacidad para la respuesta */
 function mapCapacidad(cap: CapacidadConProgramacion) {
