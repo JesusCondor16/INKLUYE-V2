@@ -18,10 +18,14 @@ export async function GET(req: NextRequest) {
     }
 
     return NextResponse.json({ success: true, data: cursos }, { status: 200 });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("❌ Error GET /api/buscar-syllabus:", err);
+
+    // Validamos si err es un Error real
+    const message = err instanceof Error ? err.message : "Error desconocido";
+
     return NextResponse.json(
-      { success: false, error: "Error al obtener cursos", details: err.message },
+      { success: false, error: "Error al obtener cursos", details: message },
       { status: 500 }
     );
   }

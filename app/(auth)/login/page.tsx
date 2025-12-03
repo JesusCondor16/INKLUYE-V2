@@ -4,6 +4,13 @@ import { useState } from 'react';
 import jwtDecode from 'jwt-decode';
 import styles from './LoginPage.module.css';
 
+type JwtPayload = {
+  role?: string;
+  name?: string;
+  email?: string;
+  // agrega otros campos que tengas en tu token
+};
+
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -39,7 +46,7 @@ export default function LoginPage() {
       localStorage.setItem('token', token);
 
       // Decodificamos para obtener rol y nombre
-      const decoded: any = jwtDecode(token);
+      const decoded = jwtDecode<JwtPayload>(token);
       const userRole = decoded.role?.toLowerCase();
 
       // Redirigimos según rol
