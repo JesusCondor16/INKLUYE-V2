@@ -8,17 +8,23 @@ export async function GET(req: NextRequest) {
     // 1️⃣ Obtener usuario desde token server-side
     const usuario = obtenerUsuarioDesdeTokenServer(req);
     if (!usuario) {
-      return NextResponse.json({ success: false, error: 'Usuario no autenticado' }, { status: 401 });
+      return NextResponse.json(
+        { success: false, error: 'Usuario no autenticado' },
+        { status: 401 }
+      );
     }
 
     // 2️⃣ Obtener cursos filtrando por el coordinador logueado
     const cursos = await getCursosDelCoordinador(usuario.id);
 
     return NextResponse.json({ success: true, data: cursos });
-  } catch (error: any) {
-    console.error('❌ GET /api/coordinador/cursos error:', error?.message ?? error);
+  } catch (error: unknown) {
+    console.error('❌ GET /api/coordinador/cursos error:', error);
+
+    const message = error instanceof Error ? error.message : String(error);
+
     return NextResponse.json(
-      { success: false, error: 'Error al obtener cursos', details: error?.message ?? String(error) },
+      { success: false, error: 'Error al obtener cursos', details: message },
       { status: 500 }
     );
   }

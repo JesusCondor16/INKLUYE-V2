@@ -17,8 +17,14 @@ export async function GET() {
       orderBy: { name: "asc" },
     });
     return NextResponse.json(coordinadores, { status: 200 });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("❌ GET /api/coordinadores error:", err);
-    return NextResponse.json({ error: "Error al obtener coordinadores", detalle: err.message }, { status: 500 });
+
+    const message = err instanceof Error ? err.message : "Error desconocido";
+
+    return NextResponse.json(
+      { error: "Error al obtener coordinadores", detalle: message },
+      { status: 500 }
+    );
   }
 }
