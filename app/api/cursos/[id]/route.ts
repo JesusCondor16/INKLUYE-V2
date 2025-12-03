@@ -63,11 +63,23 @@ function mapCursoResponse(c: CursoFull) {
     cursoDocentes,
     docentes: docentesSimple,
     logros: c.logro ?? [],
-    prerrequisitos: c.prerequisite_prerequisite_courseIdTocourse?.map(p => ({
-      id: p.prerequisiteId,
-      name: p.course_prerequisite_prerequisiteIdTocourse?.name ?? '',
-      code: p.course_prerequisite_prerequisiteIdTocourse?.code ?? '',
-    })) ?? [],
+    prerrequisitos:
+  (c.prerequisite_prerequisite_courseIdTocourse ?? []).map((p: unknown) => {
+    const _p = p as any;
+    // intentar varios nombres posibles de la relación (según cómo Prisma generó los campos)
+    const relatedCourse =
+      _p.course_prerequisite_prerequisiteIdTocourse ??
+      _p.course ??
+      _p.prerequisiteCourse ??
+      _p.prerequisite_course ??
+      null;
+
+    return {
+      id: _p.prerequisiteId,
+      name: relatedCourse?.name ?? '',
+      code: relatedCourse?.code ?? '',
+    };
+  }) ?? [],
   };
 }
 
