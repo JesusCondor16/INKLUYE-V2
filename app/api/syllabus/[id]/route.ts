@@ -1,85 +1,88 @@
-import { NextRequest, NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
-import { PDFDocument, StandardFonts } from "pdf-lib";
-import prisma from "@/lib/prisma";
+import { NextResponse } from "next/server";
+import { PrismaClient } from "@prisma/client";
 
-interface CursoDocente {
-  user?: { id: number; name: string; email: string };
-}
+const prisma = new PrismaClient();
 
-interface Logro {
-  descripcion: string;
-}
-
-export async function GET(req: NextRequest, context: { params: Promise<{ id: string }> }) {
+/**
+ * 📘 POST: Crea un nuevo syllabus
+ *
+ * Body expected:
+ * {
+ *   "courseId": 123,        // obligatorio
+ *   "pdfUrl": "/syllabus/123.pdf" // opcional
+ * }
+ */
+export async function POST(request: Request) {
   try {
-    // Resolver el id desde el Promise
-    const { id: idStr } = await context.params;
-    const id = parseInt(idStr, 10);
-    if (isNaN(id)) {
-      return NextResponse.json({ success: false, error: "ID inválido" }, { status: 400 });
+    const body = await request.json();
+    const { courseId, pdfUrl } = body;
+
+    if (typeof courseId !== "number" || isNaN(courseId)) {
+      return NextResponse.json(
+        { error: "El campo 'courseId' es obligatorio y debe ser un número." },
+        { status: 400 }
+      );
     }
 
-    const curso = await prisma.course.findUnique({
-      where: { id },
-      include: {
-        user: { select: { id: true, name: true, email: true } },
-        cursodocente: { include: { user: { select: { id: true, name: true, email: true } } } },
-        logro: true,
+    // Verificamos si ya existe un syllabus para ese courseId (por la constraint unique)
+    const existing = await prisma.syllabus.findUnique({
+      where: { courseId },
+    });
+
+    if (existing) {
+      return NextResponse.json(
+        { error: "Ya existe un syllabus para este courseId.", syllabus: existing },
+        { status: 409 }
+      );
+    }
+
+    const syllabus = await prisma.syllabus.create({
+      data: {
+        courseId,
+        pdfUrl: typeof pdfUrl === "string" ? pdfUrl : "",
       },
     });
 
-    if (!curso) return NextResponse.json({ success: false, error: "Curso no encontrado" }, { status: 404 });
+    return NextResponse.json(syllabus, { status: 201 });
+  } catch (error: unknown) {
+    console.error("❌ Error al guardar syllabus:", error);
+    const detail = error instanceof Error ? error.message : String(error);
+    return NextResponse.json(
+      { error: "Error interno del servidor", detail },
+      { status: 500 }
+    );
+  } finally {
+    // Opcional: cerrar cliente Prisma en rutas serverless ayuda a evitar warnings en algunos entornos
+    try {
+      await prisma.$disconnect();
+    } catch {
+      /* ignore */
+    }
+  }
+}
 
-    const lines: string[] = [];
-    lines.push(`Curso: ${curso.name}`);
-    lines.push(`Código: ${curso.code}`);
-    lines.push(`Coordinador: ${curso.user?.name ?? "—"}`);
-    const docentesList = (curso.cursodocente ?? []).map((cd: CursoDocente) => cd.user?.name ?? "-").join(", ");
-    lines.push(`Docentes: ${docentesList || "—"}`);
-    lines.push("");
-    lines.push("Logros:");
-    if (Array.isArray(curso.logro) && curso.logro.length > 0) {
-      curso.logro.forEach((l: Logro, i: number) => lines.push(`${i + 1}. ${l.descripcion}`));
-    } else lines.push("—");
-
-    const pdfDoc = await PDFDocument.create();
-    const font = await pdfDoc.embedFont(StandardFonts.TimesRoman);
-    const fontSize = 12;
-    const pageSize: [number, number] = [595.28, 841.89]; // <-- tupla para TypeScript
-    let page = pdfDoc.addPage(pageSize);
-    let cursorY = page.getHeight() - 40;
-
-    const drawLine = (text: string) => {
-      if (cursorY < 40) {
-        page = pdfDoc.addPage(pageSize);
-        cursorY = page.getHeight() - 40;
-      }
-      page.drawText(text, { x: 40, y: cursorY, size: fontSize, font });
-      cursorY -= fontSize + 6;
-    };
-    for (const line of lines) drawLine(line);
-
-    const pdfBytes = await pdfDoc.save();
-    const dir = path.join(process.cwd(), "public", "syllabus");
-    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-
-    const filePath = path.join(dir, `${id}.pdf`);
-    fs.writeFileSync(filePath, Buffer.from(pdfBytes));
-
-    const pdfUrl = `/syllabus/${id}.pdf`;
-
-    await prisma.syllabus.upsert({
-      where: { courseId: id },
-      update: { pdfUrl },
-      create: { courseId: id, pdfUrl },
+/**
+ * 📘 GET: Obtiene todos los syllabus
+ */
+export async function GET() {
+  try {
+    const syllabus = await prisma.syllabus.findMany({
+      orderBy: { id: "desc" },
     });
 
-    return NextResponse.json({ success: true, message: "PDF generado y guardado", pdfUrl }, { status: 200 });
+    return NextResponse.json(syllabus, { status: 200 });
   } catch (error: unknown) {
-    console.error("❌ Error GET /api/syllabus/[id]:", error);
+    console.error("❌ Error al obtener syllabus:", error);
     const detail = error instanceof Error ? error.message : String(error);
-    return NextResponse.json({ success: false, error: detail }, { status: 500 });
+    return NextResponse.json(
+      { error: "Error al obtener datos", detail },
+      { status: 500 }
+    );
+  } finally {
+    try {
+      await prisma.$disconnect();
+    } catch {
+      /* ignore */
+    }
   }
 }
