@@ -49,10 +49,10 @@ export default function ModalAgregarDocente({ onClose, onSuccess, docente }: Pro
     const method = docente?.id ? 'PUT' : 'POST';
 
     // Convertir rol a minúscula
-    const payload: any = {
+    const payload: { name: string; email: string; role: string; password?: string } = {
         name: form.name,
         email: form.email,
-        role: form.role.toLowerCase(), // <-- aquí
+        role: form.role.toLowerCase(),
     };
     if (!docente) payload.password = form.password;
 

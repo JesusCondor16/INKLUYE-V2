@@ -23,15 +23,16 @@ export default function ModalCerrarSesion({
   const cancelBtnRef = useRef<HTMLButtonElement | null>(null);
   const modalRef = useRef<HTMLDivElement | null>(null);
 
-  if (!isOpen) return null;
-
   /* -------------------- FOCUS AL ABRIR -------------------- */
   useEffect(() => {
+    if (!isOpen) return;
     cancelBtnRef.current?.focus();
-  }, []);
+  }, [isOpen]);
 
   /* -------------------- CERRAR CON ESC -------------------- */
   useEffect(() => {
+    if (!isOpen) return;
+
     function handleKey(e: KeyboardEvent) {
       if (e.key === 'Escape') {
         e.preventDefault();
@@ -67,7 +68,9 @@ export default function ModalCerrarSesion({
 
     document.addEventListener('keydown', handleKey);
     return () => document.removeEventListener('keydown', handleKey);
-  }, [onCancel]);
+  }, [isOpen, onCancel]);
+
+  if (!isOpen) return null;
 
   return (
     <div

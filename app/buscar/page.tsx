@@ -36,7 +36,7 @@ export default function BuscarSyllabusPage() {
     const fetchCursos = async () => {
       try {
         const res = await fetch('/api/cursos/buscar');
-        const data = await res.json();
+        const data = await res.json() as { success?: boolean; error?: string; data?: Curso[] };
 
         if (!res.ok || !data?.success) {
           setError(data?.error || "No se pudieron cargar los cursos");
@@ -45,7 +45,7 @@ export default function BuscarSyllabusPage() {
           return;
         }
 
-        const mapped: Curso[] = (data.data || []).map((c: Curso) => ({
+        const mapped: Curso[] = (data.data || []).map((c: Curso & { syllabus?: { pdfUrl?: string } }) => ({
           id: c.id,
           code: c.code,
           name: c.name,
@@ -54,7 +54,7 @@ export default function BuscarSyllabusPage() {
           credits: c.credits,
           user: c.user ?? null,
           cursodocente: c.cursodocente ?? [],
-          pdfUrl: (c as any).syllabus?.pdfUrl ?? c.pdfUrl ?? null, // aún puede venir de syllabus
+          pdfUrl: c.syllabus?.pdfUrl ?? c.pdfUrl ?? null, // aún puede venir de syllabus
         }));
 
         if (!mounted) return;
@@ -68,7 +68,7 @@ export default function BuscarSyllabusPage() {
             if (!r.ok) return course;
             const j: { curso?: Curso; syllabusUrl?: string } = await r.json();
             const payload = j.curso ?? j ?? {};
-            const pdfUrl = payload.syllabus?.pdfUrl ?? payload.syllabusUrl ?? null;
+            const pdfUrl = (payload as Curso & { syllabus?: { pdfUrl?: string } }).syllabus?.pdfUrl ?? payload.syllabusUrl ?? null;
             return { ...course, pdfUrl };
           } catch (err) {
             console.warn(`No se pudo obtener syllabus para courseId=${course.id}`, err);
@@ -105,7 +105,7 @@ export default function BuscarSyllabusPage() {
               )
             );
           }
-        } catch (e) {
+        } catch (e: unknown) {
           console.warn("Error parseando syllabus_updated desde storage", e);
         }
       }
@@ -125,8 +125,8 @@ export default function BuscarSyllabusPage() {
           }
         };
       }
-    } catch (e) {
-      console.warn("BroadcastChannel no disponible", e);
+    } catch (err: unknown) {
+      console.warn("BroadcastChannel no disponible", err);
       bc = null;
     }
 
@@ -135,7 +135,7 @@ export default function BuscarSyllabusPage() {
     return () => {
       mounted = false;
       if (bc) {
-        try { bc.close(); } catch (_) { }
+        try { bc.close(); } catch (_) { /* ignorado */ }
       }
       window.removeEventListener("storage", onStorage);
     };
