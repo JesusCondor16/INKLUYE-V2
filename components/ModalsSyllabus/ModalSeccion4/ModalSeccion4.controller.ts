@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import type { BibliografiaItem, EvaluacionFila, ModalSeccion4Data } from './ModalSeccion4.model';
+import type { BibliografiaItem, EvaluacionFila } from './ModalSeccion4.model';
 
 export function useModalSeccion4Controller() {
   const { id } = useParams();

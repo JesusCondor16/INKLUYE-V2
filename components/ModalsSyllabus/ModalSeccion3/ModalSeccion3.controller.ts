@@ -43,7 +43,7 @@ export function useModalSeccion3Controller() {
           const filasRaw = unidad.filas ?? [];
           const filas: Fila[] =
             filasRaw.length > 0
-              ? filasRaw.map((fila) => ({
+              ? filasRaw.map((fila: Partial<Fila>) => ({
                   semana: fila.semana ?? '',
                   contenido: fila.contenido ?? '',
                   actividades: fila.actividades ?? '',
