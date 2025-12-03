@@ -28,11 +28,11 @@ export function useModalSeccion3Controller() {
         const res = await fetch(`/api/cursos/${cursoId}/capacidades`, { signal });
         if (!res.ok) throw new Error('Error al cargar capacidades del curso');
 
-        const data = await res.json();
+        const data = (await res.json()) as { capacidades?: Capacidad[] } | Capacidad[];
 
         // Normalización de datos
-        const capsArray: Capacidad[] = Array.isArray(data.capacidades)
-          ? data.capacidades
+        const capsArray: Capacidad[] = Array.isArray((data as any).capacidades)
+          ? (data as any).capacidades
           : Array.isArray(data)
           ? data
           : [];
@@ -68,9 +68,10 @@ export function useModalSeccion3Controller() {
 
         setCapacidades(inicialCapacidades);
         setProgramaciones(inicialProgramaciones);
-      } catch (err: any) {
-        if (err.name !== 'AbortError') {
-          console.error('Error cargando capacidades:', err);
+      } catch (err: unknown) {
+        const error = err instanceof Error ? err : new Error('Error desconocido');
+        if (error.name !== 'AbortError') {
+          console.error('Error cargando capacidades:', error);
           setCapacidades([]);
           setProgramaciones([]);
         }

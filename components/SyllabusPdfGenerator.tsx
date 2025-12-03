@@ -1,4 +1,3 @@
-// components/SyllabusPdfGenerator.tsx
 'use client';
 
 import { useEffect, useRef, useState } from "react";
@@ -12,13 +11,23 @@ type Biblio = { id: number; texto: string; };
 type Estrategia = { id: number; texto: string; };
 type Recurso = { id: number; descripcion: string; };
 
+interface SyllabusData {
+  curso?: { name?: string; code?: string; credits?: number; sumilla?: string };
+  competencias?: Competencia[];
+  logros?: Logro[];
+  matriz?: Matriz[];
+  estrategia?: Estrategia[];
+  recursos?: Recurso[];
+  bibliografia?: Biblio[];
+}
+
 interface Props {
   cursoId: number;
   autoLoad?: boolean; // si quieres cargar data automáticamente
 }
 
 export default function SyllabusPdfGenerator({ cursoId, autoLoad = true }: Props) {
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<SyllabusData | null>(null);
   const [loading, setLoading] = useState(false);
   const [loadingData, setLoadingData] = useState(false);
   const printRef = useRef<HTMLDivElement | null>(null);

@@ -22,18 +22,23 @@ export function useModalSeccion4Controller() {
     const fetchData = async () => {
       try {
         const res = await fetch(`/api/cursos/${id}/recurso`);
-        const data = await res.json();
+        const data = (await res.json()) as {
+          estrategiaDidactica?: { texto: string }[];
+          recursos?: { descripcion: string }[];
+          bibliografia?: { id: number; texto: string }[];
+          matrizevaluacion?: { nota_sum?: string; nota_peso?: number | null }[];
+        };
 
         setEstrategia(
-          (data.estrategiaDidactica ?? []).map((e: any) => e.texto).join('\n\n')
+          (data.estrategiaDidactica ?? []).map((e) => e.texto).join('\n\n')
         );
 
         setRecursos(
-          (data.recursos ?? []).map((r: any) => r.descripcion).join('\n\n')
+          (data.recursos ?? []).map((r) => r.descripcion).join('\n\n')
         );
 
         setBibliografia(
-          data.bibliografia?.map((b: any) => ({ id: b.id, texto: b.texto })) ?? []
+          data.bibliografia?.map((b) => ({ id: b.id, texto: b.texto })) ?? []
         );
 
         const matrizEval: EvaluacionFila[] = data.matrizevaluacion ?? [];
@@ -41,7 +46,7 @@ export function useModalSeccion4Controller() {
 
         // Generar fórmula literal: "N1 * 30% + N2 * 40% + N3 * 30%"
         const formula = matrizEval
-          .map((fila: any) => `${fila.nota_sum} * ${fila.nota_peso}%`)
+          .map((fila) => `${fila.nota_sum} * ${fila.nota_peso}%`)
           .join(' + ');
         setNotaFinalFormula(formula);
       } catch (err) {
@@ -81,9 +86,10 @@ export function useModalSeccion4Controller() {
       const result = await res.json();
       if (!res.ok) throw new Error(result.error || 'Error al guardar bibliografía');
       alert('Bibliografía guardada correctamente');
-    } catch (err: any) {
-      alert('Error: ' + err.message);
-      console.error(err);
+    } catch (err: unknown) {
+      const error = err instanceof Error ? err : new Error('Error desconocido');
+      alert('Error: ' + error.message);
+      console.error(error);
     } finally {
       setLoading(false);
     }
