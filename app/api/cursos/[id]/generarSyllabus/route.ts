@@ -1,4 +1,3 @@
-// app/api/cursos/[id]/generarSyllabus/route.ts
 export const runtime = 'nodejs';
 
 import { NextResponse } from 'next/server';
@@ -171,7 +170,7 @@ export async function GET(_req: Request, context: { params: Params | Promise<Par
       } else lines.push('—');
 
       const pdfDoc = await PDFDocument.create();
-      const pageSize = [595.28, 841.89];
+      const pageSize: [number, number] = [595.28, 841.89]; // tuple explícita
       let page = pdfDoc.addPage(pageSize);
       const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
       const fontSize = 11;
