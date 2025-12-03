@@ -32,14 +32,12 @@ function mapCapacidad(cap: CapacidadConProgramacion) {
   };
 }
 
-export async function GET(
-  _req: Request,
-  { params }: { params: { id?: string } }
-) {
+// ✅ GET corregido para App Router
+export async function GET(_req: Request, context: { params: Promise<{ id: string }> }) {
   try {
-    const idStr = params?.id;
-    if (!idStr) return NextResponse.json({ error: "ID de curso no proporcionado" }, { status: 400 });
-    const cursoId = parseInt(idStr, 10);
+    const { id } = await context.params;
+    if (!id) return NextResponse.json({ error: "ID de curso no proporcionado" }, { status: 400 });
+    const cursoId = parseInt(id, 10);
     if (isNaN(cursoId)) return NextResponse.json({ error: "ID inválido" }, { status: 400 });
 
     const capacidades = await prisma.capacidad.findMany({
@@ -58,14 +56,12 @@ export async function GET(
   }
 }
 
-export async function POST(
-  req: Request,
-  { params }: { params: { id?: string } }
-) {
+// ✅ POST corregido para App Router
+export async function POST(req: Request, context: { params: Promise<{ id: string }> }) {
   try {
-    const idStr = params?.id;
-    if (!idStr) return NextResponse.json({ error: "ID de curso no proporcionado" }, { status: 400 });
-    const cursoId = parseInt(idStr, 10);
+    const { id } = await context.params;
+    if (!id) return NextResponse.json({ error: "ID de curso no proporcionado" }, { status: 400 });
+    const cursoId = parseInt(id, 10);
     if (isNaN(cursoId)) return NextResponse.json({ error: "ID inválido" }, { status: 400 });
 
     const body = await req.json();
