@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma"; // ajusta la ruta si tu prisma helper está en otro lugar
 
-type Params = { id?: string };
-
 type CompetenciaInput = {
   codigo: string;
   descripcion: string;
@@ -18,15 +16,12 @@ type LogroInput = {
   nivel?: string;
 };
 
-/**
- * GET /api/cursos/:id/competencias
- * Devuelve { competencias: [...], logros: [...] }
- */
-export async function GET(_request: Request, { params }: { params: Params }) {
+// ✅ GET corregido
+export async function GET(_request: Request, context: { params: Promise<{ id: string }> }) {
   try {
-    const idStr = params?.id;
-    if (!idStr) return NextResponse.json({ error: "ID no proporcionado" }, { status: 400 });
-    const cursoId = parseInt(idStr, 10);
+    const { id } = await context.params;
+    if (!id) return NextResponse.json({ error: "ID no proporcionado" }, { status: 400 });
+    const cursoId = parseInt(id, 10);
     if (Number.isNaN(cursoId)) return NextResponse.json({ error: "ID inválido" }, { status: 400 });
 
     // Intentamos primero traer competencias directas
@@ -72,11 +67,12 @@ export async function GET(_request: Request, { params }: { params: Params }) {
   }
 }
 
-export async function POST(request: Request, { params }: { params: Params }) {
+// ✅ POST corregido
+export async function POST(request: Request, context: { params: Promise<{ id: string }> }) {
   try {
-    const idStr = params?.id;
-    if (!idStr) return NextResponse.json({ error: "ID no proporcionado" }, { status: 400 });
-    const cursoId = parseInt(idStr, 10);
+    const { id } = await context.params;
+    if (!id) return NextResponse.json({ error: "ID no proporcionado" }, { status: 400 });
+    const cursoId = parseInt(id, 10);
     if (Number.isNaN(cursoId)) return NextResponse.json({ error: "ID inválido" }, { status: 400 });
 
     const data = (await request.json().catch(() => null)) as
