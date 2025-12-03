@@ -13,8 +13,8 @@ export async function GET(_req: Request, context: { params: Promise<{ id: string
         competencia: true,
         logro: true,
         capacidad: { include: { programacioncontenido: true } },
-        estrategiadidactica: true, // ✅ CORRECTO
-        recursos: true,
+        estrategiadidactica: true, // ✅ correcto
+        recurso: true,             // ✅ corregido
         bibliografia: true,
         matrizevaluacion: true,
       },
@@ -28,7 +28,7 @@ export async function GET(_req: Request, context: { params: Promise<{ id: string
       logros: course.logro,
       capacidades: course.capacidad,
       estrategias: course.estrategiadidactica,
-      recursos: course.recursos,
+      recursos: course.recurso,  // ✅ corregido
       bibliografia: course.bibliografia,
       matrizEvaluacion: course.matrizevaluacion,
     });
