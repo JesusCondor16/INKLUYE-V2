@@ -2,6 +2,9 @@ export const runtime = 'nodejs';
 
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
+import puppeteer from 'puppeteer';
+import fs from 'fs';
+import path from 'path';
 
 const prisma = new PrismaClient();
 type Params = { id?: string };
@@ -14,7 +17,7 @@ export async function GET(_req: Request, context: { params: Params | Promise<Par
   if (Number.isNaN(cursoId)) return NextResponse.json({ error: 'ID inválido' }, { status: 400 });
 
   try {
-    // Datos principales del curso
+    // Traer datos principales del curso
     const curso = await prisma.course.findUnique({
       where: { id: cursoId },
       select: {
@@ -38,7 +41,7 @@ export async function GET(_req: Request, context: { params: Params | Promise<Par
 
     if (!curso) return NextResponse.json({ error: 'Curso no encontrado' }, { status: 404 });
 
-    // Relaciones necesarias
+    // Relaciones necesarias para el syllabus
     const competencias = await prisma.competencia.findMany({ where: { cursoId } });
     const logros = await prisma.logro.findMany({ where: { cursoId } });
     const matriz = await prisma.matrizevaluacion.findMany({ where: { courseId: cursoId } });
@@ -55,8 +58,48 @@ export async function GET(_req: Request, context: { params: Params | Promise<Par
       ? await prisma.user.findMany({ where: { id: { in: docenteIds } } })
       : [];
 
-    // ✅ No generamos PDF por compatibilidad
-    const pdfUrl = null;
+    // -----------------------------
+    // GENERACIÓN DE PDF (seguro)
+    // -----------------------------
+    const dir = path.join(process.cwd(), 'public', 'pdf');
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+
+    const filename = `${cursoId}.pdf`;
+    const filePath = path.join(dir, filename);
+
+    let pdfUrl: string | null = null;
+    let generated = false;
+
+    if (!fs.existsSync(filePath)) {
+      const browser = await puppeteer.launch({ args: ['--no-sandbox'] });
+      const page = await browser.newPage();
+
+      const html = `
+        <h1>${curso.name}</h1>
+        <p><strong>Código:</strong> ${curso.code}</p>
+        <p><strong>Créditos:</strong> ${curso.credits ?? '-'}</p>
+        <h2>Sumilla</h2>
+        <p>${curso.sumilla ?? '—'}</p>
+      `;
+
+      await page.setContent(html, { waitUntil: 'networkidle0' });
+
+      // ✅ Convertimos Uint8Array a Buffer para Node.js
+      const pdfUint8 = await page.pdf({
+        format: 'A4',
+        printBackground: true,
+        margin: { top: '20mm', bottom: '20mm', left: '15mm', right: '15mm' },
+      });
+
+      const pdfBuffer = Buffer.from(pdfUint8);
+      fs.writeFileSync(filePath, pdfBuffer);
+      await browser.close();
+
+      pdfUrl = `/pdf/${filename}`;
+      generated = true;
+    } else {
+      pdfUrl = `/pdf/${filename}`;
+    }
 
     return NextResponse.json({
       curso,
@@ -71,10 +114,10 @@ export async function GET(_req: Request, context: { params: Params | Promise<Par
       prerequisites,
       cursodocente: docentes,
       url: pdfUrl,
-      generated: false,
+      generated,
     });
   } catch (err: unknown) {
-    console.error('Error en /api/cursos/[id]/pdf route:', err);
+    console.error('Error en /api/pdf route:', err);
     const msg = err instanceof Error ? err.message : String(err);
     return NextResponse.json({ error: 'Error servidor', detalle: msg }, { status: 500 });
   }
