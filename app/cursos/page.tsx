@@ -1,4 +1,4 @@
-// 'use client';
+'use client';
 import { useEffect, useState } from 'react';
 import Sidebar from '@/components/Sidebar';
 import ModalEditarCurso, { Curso as ModalCurso, ModalSavePayload } from '@/components/ModalEditarCurso/ModalEditarCurso';
