@@ -7,25 +7,25 @@ async function main() {
   const usuarios = [
     {
       name: "Jose Herrera",
-      email: "jherrera@unmsm.edu.pe",
+      email: "adminherrera@unmsm.edu.pe",
       password: "123456",
-      role: "administrador",
+      role: "director",
     },
     {
       name: "Jose Herrera",
-      email: "jherrera@unmsm.edu.pe",
+      email: "jherrera1@unmsm.edu.pe",
       password: "123456",
       role: "coordinador",
     },
     {
       name: "Luzmila Pro",
-      email: "lpro@unmsm.edu.pe",
+      email: "lpro1@unmsm.edu.pe",
       password: "123456",
       role: "docente",
     },
     {
       name: "Sergio Quiroz",
-      email: "sergioq@unmsm.edu.pe",
+      email: "sergioq1@unmsm.edu.pe",
       password: "123456",
       role: "estudiante",
     },

@@ -1,8 +1,9 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './ModalSeccion1.module.css';
 import { useModalSeccion1Controller } from './ModalSeccion1.controller';
+import { Curso } from './ModalSeccion1.model';
 
 interface ModalSeccion1Props {
   show: boolean;
@@ -10,8 +11,34 @@ interface ModalSeccion1Props {
   cursoId: number;
 }
 
+interface Usuario {
+  id: number;
+  name: string;
+  email: string;
+}
+
 export default function ModalSeccion1({ show, onClose, cursoId }: ModalSeccion1Props) {
   const { curso, sumilla, loading, textareaRef } = useModalSeccion1Controller(cursoId);
+
+  const [coordinadores, setCoordinadores] = useState<Usuario[]>([]);
+  const [docentes, setDocentes] = useState<Usuario[]>([]);
+  const [selectedCoordinador, setSelectedCoordinador] = useState<number | null>(null);
+  const [selectedDocentes, setSelectedDocentes] = useState<number[]>([]);
+
+  useEffect(() => {
+    // Filtrar usuarios del curso por rol
+    if (!curso) return;
+
+    // Coordinadores y docentes registrados en BD
+    const allCoordinadores = curso.docentes?.filter(u => u.role === 'coordinador') || [];
+    const allDocentes = curso.docentes?.filter(u => u.role === 'docente') || [];
+
+    setCoordinadores(allCoordinadores);
+    setDocentes(allDocentes);
+
+    setSelectedCoordinador(curso.coordinador?.id ?? null);
+    setSelectedDocentes(curso.cursoDocentes?.map(d => d.user.id) || []);
+  }, [curso]);
 
   if (!show) return null;
 
@@ -20,6 +47,15 @@ export default function ModalSeccion1({ show, onClose, cursoId }: ModalSeccion1P
     if (!target.closest(`.${styles.modalContainer}`)) {
       onClose();
     }
+  };
+
+  const handleCoordinadorChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedCoordinador(parseInt(e.target.value, 10));
+  };
+
+  const handleDocentesChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const options = Array.from(e.target.selectedOptions, option => parseInt(option.value, 10));
+    setSelectedDocentes(options);
   };
 
   return (
@@ -84,19 +120,44 @@ export default function ModalSeccion1({ show, onClose, cursoId }: ModalSeccion1P
               <dt>1.11 Pre-requisitos:</dt>
               <dd>
                 {curso?.prerequisites?.length
-                  ? curso.prerequisites.map(p => p.prerequisite?.name).join(', ')
+                  ? curso.prerequisites.map(p => p.prerequisite.name).join(', ')
                   : '—'}
               </dd>
 
               <dt>1.12 Docente(s):</dt>
               <dd>
-                {curso?.cursoDocentes?.length
-                  ? curso.cursoDocentes.map(d => d.user?.name).join(', ')
-                  : '—'}
+                <select
+                  multiple
+                  value={selectedDocentes}
+                  onChange={handleDocentesChange}
+                  className={styles.select}
+                  size={docentes.length || 3}
+                  aria-label="Seleccionar docentes"
+                >
+                  {docentes.map(d => (
+                    <option key={d.id} value={d.id}>
+                      {d.name} ({d.email})
+                    </option>
+                  ))}
+                </select>
               </dd>
 
               <dt>1.13 Coordinador:</dt>
-              <dd>{curso?.coordinador?.name || '—'}</dd>
+              <dd>
+                <select
+                  value={selectedCoordinador ?? ''}
+                  onChange={handleCoordinadorChange}
+                  className={styles.select}
+                  aria-label="Seleccionar coordinador"
+                >
+                  <option value="">—</option>
+                  {coordinadores.map(c => (
+                    <option key={c.id} value={c.id}>
+                      {c.name} ({c.email})
+                    </option>
+                  ))}
+                </select>
+              </dd>
             </dl>
 
             <hr className={styles.separator} />
