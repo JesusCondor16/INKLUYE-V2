@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import puppeteer from "puppeteer";
+import fs from "fs";
+import path from "path";
 
 export async function GET(_req: Request, context: { params: Promise<{ id: string }> }) {
   try {
@@ -16,8 +18,8 @@ export async function GET(_req: Request, context: { params: Promise<{ id: string
         competencia: true,
         logro: true,
         capacidad: { include: { programacioncontenido: true } },
-        estrategiadidactica: true, // CORRECTO según schema
-        recurso: true,             // CORRECTO según schema
+        estrategiadidactica: true,
+        recurso: true,
         bibliografia: true,
         matrizevaluacion: true,
       },
@@ -72,19 +74,18 @@ export async function GET(_req: Request, context: { params: Promise<{ id: string
     const page = await browser.newPage();
     await page.setContent(html, { waitUntil: "networkidle0" });
 
-    // PDF como Buffer
-    const pdfArray = await page.pdf({
+    const pdfUint8 = await page.pdf({
       format: "A4",
       printBackground: true,
       margin: { top: "20mm", bottom: "20mm", left: "15mm", right: "15mm" },
     });
-    const pdfBuffer = Buffer.from(pdfArray); // ✅ Asegura que sea Buffer
+
+    // ✅ Convertir a Buffer para TypeScript y fs
+    const pdfBuffer = Buffer.from(pdfUint8);
 
     await browser.close();
 
-    // Guardar PDF en filesystem (opcional)
-    const fs = await import("fs");
-    const path = await import("path");
+    // Guardar PDF en filesystem
     const dir = path.join(process.cwd(), "public", "syllabus");
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
     const filename = `${cursoId}.pdf`;
