@@ -1,0 +1,243 @@
+/* coordinador.module.css
+   CSS Module compatible con Next.js/Turbopack
+   Accesibilidad: WCAG 2.1 AAA (contraste, foco, tamaños táctiles)
+   Evita selectores \"puros\" fuera de :global(...)
+*/
+
+/* Variables globales */
+:global(:root) {
+  --primary-color: #003366;
+  --primary-color-dark: #00264d;
+  --secondary-color: #6c757d;
+  --success-color: #157347;
+  --error-color: #b02a37;
+  --bg-color: #ffffff;
+  --surface-color: #f8fafc;
+  --text-color: #212529;
+  --heading-color: #0b2c4d;
+  --table-header-bg: #e9ecef;
+  --table-row-hover: #f1f3f5;
+  --focus-ring: #ffbf47;
+  --muted: #6c757d;
+  --touch-min: 2.75rem; /* ≈44px */
+}
+
+/* Global element rules (envueltos en :global) */
+:global(html) {
+  box-sizing: border-box;
+  font-family: "Inter", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial;
+  line-height: 1.6;
+  -webkit-text-size-adjust: 100%;
+}
+:global(*), :global(*::before), :global(*::after) { box-sizing: inherit; }
+
+/* Respeto a prefers-reduced-motion (global) */
+@media (prefers-reduced-motion: reduce) {
+  :global(*) {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* Layout principal (local) */
+.wrapper {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+/* Contenedor principal centrado para pantallas grandes */
+.main {
+  flex: 1;
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto; /* centrado */
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* SKIP LINK accesible (local) */
+.skipLink {
+  position: absolute;
+  left: -9999px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  white-space: nowrap;
+  color: #000 !important;
+  background: #fff !important;
+  text-decoration: none;
+  z-index: 1000;
+}
+.skipLink:focus,
+.skipLink:active {
+  left: 1rem;
+  top: 1rem;
+  width: auto;
+  height: auto;
+  padding: 0.6rem 0.9rem;
+  background-color: var(--primary-color) !important;
+  color: #ffffff !important;
+  font-weight: 700;
+  border-radius: 6px;
+  text-decoration: none;
+  outline: none;
+  box-shadow: 0px 3px 10px rgba(0,0,0,0.2);
+}
+
+/* Títulos y texto */
+.title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--heading-color);
+  margin-bottom: 0.25rem;
+}
+.lead {
+  font-size: 1.05rem;
+  color: var(--muted);
+  margin-bottom: 1rem;
+}
+
+/* Status / error boxes: contraste AAA garantizado */
+.statusBox,
+.emptyBox,
+.errorBox {
+  border-radius: 6px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  box-sizing: border-box;
+}
+
+/* StatusBox (informativo) */
+.statusBox {
+  background-color: #eaf3ff; /* fondo claro */
+  color: var(--primary-color); /* texto oscuro (contraste AAA) */
+  border: 1px solid rgba(0,62,102,0.08);
+}
+
+/* Error box (alto contraste para errores) */
+.errorBox {
+  background-color: #f8d7da;
+  color: var(--error-color);
+  border: 1px solid rgba(176,42,55,0.12);
+}
+
+/* Forzar que elementos con estilos inline dentro del statusBox no rompan el contraste */
+.statusBox *[style] {
+  background: transparent !important;
+  color: inherit !important;
+}
+
+/* Celdas y tabla */
+.tableWrapper {
+  overflow: auto;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+  background: #fff;
+  width: 100%;
+}
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  font-size: 0.95rem;
+  table-layout: auto;
+  min-width: 0;
+}
+.caption {
+  text-align: left;
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  color: var(--heading-color);
+}
+.table thead th {
+  text-align: left;
+  font-weight: 600;
+  padding: 0.75rem 1rem;
+  background: var(--table-header-bg);
+  color: var(--heading-color);
+  border-bottom: 1px solid #e9ecef;
+}
+.table tbody td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #f1f3f5;
+  color: var(--text-color);
+  vertical-align: middle;
+}
+.table tbody tr:nth-child(even) { background-color: #f8f9fa; }
+.table tbody tr:hover { background-color: var(--table-row-hover); }
+
+/* Data labels para mobile (oculto en desktop) */
+.table tbody td[data-label]::before {
+  content: attr(data-label) ": ";
+  display: none;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+/* Botones y variantes */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.65rem;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  border: none;
+  cursor: pointer;
+  user-select: none;
+  min-height: var(--touch-min);
+}
+.btn:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+.btn-primary,
+.generateButton {
+  background-color: var(--primary-color);
+  color: #ffffff;
+}
+.btn-primary:hover,
+.generateButton:hover {
+  background-color: var(--primary-color-dark);
+  transform: translateY(-1px);
+}
+.generateButton:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 3px;
+}
+.btnIcon, .generateIcon {
+  font-size: 1.05rem;
+  line-height: 1;
+  display: inline-block;
+  color: inherit;
+}
+
+/* Util visually hidden local */
+.visuallyHidden {
+  position: absolute !important;
+  height: 1px;
+  width: 1px;
+  overflow: hidden;
+  clip: rect(1px, 1px, 1px, 1px);
+  white-space: nowrap;
+}
+
+/* Responsive: en pantallas pequeñas mostramos data-label y reducimos padding */
+@media (max-width: 700px) {
+  .table { font-size: 0.9rem; }
+  .table tbody td[data-label]::before { display: inline-block; margin-right: 0.25rem; }
+  .generateButton, .btn { font-size: 0.9rem; padding: 0.4rem 0.6rem; }
+  .main { padding: 1rem; }
+}
+
+/* Extra: visibilidad en pantallas muy grandes */
+@media (min-width: 1200px) {
+  .tableWrapper { overflow: visible; }
+  .table { table-layout: auto; }
+}

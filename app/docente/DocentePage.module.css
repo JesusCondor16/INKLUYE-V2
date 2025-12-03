@@ -1,0 +1,80 @@
+/* ============================================
+   WCAG 2.1 AAA — ESTILOS ACCESIBLES PARA DOCENTE
+   Compatible con Next.js / Turbopack (solo clases locales)
+============================================ */
+
+/* Wrapper general */
+.wrapper {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  background: #ffffff;
+}
+
+/* Skip link accesible (solo visible al enfocar) */
+.skipLink {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 0.75rem 1rem;
+  background: #004085;
+  color: #ffffff;
+  font-weight: bold;
+  text-decoration: none;
+  z-index: 999;
+  transform: translateY(-100%);
+  transition: transform 0.2s ease-in-out;
+}
+.skipLink:focus {
+  transform: translateY(0);
+  outline: 3px solid #ffbf47; /* Alto contraste */
+}
+
+/* Main */
+.main {
+  flex: 1;
+  padding: 2rem;
+  box-sizing: border-box;
+}
+
+/* TITULOS accesibles */
+.title {
+  color: #0b1a33;
+  font-weight: 700;
+  font-size: 1.7rem;
+  margin-bottom: 1rem;
+}
+
+/* Subtítulo / lead */
+.subtitle,
+.lead {
+  font-size: 1.05rem;
+  color: #1c1c1c;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+/* Panel informativo — contraste AAA garantizado */
+.infoPanel {
+  background-color: #e8f1ff; /* azul muy claro */
+  color: #0a1a2a; /* texto oscuro */
+  border-left: 6px solid #0056b3; /* Alto contraste */
+  padding: 1.25rem 1rem;
+  border-radius: 8px;
+  margin-top: 1.5rem;
+
+  /* triple A: ratio 7:1 garantizado */
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .main {
+    padding: 1.2rem;
+  }
+
+  .title {
+    font-size: 1.4rem;
+  }
+}
+
+/* Fin */

@@ -1,0 +1,122 @@
+/* ==========================================================
+   🌐 GLOBAL STYLESHEET — Sistema de Gestión de Syllabus
+   Cumple con WCAG 2.0 AAA — Enfoque en accesibilidad, legibilidad y contraste.
+   ========================================================== */
+
+/* =========================
+   1️⃣ Dependencias base
+   ========================= */
+
+/* ⚙️ Importar Bootstrap */
+@import "bootstrap/dist/css/bootstrap.min.css";
+
+/* =========================
+   2️⃣ Variables globales
+   ========================= */
+:root {
+  /* 🎨 Colores principales */
+  --color-primario: #003366; /* Azul oscuro con buen contraste */
+  --color-secundario: #007bff; /* Azul accesible */
+  --color-acento: #17a2b8; /* Celeste */
+  --color-exito: #28a745;
+  --color-error: #dc3545;
+  --color-advertencia: #ffc107;
+
+  /* 🎨 Colores de fondo y texto */
+  --color-fondo: #f8f9fa;
+  --color-texto: #212529;
+  --color-borde: #ced4da;
+
+  /* ✍️ Tipografía */
+  --fuente-base: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  --fuente-tamano-base: 1rem;
+  --line-height-base: 1.6;
+}
+
+/* =========================
+   3️⃣ Estilos globales del documento
+   ========================= */
+html {
+  scroll-behavior: smooth;
+  font-size: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--color-fondo);
+  color: var(--color-texto);
+  font-family: var(--fuente-base);
+  font-size: var(--fuente-tamano-base);
+  line-height: var(--line-height-base);
+}
+
+/* =========================
+   4️⃣ Enlaces y botones accesibles
+   ========================= */
+a {
+  color: var(--color-secundario);
+  text-decoration: none;
+}
+
+a:hover,
+a:focus {
+  color: var(--color-primario);
+  text-decoration: underline;
+  outline: none;
+}
+
+button:focus,
+a:focus {
+  outline: 3px solid var(--color-primario);
+  outline-offset: 2px;
+}
+
+/* =========================
+   5️⃣ Contenedores principales
+   ========================= */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+/* =========================
+   6️⃣ Accesibilidad visual
+   ========================= */
+:focus-visible {
+  outline: 3px solid var(--color-primario);
+  outline-offset: 3px;
+}
+
+/* Mejor contraste para textos sobre fondos claros */
+.text-contrast {
+  color: #000 !important;
+  font-weight: 600;
+}
+
+/* =========================
+   7️⃣ Utilitarios personalizados
+   ========================= */
+.border-accent {
+  border-color: var(--color-acento) !important;
+}
+
+.bg-primario {
+  background-color: var(--color-primario) !important;
+  color: #fff !important;
+}
+
+.bg-secundario {
+  background-color: var(--color-secundario) !important;
+  color: #fff !important;
+}
+
+/* =========================
+   8️⃣ Ajustes responsivos
+   ========================= */
+@media (max-width: 768px) {
+  .container {
+    padding: 0.5rem;
+  }
+}

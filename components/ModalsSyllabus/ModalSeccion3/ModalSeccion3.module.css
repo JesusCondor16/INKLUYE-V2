@@ -1,0 +1,239 @@
+/* variables globales (permitidas con :global) */
+:global(:root) {
+  --bg-overlay: rgba(0,0,0,0.65);
+  --modal-bg: #ffffff;
+  --surface: #f8fafc;
+  --primary: #003366;
+  --primary-cta: #0056b3;
+  --primary-cta-hover: #003f88;
+  --muted: #6b7280;
+  --text: #0b0b0b;
+  --danger: #c53030;
+  --focus-ring-color: rgba(0,86,179,0.25);
+  --radius: 10px;
+}
+
+/* overlay (local) */
+.overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-overlay);
+  padding: 20px;
+  z-index: 9999;
+}
+
+/* modal container */
+.modalContent {
+  width: 100%;
+  max-width: 1100px;
+  max-height: 90vh;
+  background: var(--modal-bg);
+  color: var(--text);
+  border-radius: var(--radius);
+  box-shadow: 0 20px 40px rgba(2,6,23,0.45);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  outline: none;
+}
+
+/* header */
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 22px;
+  border-bottom: 1px solid #e6edf3;
+  background: linear-gradient(90deg, rgba(0,51,102,0.03), transparent);
+}
+.modalTitle {
+  margin: 0;
+  font-size: 1.14rem;
+  color: var(--primary);
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+/* close button (visible focus) */
+.btnClose {
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  font-size: 1.25rem;
+  padding: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.btnClose:hover {
+  color: var(--primary-cta);
+}
+.btnClose:focus {
+  outline: none;
+  box-shadow: 0 0 0 4px var(--focus-ring-color);
+}
+
+/* body */
+.modalBody {
+  padding: 20px 22px;
+  overflow: auto;
+  line-height: 1.45;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+
+/* section title */
+.sectionTitle {
+  display: block;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin: 8px 0 16px;
+  border-left: 4px solid var(--primary);
+  padding-left: 12px;
+}
+
+/* unidad (card style) */
+.unidad {
+  background: var(--surface);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 14px;
+  box-shadow: 0 2px 6px rgba(3,10,22,0.03);
+}
+.unidad fieldset {
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+.unidadLegend {
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: var(--primary);
+}
+
+/* form controls styling (readable, accessible sizes) */
+.formControl {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 1rem;
+  border: 1px solid #d1e3f0;
+  border-radius: 6px;
+  background: #fff;
+  color: var(--text);
+  box-sizing: border-box;
+  min-height: 40px;
+  line-height: 1.4;
+  resize: vertical;
+}
+
+/* disabled inputs look slightly muted but remain readable */
+.disabledControl {
+  background: #fafbfd;
+  color: var(--text);
+  border-color: #e6eef6;
+}
+
+/* preserve newlines and bullets */
+.preserveWhitespace {
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+/* table styles */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 0.75rem;
+}
+.tableHead {
+  background: #f1f9ff;
+  color: var(--primary);
+  font-weight: 700;
+  text-align: left;
+}
+.tableHeadCell {
+  padding: 10px;
+  border: 1px solid #e6eef6;
+}
+.tableBodyCell {
+  padding: 10px;
+  border: 1px solid #eef6fb;
+  vertical-align: top;
+  background: #ffffff;
+  line-height: 1.6;
+}
+
+/* responsive wrapper */
+.tableResponsive {
+  overflow: auto;
+  border-radius: 6px;
+  margin-bottom: 12px;
+}
+
+/* footer */
+.modalFooter {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 14px 22px;
+  border-top: 1px solid #e6edf3;
+  background: linear-gradient(180deg, rgba(0,0,0,0.01), transparent);
+}
+
+/* buttons */
+.btn {
+  font-size: 0.98rem;
+  padding: 10px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  border: none;
+}
+.btnSecondary {
+  background: #f1f5f9;
+  color: var(--text);
+  box-shadow: 0 1px 0 rgba(2,6,23,0.03);
+}
+.btnSecondary:focus,
+.btnPrimary:focus {
+  outline: none;
+  box-shadow: 0 0 0 4px var(--focus-ring-color);
+}
+.btn[disabled] { opacity: 0.6; cursor: not-allowed; }
+
+/* primary CTA class if needed */
+.btnPrimary {
+  background: var(--primary-cta);
+  color: #fff;
+}
+.btnPrimary:hover { background: var(--primary-cta-hover); }
+
+/* focus styles for keyboard users */
+.formControl:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  box-shadow: 0 0 0 4px var(--focus-ring-color);
+  border-radius: 6px;
+}
+
+/* data list styling */
+.datalist dt {
+  font-weight: 700;
+  color: var(--primary);
+}
+.datalist dd {
+  margin: 0 0 12px 0;
+  color: var(--text);
+  white-space: pre-wrap;
+}
+
+/* small screens adjustments */
+@media (max-width: 720px) {
+  .modalContent { max-width: 95vw; padding: 8px; }
+  .modalBody { padding: 12px; }
+  .tableHeadCell, .tableBodyCell { font-size: 0.9rem; padding: 8px; }
+}

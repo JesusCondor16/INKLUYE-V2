@@ -1,0 +1,186 @@
+/* GestionCursos.module.css
+   WCAG 2.1 AAA — contraste alto, foco claro, legibilidad y diseño elegante.
+   TODO: no usar selectores globales "no puros" como [role="..."] dentro del módulo.
+*/
+
+:global(:root) {
+  --color-primario: #0d6efd;
+  --color-secundario: #5b6368;
+  --color-fondo: #ffffff;
+  --color-texto: #0b0b0b;
+  --color-alerta: #0c5460;
+  --color-boton-hover: #0056b3;
+  --color-boton-texto: #ffffff;
+  --fuente-base: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  --radio-borde: 0.375rem;
+  --sombra-suave: 0 6px 18px rgba(2,6,23,0.06);
+}
+
+/* Layout principal (clase local, evita selectores no puros) */
+.main {
+  display: flex;
+  gap: 1.25rem;
+  padding: 2rem;
+  background-color: var(--color-fondo);
+  color: var(--color-texto);
+  font-family: var(--fuente-base);
+  align-items: flex-start;
+  min-height: 100vh;
+}
+
+/* Contenido (derecha del sidebar) */
+.content {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: block;
+}
+
+/* Título principal */
+.titulo {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--color-primario);
+  margin: 0 0 1rem 0;
+  line-height: 1.12;
+}
+
+.titulo:focus,
+.titulo:focus-visible {
+  outline: 3px solid var(--color-primario);
+  outline-offset: 4px;
+  border-radius: 6px;
+}
+
+/* Tabla */
+.tablaWrapper {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 8px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.75rem;
+  box-shadow: var(--sombra-suave);
+  font-size: 0.95rem;
+  min-width: 720px;
+}
+
+.table th,
+.table td {
+  padding: 0.9rem 1rem;
+  text-align: left;
+  border: 1px solid #e6e9ee;
+  vertical-align: middle;
+}
+
+.table th {
+  background-color: #f7f9fb;
+  color: var(--color-secundario);
+  font-weight: 700;
+}
+
+.table td {
+  background-color: var(--color-fondo);
+  color: var(--color-texto);
+}
+
+.table tr:hover {
+  background-color: #eef7ff;
+}
+
+/* Botones consistentes */
+.btn {
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 0.56rem 0.95rem;
+  border-radius: var(--radio-borde);
+  border: none;
+  cursor: pointer;
+  transition: background-color 160ms ease-in-out, transform 100ms ease;
+  box-shadow: 0 2px 6px rgba(2,6,23,0.06);
+  display: inline-flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+/* Variante primaria */
+.btnPrimary {
+  background-color: var(--color-primario);
+  color: var(--color-boton-texto);
+}
+
+.btnPrimary:hover,
+.btnPrimary:focus {
+  background-color: var(--color-boton-hover);
+  transform: translateY(-1px);
+  outline: 3px solid rgba(13,110,253,0.14);
+  outline-offset: 3px;
+}
+
+/* Variante de advertencia (por si la usas) */
+.btnWarning {
+  background-color: #ffc107;
+  color: #1b1b1b;
+}
+
+.btnWarning:hover,
+.btnWarning:focus {
+  background-color: #e0a800;
+  transform: translateY(-1px);
+  outline: 3px solid rgba(255,193,7,0.14);
+  outline-offset: 3px;
+}
+
+/* Alertas */
+.alert {
+  padding: 1rem 1.15rem;
+  margin-bottom: 1rem;
+  border-radius: var(--radio-borde);
+  background-color: #d1ecf1;
+  color: var(--color-alerta);
+  border: 1px solid #bee5eb;
+}
+
+/* Centrar texto usado en filas vacías o estados */
+.textoCentro {
+  text-align: center;
+  padding: 1rem;
+  color: var(--color-secundario);
+}
+
+/* Accesibilidad: clase local para ocultar visualmente */
+.visuallyHidden {
+  position: absolute !important;
+  height: 1px; width: 1px;
+  overflow: hidden;
+  clip: rect(1px, 1px, 1px, 1px);
+  white-space: nowrap;
+}
+
+/* Foco visible global (solo reglas seguras) */
+:global(*:focus-visible) {
+  outline: 3px solid #2b8cff;
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .btn, .table tr {
+    transition: none !important;
+  }
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .main {
+    padding: 1rem;
+  }
+
+  .table {
+    min-width: 0;
+    font-size: 0.9rem;
+  }
+}

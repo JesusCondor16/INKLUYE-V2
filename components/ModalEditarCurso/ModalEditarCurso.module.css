@@ -1,0 +1,201 @@
+/* ModalEditarCurso.module.css — versión compacta y con Sumilla expandida */
+
+/* Fondo oscuro */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(2, 12, 28, 0.72);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem;
+  z-index: 1200;
+}
+
+/* MODAL COMPACTO */
+.modal {
+  width: 100%;
+  max-width: 720px;
+  background: #ffffff;
+  color: #0b2540;
+  border-radius: 12px;
+  box-shadow: 0 12px 38px rgba(3, 12, 30, 0.32);
+  padding: 1rem 1.25rem;
+  outline: none;
+  max-height: 92vh;
+  overflow-y: auto;
+}
+
+/* Título */
+.title {
+  margin: 0 0 0.35rem 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #053660;
+}
+
+/* Sección */
+.sectionTitle {
+  margin: 1rem 0 0.5rem 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #053660;
+  border-left: 4px solid #e6f0ff;
+  padding-left: 0.5rem;
+}
+
+/* Grid compacto */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.6rem 0.75rem;
+}
+
+/* Campo */
+.field {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Label */
+.labelText {
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+  color: #0b3a5a;
+}
+
+/* Inputs/selects/textarea */
+.control {
+  width: 100%;
+  padding: 0.45rem 0.55rem;
+  border-radius: 7px;
+  border: 1px solid #d7e7f5;
+  font-size: 0.9rem;
+  background: #ffffff;
+  color: #092333;
+  box-sizing: border-box;
+}
+
+/* Estados readOnly/disabled sobre la clase local */
+.control[readonly],
+.control[disabled] {
+  background: #f6f9fc;
+  color: #253b4a;
+}
+
+/* Focus visible (solo con clases locales) */
+.control:focus,
+.btnCancel:focus,
+.btnSave:focus,
+.sumillaTextarea:focus {
+  outline: 3px solid #ffbf47;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 3px rgba(255, 191, 71, 0.12);
+}
+
+/* Hint */
+.hint {
+  font-size: 0.78rem;
+  margin-top: 0.2rem;
+  color: #405969;
+}
+
+/* Docentes */
+.docentesList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.docenteItem {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.32rem 0.55rem;
+  background: #f3f8ff;
+  border-radius: 8px;
+  border: 1px solid rgba(5, 54, 96, 0.06);
+  font-size: 0.85rem;
+}
+
+/* Small checkbox styling (class local) */
+.checkbox {
+  width: 16px;
+  height: 16px;
+}
+
+/* Full width */
+.fullWidth {
+  grid-column: 1 / -1;
+}
+
+/* Sumilla ocupa todo el ancho */
+.sumillaBox {
+  grid-column: 1 / -1;
+  margin-top: 0.5rem;
+}
+
+.sumillaTextarea {
+  width: 100%;
+  min-height: 140px;
+  resize: vertical;
+  padding: 0.6rem 0.75rem;
+  border-radius: 7px;
+  border: 1px solid #d7e7f5;
+  font-size: 0.9rem;
+  background: #f6f9fc; /* readonly visual */
+  color: #253b4a;
+  box-sizing: border-box;
+}
+
+/* Actions */
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  margin-top: 1rem;
+}
+
+/* Buttons */
+.btnCancel,
+.btnSave {
+  padding: 0.45rem 0.85rem;
+  border-radius: 9px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+}
+
+/* Cancel */
+.btnCancel {
+  background: transparent;
+  border: 1px solid #cfe6f8;
+  color: #073047;
+}
+
+/* Save */
+.btnSave {
+  background: #003f7a;
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(2, 26, 57, 0.15);
+}
+
+.btnSave[disabled],
+.btnSave[aria-disabled="true"] {
+  opacity: 0.65;
+  cursor: not-allowed;
+  filter: grayscale(10%);
+}
+
+/* Responsive */
+@media (max-width: 720px) {
+  .modal {
+    max-width: 95%;
+    padding: 0.9rem 1rem;
+  }
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,246 @@
+/* ================================
+   LoginPage.module.css (WCAG 2.1 AAA)
+   ================================ */
+
+/* Contenedor principal */
+.container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #e6f0fa;
+  padding: 2rem;
+  box-sizing: border-box;
+}
+
+/* Tarjeta del formulario */
+.card {
+  background-color: #ffffff;
+  border: 3px solid #002244; /* borde más oscuro para contraste */
+  border-radius: 12px;
+  padding: 2rem;
+  max-width: 520px;
+  width: 100%;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.10);
+  box-sizing: border-box;
+}
+
+/* Título */
+.title {
+  color: #001833;
+  font-weight: 800;
+  text-align: center;
+  margin: 0 0 1.25rem 0;
+  font-size: 1.6rem;
+  line-height: 1.2;
+}
+
+/* Texto de descripción */
+.description {
+  color: #111111;
+  line-height: 1.6;
+  text-align: left;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+}
+
+/* Campos de formulario */
+.field {
+  margin-bottom: 0.75rem;
+}
+
+.label {
+  display: block;
+  font-weight: 700;
+  color: #002244;
+  margin-bottom: 0.25rem;
+  font-size: 0.95rem;
+}
+
+/* Input (mejor contraste y borde más perceptible) */
+.input {
+  border: 2px solid #c7d6ea;
+  border-radius: 8px;
+  padding: 0.75rem 0.9rem;
+  width: 100%;
+  font-size: 1rem;
+  background: #ffffff;
+  color: #111111;
+  box-sizing: border-box;
+  transition: box-shadow 140ms ease, border-color 140ms ease;
+  min-height: 44px; /* objetivo mínimo */
+}
+
+/* Focus visible accesible (no quitar outline sin alternativa) */
+.input:focus-visible {
+  outline: 3px solid #ffd571;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 4px rgba(255,191,71,0.10);
+  border-color: #002244;
+}
+
+/* Botón principal */
+.button {
+  background-color: #002244; /* contraste fuerte */
+  border: 2px solid #002244;
+  color: #ffffff;
+  padding: 0.85rem;
+  font-weight: 800;
+  border-radius: 8px;
+  cursor: pointer;
+  width: 100%;
+  font-size: 1rem;
+  min-height: 44px;
+  box-sizing: border-box;
+  transition: transform 120ms ease, box-shadow 120ms ease, background-color 120ms ease;
+}
+
+.button:hover,
+.button:active {
+  transform: translateY(-1px);
+  background-color: #001833;
+  box-shadow: 0 8px 18px rgba(0,0,0,0.10);
+}
+
+.button:focus-visible {
+  outline: 3px solid #ffd571;
+  outline-offset: 3px;
+}
+
+/* Mensaje de error (alto contraste y legible) */
+.error {
+  color: #6b0f0f;
+  background-color: #fff1f1;
+  border: 2px solid #9b1c1c;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+/* Password wrapper y toggle */
+.passwordWrap {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.togglePassword {
+  background: none;
+  border: 2px solid #003366;
+  color: #003366;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+  min-height: 44px;
+  min-width: 88px;
+  box-sizing: border-box;
+}
+
+.togglePassword:hover,
+.togglePassword:active {
+  background-color: #e8f1fb;
+}
+
+.togglePassword:focus-visible {
+  outline: 3px solid #ffd571;
+  outline-offset: 3px;
+}
+
+/* Sección de ayuda */
+.helpButton {
+  border: 2px solid #003366;
+  color: #003366;
+  background-color: #ffffff;
+  font-size: 0.95rem;
+  padding: 0.6rem 0.8rem;
+  border-radius: 8px;
+  margin-top: 1rem;
+  cursor: pointer;
+  font-weight: 700;
+  min-height: 44px;
+}
+
+.helpButton:hover,
+.helpButton:active {
+  background-color: #f2f7ff;
+}
+
+.helpButton:focus-visible {
+  outline: 3px solid #ffd571;
+  outline-offset: 3px;
+}
+
+/* Help section visible / hidden (sin lecturas accidentales) */
+.helpSection {
+  background-color: #d9ecff;
+  border: 2px solid #003366;
+  color: #002244;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-top: 1rem;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+/* visible/hidden para sincronizar con aria-hidden en JS */
+.visible {
+  display: block;
+  visibility: visible;
+  height: auto;
+  overflow: visible;
+}
+
+.hidden {
+  display: none;
+  visibility: hidden;
+  height: 0;
+  overflow: hidden;
+}
+
+/* sr-only para live regions y textos solo para AT */
+.srOnly {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Responsiveness */
+@media (max-width: 520px) {
+  .card {
+    padding: 1rem;
+    border-width: 2px;
+    max-width: 96%;
+  }
+
+  .title {
+    font-size: 1.25rem;
+  }
+
+  .description {
+    font-size: 0.95rem;
+  }
+
+  .togglePassword {
+    min-width: 72px;
+    padding: 0.45rem 0.6rem;
+  }
+}
+
+/* Reduce motion preference (CORREGIDO para CSS Modules: :global(*) ) */
+@media (prefers-reduced-motion: reduce) {
+  :global(*) {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

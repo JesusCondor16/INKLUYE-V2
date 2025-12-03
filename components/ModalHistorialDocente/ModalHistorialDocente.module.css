@@ -1,0 +1,67 @@
+.modalBackdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1050;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modalContent {
+  background-color: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  width: 90%;
+  max-width: 800px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background-color: #003366;
+  color: #fff;
+}
+
+.modalTitle {
+  margin: 0;
+  font-weight: bold;
+}
+
+.modalBody {
+  padding: 1rem;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.tableHeader {
+  background-color: #f8f9fa;
+  color: #212529;
+}
+
+.modalFooter {
+  display: flex;
+  justify-content: flex-end;
+  padding: 1rem;
+  gap: 0.5rem;
+}
+
+.btnClose {
+  background-color: #6c757d;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.btnClose:hover {
+  background-color: #565e64;
+}

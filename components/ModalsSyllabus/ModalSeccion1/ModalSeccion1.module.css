@@ -1,0 +1,117 @@
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.modalContainer {
+  background-color: #ffffff;
+  color: #000;
+  border-radius: 1rem;
+  width: 90%;
+  max-width: 800px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.4);
+  padding: 1.5rem;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #003366;
+  color: #fff;
+  padding: 1rem;
+  border-radius: 0.5rem 0.5rem 0 0;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.25rem;
+  cursor: pointer;
+}
+.closeButton:focus {
+  outline: 3px solid #f6c744;
+}
+
+.modalBody {
+  padding: 1rem;
+}
+
+.datalist {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  row-gap: 0.5rem;
+  column-gap: 1rem;
+}
+
+.separator {
+  margin: 1.5rem 0;
+}
+
+.textarea {
+  width: 100%;
+  min-height: 120px;
+  resize: vertical;
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  font-size: 1rem;
+}
+.textarea:focus {
+  outline: 3px solid #003366;
+}
+
+.charCount {
+  text-align: right;
+  font-size: 0.85rem;
+  color: #555;
+  margin-top: 0.25rem;
+}
+
+.buttonContainer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.buttonPrimary {
+  background-color: #003366;
+  color: #fff;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.6rem 1.2rem;
+  cursor: pointer;
+}
+.buttonPrimary:focus {
+  outline: 3px solid #f6c744;
+}
+
+.buttonSecondary {
+  background-color: #ccc;
+  color: #000;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.6rem 1.2rem;
+  cursor: pointer;
+}
+.buttonSecondary:focus {
+  outline: 3px solid #f6c744;
+}
+
+.loadingText {
+  text-align: center;
+  font-weight: bold;
+  color: #003366;
+}

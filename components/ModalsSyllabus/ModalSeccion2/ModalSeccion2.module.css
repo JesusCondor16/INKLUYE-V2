@@ -1,0 +1,36 @@
+.modal-body {
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.table {
+  background-color: #fff;
+  border-radius: 10px;
+}
+
+.table th {
+  text-align: center;
+  vertical-align: middle;
+}
+
+.table td {
+  vertical-align: middle;
+}
+
+.table-primary {
+  background-color: #cfe2ff;
+}
+
+.table-success {
+  background-color: #d1e7dd;
+}
+
+.btn-outline-primary,
+.btn-outline-success {
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+textarea.form-control {
+  resize: none;
+}

@@ -1,0 +1,74 @@
+/* Layout principal: sidebar izquierda + contenido derecha */
+.pageWrapper {
+  display: flex;
+  min-height: 100vh;
+  background: #f2f6fc;
+}
+
+/* Contenedor del contenido derecho */
+.main {
+  flex: 1;
+  padding: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+/* Wrapper del PerfilCard */
+.cardWrapper {
+  width: 100%;
+  max-width: 520px;
+}
+
+/* Loading */
+.loading {
+  font-size: 1.2rem;
+  color: #003366;
+  font-weight: bold;
+}
+
+/* Error box */
+.errorBox {
+  background: #fff0f0;
+  border: 1px solid #cc0000;
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 480px;
+}
+.errorTitle {
+  margin: 0;
+  font-weight: bold;
+  color: #b00000;
+}
+.errorText {
+  margin-top: 10px;
+  color: #5a0000;
+}
+
+.center {
+  text-align: center;
+  margin-top: 20px;
+}
+.loginBtn {
+  padding: 10px 20px;
+  background: #004a99;
+  color: white;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+/* Responsive */
+@media (max-width: 820px) {
+  .pageWrapper {
+    flex-direction: column;
+  }
+
+  .main {
+    padding: 20px;
+  }
+
+  .cardWrapper {
+    max-width: 100%;
+  }
+}

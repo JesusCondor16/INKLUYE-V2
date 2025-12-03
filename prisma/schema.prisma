@@ -1,0 +1,205 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model bibliografia {
+  id       Int    @id @default(autoincrement())
+  texto    String @db.VarChar(1000)
+  courseId Int
+  course   course @relation(fields: [courseId], references: [id], map: "Bibliografia_courseId_fkey")
+
+  @@index([courseId], map: "Bibliografia_courseId_fkey")
+}
+
+model capacidad {
+  id                    Int                     @id @default(autoincrement())
+  nombre                String                  @db.VarChar(100)
+  descripcion           String                  @db.VarChar(500)
+  cursoId               Int
+  course                course                  @relation(fields: [cursoId], references: [id], map: "Capacidad_cursoId_fkey")
+  programacioncontenido programacioncontenido[]
+
+  @@index([cursoId], map: "Capacidad_cursoId_fkey")
+}
+
+model competencia {
+  id                Int                 @id @default(autoincrement())
+  codigo            String              @unique(map: "Competencia_codigo_key")
+  descripcion       String?             @db.VarChar(1000)
+  tipo              String
+  nivel             String
+  cursoId           Int
+  course            course              @relation(fields: [cursoId], references: [id], map: "Competencia_cursoId_fkey")
+  coursecompetencia coursecompetencia[]
+
+  @@index([cursoId], map: "Competencia_cursoId_fkey")
+}
+
+model course {
+  id                                               Int                   @id @default(autoincrement())
+  code                                             String                @unique(map: "Course_code_key")
+  name                                             String
+  credits                                          Int
+  type                                             String
+  area                                             String?
+  weeks                                            Int?
+  theoryHours                                      Int?
+  practiceHours                                    Int?
+  labHours                                         Int?
+  semester                                         String?
+  cycle                                            String?
+  modality                                         String?
+  group                                            String?
+  sumilla                                          String?               @db.VarChar(2000)
+  coordinadorId                                    Int?
+  bibliografia                                     bibliografia[]
+  capacidad                                        capacidad[]
+  competencia                                      competencia[]
+  user                                             user?                 @relation(fields: [coordinadorId], references: [id], map: "Course_coordinadorId_fkey")
+  coursecompetencia                                coursecompetencia[]
+  cursodocente                                     cursodocente[]
+  estrategiadidactica                              estrategiadidactica[]
+  logro                                            logro[]
+  matrizevaluacion                                 matrizevaluacion[]
+  prerequisite_prerequisite_courseIdTocourse       prerequisite[]        @relation("prerequisite_courseIdTocourse")
+  prerequisite_prerequisite_prerequisiteIdTocourse prerequisite[]        @relation("prerequisite_prerequisiteIdTocourse")
+  recurso                                          recurso[]
+  syllabus                                         syllabus?
+
+  @@index([coordinadorId], map: "Course_coordinadorId_fkey")
+}
+
+model coursecompetencia {
+  cursoId       Int
+  competenciaId Int
+  competencia   competencia @relation(fields: [competenciaId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_competencia")
+  course        course      @relation(fields: [cursoId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_curso")
+
+  @@id([cursoId, competenciaId])
+  @@index([competenciaId], map: "fk_competencia")
+}
+
+model cursodocente {
+  courseId Int
+  userId   Int
+  course   course @relation(fields: [courseId], references: [id], map: "CursoDocente_courseId_fkey")
+  user     user   @relation(fields: [userId], references: [id], map: "CursoDocente_userId_fkey")
+
+  @@id([courseId, userId])
+  @@index([userId], map: "CursoDocente_userId_fkey")
+}
+
+model logro {
+  id          Int    @id @default(autoincrement())
+  codigo      String @db.VarChar(10)
+  descripcion String @db.VarChar(500)
+  cursoId     Int
+  tipo        String @db.VarChar(100)
+  nivel       String @db.VarChar(100)
+  course      course @relation(fields: [cursoId], references: [id], map: "Logro_cursoId_fkey")
+
+  @@index([cursoId], map: "Logro_cursoId_fkey")
+}
+
+model matrizevaluacion {
+  id          Int     @id @default(autoincrement())
+  unidad      String  @db.VarChar(100)
+  criterio    String  @db.VarChar(1000)
+  producto    String  @db.VarChar(500)
+  nota_peso   Float?  @db.Float
+  nota_sum    String? @db.VarChar(500)
+  instrumento String  @db.VarChar(100)
+  courseId    Int
+  course      course  @relation(fields: [courseId], references: [id], map: "MatrizEvaluacion_courseId_fkey")
+
+  @@index([courseId], map: "MatrizEvaluacion_courseId_fkey")
+}
+
+model nota {
+  id    Int    @id @default(autoincrement())
+  texto String @db.VarChar(500)
+}
+
+model prerequisite {
+  id                                         Int    @id @default(autoincrement())
+  courseId                                   Int
+  prerequisiteId                             Int
+  course_prerequisite_courseIdTocourse       course @relation("prerequisite_courseIdTocourse", fields: [courseId], references: [id], map: "Prerequisite_courseId_fkey")
+  course_prerequisite_prerequisiteIdTocourse course @relation("prerequisite_prerequisiteIdTocourse", fields: [prerequisiteId], references: [id], map: "Prerequisite_prerequisiteId_fkey")
+
+  @@unique([courseId, prerequisiteId], map: "Prerequisite_courseId_prerequisiteId_key")
+  @@index([prerequisiteId], map: "Prerequisite_prerequisiteId_fkey")
+}
+
+model programacioncontenido {
+  id          Int       @id @default(autoincrement())
+  logroUnidad String    @db.VarChar(500)
+  semana      String    @db.VarChar(2)
+  contenido   String    @db.VarChar(500)
+  actividades String    @db.VarChar(1000)
+  recursos    String    @db.VarChar(500)
+  estrategias String    @db.VarChar(500)
+  capacidadId Int
+  capacidad   capacidad @relation(fields: [capacidadId], references: [id], map: "ProgramacionContenido_capacidadId_fkey")
+
+  @@index([capacidadId], map: "ProgramacionContenido_capacidadId_fkey")
+}
+
+model syllabus {
+  id        Int      @id @default(autoincrement())
+  courseId  Int      @unique(map: "Syllabus_courseId_key")
+  createdAt DateTime @default(now())
+  pdfUrl    String
+  updatedAt DateTime @default(now())
+  course    course   @relation(fields: [courseId], references: [id], map: "Syllabus_courseId_fkey")
+}
+
+model user {
+  id           Int            @id @default(autoincrement())
+  name         String
+  email        String         @unique(map: "User_email_key")
+  password     String
+  role         String
+  course       course[]
+  cursodocente cursodocente[]
+  userhistory  userhistory[]
+}
+
+model userhistory {
+  id            Int      @id @default(autoincrement())
+  userId        Int
+  changeDate    DateTime @default(now())
+  changedBy     String
+  changedByRole String
+  description   String
+  user          user     @relation(fields: [userId], references: [id], map: "UserHistory_userId_fkey")
+
+  @@index([userId], map: "UserHistory_userId_fkey")
+}
+
+model estrategiadidactica {
+  id        Int      @id @default(autoincrement())
+  cursoId   Int
+  texto     String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+  course    course   @relation(fields: [cursoId], references: [id], map: "EstrategiaDidactica_cursoId_fkey")
+
+  @@index([cursoId], map: "EstrategiaDidactica_cursoId_fkey")
+}
+
+model recurso {
+  id          Int      @id @default(autoincrement())
+  cursoId     Int
+  descripcion String   @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime
+  course      course   @relation(fields: [cursoId], references: [id], map: "Recurso_cursoId_fkey")
+
+  @@index([cursoId], map: "Recurso_cursoId_fkey")
+}

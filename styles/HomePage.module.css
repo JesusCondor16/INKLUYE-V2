@@ -1,0 +1,256 @@
+/* HomePage.module.css — versión para CSS Modules (Next.js) */
+
+/* --- Layout principal --- */
+.main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh; /* permite reflow */
+  background-color: #e6f0fa;
+  padding: 2rem;
+}
+
+/* Contenedor principal */
+.container {
+  text-align: center;
+  background-color: #ffffff;
+  max-width: 700px;
+  width: 100%;
+  border: 3px solid #003366; /* más oscuro para mejor contraste */
+  border-radius: 8px;
+  padding: 3rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+  box-sizing: border-box;
+}
+
+/* Títulos y texto */
+.title {
+  color: #002244; /* muy oscuro para alto contraste con blanco */
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  line-height: 1.3;
+}
+
+.description {
+  font-size: 1.125rem; /* >=16px (dependiendo de root font-size) */
+  color: #222222; /* muy oscuro para alto contraste */
+  line-height: 1.6; /* legibilidad y reflow */
+  margin-bottom: 2rem;
+  text-align: left;
+}
+
+/* Navegación de botones (grid facilita foco secuencial) */
+.nav {
+  display: grid;
+  gap: 1rem;
+  max-width: 320px;
+  margin: 0 auto;
+  align-items: center;
+  justify-items: stretch;
+}
+
+/* Estilos base aplicados a botones globales y clases locales.
+   Usamos :global(button) para no romper el scope del módulo. */
+:global(button), 
+.primaryButton,
+.outlineButtonPrimary,
+.outlineButtonSecondary {
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.2;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  min-width: 44px;
+  min-height: 44px; /* tamaño objetivo de 44x44px para interactivos */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: box-shadow 150ms ease, transform 120ms ease;
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+  border-style: solid;
+  border-width: 0;
+  box-sizing: border-box;
+}
+
+/* BOTÓN PRINCIPAL — contraste más alto con texto blanco */
+.primaryButton {
+  background-color: #002244; /* azul oscuro para contraste >= 7:1 vs #fff */
+  color: #ffffff;
+  border: 2px solid #002244;
+}
+
+/* Outline primary — texto en color oscuro sobre fondo claro */
+.outlineButtonPrimary {
+  background: none;
+  color: #002244;
+  border: 2px solid #003366; /* contraste fuerte contra el fondo */
+}
+
+/* Outline secondary — tonos neutros con contraste suficiente */
+.outlineButtonSecondary {
+  background: none;
+  color: #3b3f45; /* gris oscuro legible */
+  border: 2px solid #3b3f45;
+}
+
+/* Hover / active states — no depender solo del color para indicar estado */
+:global(button:hover),
+:global(button:active),
+:global(button:focus-visible) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.08);
+}
+
+/* --- Foco visible accesible --- */
+/* Eliminamos outlines globales por defecto y definimos focus-visible */
+:global(button:focus),
+:global(a:focus),
+:global(input:focus),
+:global(select:focus),
+:global(textarea:focus) {
+  outline: none;
+}
+
+:global(button:focus-visible),
+:global(a:focus-visible),
+:global(input:focus-visible),
+:global(select:focus-visible),
+:global(textarea:focus-visible) {
+  outline: 3px solid #ffbf47; /* contraste alto para indicar foco */
+  outline-offset: 3px;
+  box-shadow: 0 0 0 4px rgba(255,191,71,0.12);
+  border-radius: 8px;
+}
+
+/* Asegurar contraste del foco sobre fondos oscuros */
+.primaryButton:focus-visible {
+  outline-color: #ffd571;
+}
+
+/* --- Secciones de ayuda y créditos --- */
+.helpSection,
+.creditSection {
+  margin-top: 1.5rem;
+  text-align: left;
+  padding: 1rem;
+  border-radius: 6px;
+  border: 2px solid transparent;
+  box-sizing: border-box;
+  line-height: 1.6;
+  font-size: 1rem;
+}
+
+/* Help: fondo azul claro y texto oscuro (alto contraste) */
+.helpSection {
+  background-color: #d9ecff;
+  border-color: #003366;
+  color: #002244;
+}
+
+/* Credits: fondo neutro y texto oscuro */
+.creditSection {
+  background-color: #f8f9fa;
+  border-color: #3b3f45;
+  color: #222222;
+}
+
+/* Heading interno de secciones (para manejo de foco programático) */
+.sectionHeading {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: inherit;
+  outline: none; /* foco se maneja en :focus-visible */
+}
+
+/* --- Visibilidad dinámca para secciones colapsables --- */
+/* .visible se muestra; .hidden se oculta completamente (sin lectura por lectores) */
+.visible {
+  display: block;
+  visibility: visible;
+  height: auto;
+  overflow: visible;
+}
+
+.hidden {
+  display: none; /* sincronizar con aria-hidden="true" en DOM */
+  visibility: hidden;
+  height: 0;
+  overflow: hidden;
+}
+
+/* --- Skip link (must be visible on keyboard focus) --- */
+.skipLink {
+  position: absolute;
+  left: -9999px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  z-index: 1000;
+}
+
+.skipLink:focus,
+.skipLink:active {
+  left: 1rem;
+  top: 1rem;
+  width: auto;
+  height: auto;
+  padding: 0.5rem 1rem;
+  background: #002244;
+  color: #ffffff;
+  border-radius: 6px;
+  text-decoration: none;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.12);
+  font-weight: 700;
+  outline: none;
+}
+
+/* --- Región solo lectura por lector de pantalla (aria-live) --- */
+.srOnly {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* --- Responsive / reflow friendly --- */
+@media (max-width: 600px) {
+  .container {
+    padding: 1.5rem;
+    border-width: 2px;
+    max-width: 96%;
+  }
+
+  .nav {
+    max-width: 100%;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .description {
+    font-size: 1rem;
+  }
+}
+
+/* --- Respect user preferences --- */
+/* Usamos :global(*) dentro del media para evitar selector "puro" '*' fuera del scope */
+@media (prefers-reduced-motion: reduce) {
+  :global(*) {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

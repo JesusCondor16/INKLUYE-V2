@@ -1,0 +1,183 @@
+/* Contenedor principal */
+.container {
+  margin: 2rem auto;
+  padding: 0 2rem;
+  font-family: "Segoe UI", "Roboto", Tahoma, sans-serif;
+  color: #1c1c1c; /* texto muy oscuro para alto contraste */
+  background-color: #ffffff;
+}
+
+/* Header */
+.header {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+}
+
+.title {
+  font-size: 2.25rem;
+  color: #0b3d91; /* azul institucional intenso */
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+}
+
+/* Botón principal */
+.btnPrimary {
+  background-color: #0b3d91;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 1rem;
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.btnPrimary:hover,
+.btnPrimary:focus {
+  background-color: #082b6d;
+  outline: 3px solid #ffc107; /* alto contraste para focus */
+  outline-offset: 2px;
+}
+
+/* Mensaje de alerta */
+.alert {
+  background-color: #eaf2ff;
+  color: #0b3d91;
+  padding: 1rem 1.25rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}
+
+/* Contenedor de la tabla */
+.tableContainer {
+  overflow-x: auto;
+  box-shadow: 0 0.25rem 0.5rem rgba(0,0,0,0.1);
+  border-radius: 0.5rem;
+}
+
+/* Tabla formal */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center;
+  font-size: 1rem;
+}
+
+.table th,
+.table td {
+  border: 1px solid #dee2e6;
+  padding: 0.75rem 1rem;
+}
+
+.table th {
+  background-color: #f0f2f5;
+  color: #1c1c1c;
+  font-weight: 700;
+}
+
+.table tr:nth-child(even) {
+  background-color: #fafafa;
+}
+
+.table tr:hover,
+.table tr:focus-within {
+  background-color: #e2e6ea;
+  outline: 3px solid #ffc107; /* indicador de foco visible */
+  outline-offset: -1px;
+}
+
+/* Mensaje “sin datos” */
+.noData {
+  color: #6c757d;
+  padding: 1.5rem 0;
+  font-style: italic;
+}
+
+/* Grupo de acciones */
+.actionGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+/* Botones de acción */
+.btnEdit,
+.btnDelete,
+.btnHistorial {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.4rem 0.75rem;
+  font-size: 0.9rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-weight: 600;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+/* Editar */
+.btnEdit {
+  background-color: #ffffff;
+  color: #0b3d91;
+  border: 1px solid #0b3d91;
+}
+
+.btnEdit:hover,
+.btnEdit:focus {
+  background-color: #0b3d91;
+  color: #ffffff;
+  outline: 3px solid #ffc107;
+}
+
+/* Eliminar */
+.btnDelete {
+  background-color: #ffffff;
+  color: #b02a37; /* rojo formal */
+  border: 1px solid #b02a37;
+}
+
+.btnDelete:hover,
+.btnDelete:focus {
+  background-color: #b02a37;
+  color: #ffffff;
+  outline: 3px solid #ffc107;
+}
+
+/* Historial */
+.btnHistorial {
+  background-color: #ffffff;
+  color: #146c43; /* verde formal */
+  border: 1px solid #146c43;
+}
+
+.btnHistorial:hover,
+.btnHistorial:focus {
+  background-color: #146c43;
+  color: #ffffff;
+  outline: 3px solid #ffc107;
+}
+
+/* Iconos */
+.icon {
+  display: inline-block;
+}
+
+/* Botones y elementos accesibles */
+button:focus {
+  outline: 3px solid #ffc107;
+  outline-offset: 2px;
+}
+
+/* Tipografía legible para AAA */
+body {
+  font-size: 1rem;
+  line-height: 1.6;
+}

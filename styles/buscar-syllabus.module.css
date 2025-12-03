@@ -1,0 +1,292 @@
+/* styles/buscar-syllabus.module.css
+   WCAG 2.1 AAA — Buscar Syllabus
+   - Compatible con CSS Modules: solo clases locales (globals para :root / html)
+   - Contraste AAA, foco visible, preferencia de reducción de movimiento
+   - Diseño claro y profesional pensado para director/coordinador/docente/alumno
+*/
+
+/* Variables globales (usar :global para no romper purity de CSS Modules) */
+:global(:root) {
+  --bg: #ffffff;
+  --surface: #f7fbff;
+  --text: #0b1a33;           /* texto principal — alto contraste */
+  --muted: #5f6b75;          /* texto secundario */
+  --accent: #005ea6;         /* acción principal (links, hover) */
+  --accent-strong: #003f73;  /* hover/active */
+  --success: #0a7a3a;
+  --danger: #b02a37;
+  --border: #e6eef6;
+  --focus-ring: 3px solid rgba(0,94,166,0.18);
+  --touch-min: 2.75rem;      /* ≈44px mínimo táctil */
+  --radius: 10px;
+}
+
+/* Reglas globales seguras */
+:global(html) {
+  -webkit-text-size-adjust: 100%;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Respeto a prefers-reduced-motion (global) */
+@media (prefers-reduced-motion: reduce) {
+  :global(*) {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* ---------------------------
+   Layout general
+   --------------------------- */
+.wrapper {
+  display: flex;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Inter, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  align-items: flex-start;
+  box-sizing: border-box;
+}
+
+/* Skip link accesible — visible al recibir foco */
+.skipLink {
+  position: absolute;
+  left: -9999px;
+  top: auto;
+  background: var(--accent);
+  color: #fff;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  font-weight: 700;
+  z-index: 999;
+}
+.skipLink:focus,
+.skipLink:active {
+  left: 1rem;
+  top: 1rem;
+  transform: none;
+  outline: var(--focus-ring);
+}
+
+/* Contenido principal */
+.main {
+  flex: 1;
+  padding: 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Cabecera */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.title {
+  margin: 0;
+  font-size: 1.6rem;
+  color: var(--text);
+  font-weight: 700;
+}
+.description {
+  margin: 0;
+  color: var(--muted);
+  font-size: 1rem;
+}
+
+/* ---------------------------
+   Controles de búsqueda (accesibles)
+   --------------------------- */
+.searchRow {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  margin: 1rem 0;
+  flex-wrap: wrap;
+}
+.searchInput {
+  flex: 1 1 360px;
+  min-width: 180px;
+  padding: 0.6rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  font-size: 1rem;
+  min-height: var(--touch-min);
+}
+.searchInput:focus {
+  box-shadow: var(--focus-ring);
+  border-color: var(--accent);
+  outline: none;
+}
+.searchButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.55rem 0.9rem;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
+  min-height: var(--touch-min);
+}
+.searchButton:hover,
+.searchButton:focus {
+  background: var(--accent-strong);
+  outline: var(--focus-ring);
+}
+
+/* Filtros (checkbox / selects) */
+.filters {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.filterControl {
+  padding: 0.45rem 0.6rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: #fff;
+  min-height: var(--touch-min);
+}
+
+/* ---------------------------
+   Tabla accesible y legible
+   --------------------------- */
+.tableWrapper {
+  margin-top: 1rem;
+  overflow: auto;
+  border-radius: var(--radius);
+  background: linear-gradient(180deg, var(--surface), #fff);
+  box-shadow: 0 1px 6px rgba(10,20,30,0.04);
+  border: 1px solid var(--border);
+}
+
+/* Tabla semántica: usa caption y scope en tu JSX */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 1rem;
+  min-width: 0;
+  table-layout: auto;
+}
+.table caption {
+  caption-side: top;
+  text-align: left;
+  padding: 0.75rem 1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+.table thead th {
+  text-align: left;
+  padding: 0.75rem 1rem;
+  background: #eef6ff;
+  color: var(--text);
+  font-weight: 700;
+  border-bottom: 1px solid var(--border);
+}
+.table tbody td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid rgba(230,238,246,0.8);
+  color: var(--text);
+  vertical-align: middle;
+}
+
+/* Zebra accesible: alternancia sutil que mantiene contraste */
+.table tbody tr:nth-child(even) { background: rgba(245,250,255,0.6); }
+
+/* Enlaces / botones de action dentro de la tabla */
+.iconBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.1rem;
+  min-height: 2.1rem;
+  padding: 0.25rem;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--accent-strong);
+  cursor: pointer;
+}
+.iconBtn:hover,
+.iconBtn:focus {
+  background: rgba(0,94,166,0.06);
+  color: var(--accent);
+  outline: var(--focus-ring);
+}
+
+/* Accesibilidad: foco visible en botones y celdas interactivas */
+.table button:focus,
+.table a:focus {
+  outline: var(--focus-ring);
+  border-radius: 6px;
+}
+
+/* Data labels para mobile: mostrando la etiqueta antes del valor */
+.table tbody td[data-label]::before {
+  content: attr(data-label) ": ";
+  display: none; /* se activa en @media mobile abajo */
+  font-weight: 700;
+  color: var(--muted);
+}
+
+/* ---------------------------
+   Mensajes y estados
+   --------------------------- */
+.infoText {
+  color: var(--text);
+  font-size: 1rem;
+}
+.errorText {
+  color: var(--danger);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+/* ---------------------------
+   Utilities
+   --------------------------- */
+.visuallyHidden {
+  position: absolute !important;
+  height: 1px;
+  width: 1px;
+  overflow: hidden;
+  clip: rect(1px, 1px, 1px, 1px);
+  white-space: nowrap;
+}
+
+/* Preferencia de alto contraste del usuario */
+@media (prefers-contrast: more) {
+  .wrapper { background: #fff; color: #000; }
+  .table thead th { background: #000; color: #fff; }
+  .iconBtn { background: #000; color: #fff; border: 2px solid #fff; }
+  .skipLink:focus { outline: 4px solid #ffbf47; }
+}
+
+/* ---------------------------
+   Responsive: móvil
+   --------------------------- */
+@media (max-width: 900px) {
+  .header { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+  .searchRow { flex-direction: column; align-items: stretch; }
+  .searchButton { width: 100%; }
+  .table tbody td[data-label]::before { display: inline-block; margin-right: 0.35rem; }
+  .table thead { display: none; } /* usa data-labels para vista tipo cards */
+  .table tbody tr { display: block; margin-bottom: 0.6rem; border-radius: 8px; background: #fff; box-shadow: 0 1px 3px rgba(10,20,30,0.04); padding: 0.5rem; }
+  .table tbody td { display: flex; justify-content: space-between; padding: 0.6rem; border-bottom: none; }
+}
+
+/* Ajustes para pantallas muy anchas */
+@media (min-width: 1400px) {
+  .main { padding-left: 2.5rem; padding-right: 2.5rem; }
+  .table { table-layout: auto; }
+}

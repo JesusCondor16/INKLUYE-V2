@@ -1,0 +1,293 @@
+/* styles/directorCursos.module.css
+   Versión corregida para CSS Modules (Next.js/Turbopack)
+   — Todos los selectores globales están envueltos en :global(...)
+*/
+
+/* Variables globales y tipografía */
+:global(:root) {
+  --sidebar-width: 260px;
+  --base-font-size: 16px;
+  --font-family: "Inter", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --line-height: 1.6;
+  --bg: #ffffff;
+  --panel-bg: #f7f7f7;
+  --muted: #5a5a5a;
+  --text: #0b0b0b;
+  --accent: #005ea6;
+  --accent-hover: #003f73;
+  --danger: #b00020;
+  --success: #0a7a3a;
+  --border: #dcdcdc;
+  --focus-ring: 3px solid rgba(0,94,166,0.16);
+  --high-contrast-focus: 3px solid #ffbf47;
+  --touch-min: 2.75rem;
+}
+
+/* Elementos globales (escala, text-size-adjust) */
+:global(html) {
+  font-family: var(--font-family);
+  font-size: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* Respeto a prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  :global(*) {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* Skip link visible sólo al foco */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 1rem;
+  background: var(--accent);
+  color: #fff;
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  z-index: 999;
+}
+.skip-link:focus {
+  top: 1rem;
+}
+
+/* ---------------------------
+   Layout principal (local)
+   --------------------------- */
+.wrapper {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  align-items: flex-start;
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* Cuando sidebar es fixed, el primer hijo visualmente no ocupa layout */
+.fixedSidebar > :first-child { }
+
+.wrapper > :first-child {
+  flex: 0 0 var(--sidebar-width);
+  max-width: var(--sidebar-width);
+  min-width: var(--sidebar-width);
+}
+
+.mainContent {
+  flex: 1 1 auto;
+  padding: 1rem;
+  box-sizing: border-box;
+  margin-left: 0;
+  line-height: var(--line-height);
+}
+
+.fixedSidebar .mainContent {
+  margin-left: var(--sidebar-width);
+}
+
+/* Responsivo (local) */
+@media (min-width: 1024px) {
+  .wrapper { align-items: stretch; }
+  .mainContent { padding: 1.25rem; }
+}
+
+@media (max-width: 1023px) {
+  .wrapper { flex-direction: column; }
+  .wrapper > :first-child {
+    flex: 0 0 auto;
+    max-width: 100%;
+    min-width: 100%;
+    width: 100%;
+  }
+  .mainContent { margin-left: 0; padding: 0.75rem; }
+}
+
+/* ---------------------------
+   Contenedores y cabecera (local)
+   --------------------------- */
+.containerCursos { max-width: 100%; margin-top: 1rem; margin-bottom: 3rem; }
+
+.headerCursos {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.headerCursos h1 {
+  font-size: 1.25rem;
+  margin: 0;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.headerCursos .subtitulo {
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.alertMensaje { margin-bottom: 1rem; }
+
+/* ---------------------------
+   Tablas (local)
+   --------------------------- */
+.tableResponsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+.tableCursos {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--panel-bg);
+  color: var(--text);
+  font-size: 0.95rem;
+}
+
+.tableCursos caption {
+  caption-side: top;
+  text-align: left;
+  font-weight: 600;
+  padding: 0.5rem 0;
+  color: var(--text);
+}
+
+.tableCursos th,
+.tableCursos td {
+  vertical-align: middle;
+  text-align: center;
+  padding: 0.6rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.tableCursos th {
+  background-color: #eef4fb;
+  color: var(--text);
+  font-weight: 700;
+}
+
+.tableCursos tbody tr { min-height: 48px; }
+
+/* Foco visible en elementos interactivos dentro de la tabla */
+.tableCursos button:focus,
+.tableCursos a:focus {
+  outline: none;
+  box-shadow: var(--focus-ring);
+  border-radius: 6px;
+}
+
+/* Indicadores aria-sort (local usando atributos) */
+.tableCursos th[aria-sort="ascending"]::after { content: " \\2191"; }
+.tableCursos th[aria-sort="descending"]::after { content: " \\2193"; }
+
+/* ---------------------------
+   Botones y controles (globalizados donde corresponde)
+   --------------------------- */
+
+/* Mantengo tu selector global para botones con clase btn (usa :global) */
+:global(button[class*="btn"]),
+.btnAccion,
+:global(button[disabled]),
+:global(button[aria-disabled="true"]) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--touch-min);
+  min-height: var(--touch-min);
+  gap: 0.5rem;
+  cursor: pointer;
+  padding: 0.4rem 0.7rem;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  font-weight: 600;
+  background: var(--accent);
+  color: #fff;
+}
+
+.btnAccion { margin-right: 0.3rem; margin-bottom: 0.3rem; }
+
+:global(button[class*="btn"]):hover,
+.btnAccion:hover { background: var(--accent-hover); }
+
+:global(button[disabled]),
+:global(button[aria-disabled="true"]) { opacity: 0.6; cursor: not-allowed; }
+
+/* focus-visible (local/global combinado) */
+:global(:focus) { outline: none; }
+:global(:focus-visible) { box-shadow: var(--focus-ring); border-radius: 8px; }
+
+/* icon decorativo (local) */
+.icon { width: 1rem; height: 1rem; display: inline-block; }
+
+/* ---------------------------
+   Formularios: labels y controles (global etiquetados)
+   --------------------------- */
+:global(.formGroup) { display: flex; flex-direction: column; gap: 0.25rem; margin-bottom: 0.5rem; }
+/* si usas label/input globales: envolverlos con :global */
+:global(label) { font-size: 0.9rem; color: var(--text); }
+:global(input[type="text"]),
+:global(input[type="search"]),
+:global(input[type="number"]),
+:global(select),
+:global(textarea) {
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: #fff;
+  min-height: var(--touch-min);
+}
+
+:global(input:focus),
+:global(select:focus),
+:global(textarea:focus) { box-shadow: var(--focus-ring); border-color: var(--accent); }
+
+/* Mensajes de estado */
+.fieldError { color: var(--danger); font-size: 0.9rem; }
+.fieldSuccess { color: var(--success); font-size: 0.9rem; }
+
+/* ---------------------------
+   Visually hidden (local)
+   --------------------------- */
+.visually-hidden {
+  position: absolute !important;
+  height: 1px;
+  width: 1px;
+  overflow: hidden;
+  clip: rect(1px, 1px, 1px, 1px);
+  white-space: nowrap;
+}
+
+/* ---------------------------
+   Preferencias de alto contraste
+   --------------------------- */
+@media (prefers-contrast: more) {
+  :root { --focus-ring: var(--high-contrast-focus); }
+  .wrapper { background: #fff; color: #000; }
+  .tableCursos th { background: #000; color: #fff; }
+  :global(button[class*="btn"]) { background: #000; color: #fff; border: 2px solid #fff; }
+}
+
+/* ---------------------------
+   Pequeñas mejoras visuales para director (local)
+   --------------------------- */
+.kpiRow { display: flex; gap: 1rem; align-items: stretch; margin-bottom: 1rem; }
+.kpiCard {
+  flex: 1;
+  padding: 1rem;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(10,10,10,0.04);
+}
+.kpiCard h3 { margin: 0; font-size: 1rem; color: var(--muted); }
+.kpiCard p { margin: 0.25rem 0 0; font-size: 1.25rem; font-weight: 700; }
+
+/* util sr-only (local) */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  border: 0;
+}

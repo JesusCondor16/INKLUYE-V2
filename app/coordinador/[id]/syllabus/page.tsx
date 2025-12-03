@@ -1,0 +1,201 @@
+'use client';
+
+import { useEffect, useState, useCallback } from "react";
+import { useParams } from "next/navigation";
+import Sidebar from "@/components/Sidebar";
+import styles from "@/styles/coordinador.module.css";
+import ModalSeccion1 from "@/components/ModalsSyllabus/ModalSeccion1/ModalSeccion1";
+import ModalSeccion2 from "@/components/ModalsSyllabus/ModalSeccion2/ModalSeccion2";
+import ModalSeccion3 from "@/components/ModalsSyllabus/ModalSeccion3/ModalSeccion3";
+import ModalSeccion4 from "@/components/ModalsSyllabus/ModalSeccion4/ModalSeccion4";
+import { useSyllabusController } from "@/controllers/useSyllabusController";
+
+export default function SyllabusCursoPage() {
+  const params = useParams();
+  const cursoId = Number(params?.id);
+
+  const { curso, loading, error, loadCurso, generarPDF, generating } = useSyllabusController();
+  const [modal, setModal] = useState({ s1: false, s2: false, s3: false, s4: false });
+
+  // Cargar datos del curso al montar el componente
+  useEffect(() => {
+    if (!cursoId || isNaN(cursoId)) return;
+    loadCurso(cursoId);
+  }, [cursoId, loadCurso]);
+
+  // Handler que llama a generarPDF y notifica a otras pestañas (BroadcastChannel + localStorage fallback)
+  const handleGenerarYNotificar = useCallback(
+    async (lang: "es" | "en") => {
+      if (!cursoId || isNaN(cursoId)) {
+        alert("ID de curso inválido");
+        return;
+      }
+
+      try {
+        // Llamamos a tu controller; asumimos que puede devolver { success?: boolean, pdfUrl?: string }
+        // Si tu generarPDF no devuelve nada, se entiende que si no lanza error fue exitoso.
+        const result = await generarPDF(lang);
+
+        // Si generarPDF devuelve una URL, abrimos el PDF en nueva pestaña
+        const pdfUrl = result?.pdfUrl ?? null;
+        if (pdfUrl) {
+          try {
+            window.open(pdfUrl, "_blank");
+          } catch (e) {
+            // si no se pudo abrir, no rompe todo
+            console.warn("No se pudo abrir PDF automáticamente:", e);
+          }
+        }
+
+        // Notificar a otras pestañas: BroadcastChannel (recomendado)
+        if (typeof window !== "undefined") {
+          try {
+            // Crear y postear mensaje
+            const bc = new BroadcastChannel("syllabus_channel");
+            bc.postMessage({
+              type: "updated",
+              courseId: cursoId,
+              pdfUrl: pdfUrl,
+              ts: Date.now(),
+            });
+            // cerrar el canal para liberar recursos
+            bc.close();
+          } catch (e) {
+            // Fallback a localStorage (dispara evento 'storage' en otras pestañas)
+            try {
+              const payload = {
+                type: "updated",
+                courseId: cursoId,
+                pdfUrl: pdfUrl,
+                ts: Date.now(),
+              };
+              localStorage.setItem("syllabus_updated", JSON.stringify(payload));
+              // opcional: eliminar después para no acumular claves
+              // localStorage.removeItem("syllabus_updated");
+            } catch (err) {
+              console.warn("No se pudo notificar vía localStorage", err);
+            }
+          }
+        }
+      } catch (err: any) {
+        console.error("Error generando syllabus:", err);
+        // Puedes usar tu propio UI de errores; dejo alert para visibilidad inmediata
+        alert("Error al generar syllabus: " + (err?.message ?? "Error desconocido"));
+      }
+    },
+    [cursoId, generarPDF]
+  );
+
+  if (!cursoId || isNaN(cursoId))
+    return <div className={styles.errorBox}>❌ ID de curso inválido</div>;
+  if (loading) return <div className={styles.statusBox}>Cargando datos del curso...</div>;
+  if (error) return <div className={styles.errorBox}>❌ {error}</div>;
+
+  return (
+    <div className={styles.wrapper}>
+      <a href="#main-content" className={styles.skipLink}>
+        Saltar al contenido
+      </a>
+      <Sidebar />
+
+      <main
+        id="main-content"
+        className={styles.main}
+        role="main"
+        aria-labelledby="page-title"
+      >
+        <h1 id="page-title" className={styles.title}>
+          {curso?.name || "Syllabus del Curso"}
+        </h1>
+        <p className={styles.lead}>
+          Aquí puedes editar las secciones del syllabus y generar el PDF.
+        </p>
+
+        <table className={styles.table} role="table" aria-describedby="table-desc">
+          <caption id="table-desc" className={styles.visuallyHidden}>
+            Ítems del syllabus: Información general, Competencias, Capacidades y Estrategia didáctica.
+          </caption>
+          <thead>
+            <tr>
+              <th style={{ width: "10%" }}>Ítem</th>
+              <th style={{ width: "60%" }}>Descripción</th>
+              <th style={{ width: "30%" }}>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {[
+              { id: 1, desc: "Información general, Sumilla", modal: "s1" },
+              { id: 2, desc: "Competencias y Logros", modal: "s2" },
+              { id: 3, desc: "Capacidades y Programación", modal: "s3" },
+              {
+                id: 4,
+                desc: "Estrategia didáctica, Evaluación, Matriz y Bibliografía",
+                modal: "s4",
+              },
+            ].map((item) => (
+              <tr key={item.id}>
+                <td>{item.id}</td>
+                <td>{item.desc}</td>
+                <td>
+                  <button
+                    className={styles.btn}
+                    onClick={() => setModal({ ...modal, [item.modal]: true })}
+                  >
+                    Editar
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        <div className="mt-3 d-flex gap-2">
+          <button
+            className={`${styles.btn} btn-success`}
+            onClick={() => handleGenerarYNotificar("es")}
+            disabled={generating || !curso}
+          >
+            {generating ? "Generando..." : "📘 Generar y Abrir Syllabus (ES)"}
+          </button>
+
+          <button
+            className={`${styles.btn} btn-outline-primary`}
+            onClick={() => handleGenerarYNotificar("en")}
+            disabled={generating || !curso}
+          >
+            {generating ? "Generando..." : "🌍 Generar y Abrir Syllabus (EN)"}
+          </button>
+        </div>
+
+        {modal.s1 && (
+          <ModalSeccion1
+            show={modal.s1}
+            onClose={() => setModal({ ...modal, s1: false })}
+            cursoId={cursoId}
+          />
+        )}
+        {modal.s2 && (
+          <ModalSeccion2
+            show={modal.s2}
+            onClose={() => setModal({ ...modal, s2: false })}
+            cursoId={cursoId}
+          />
+        )}
+        {modal.s3 && (
+          <ModalSeccion3
+            show={modal.s3}
+            onClose={() => setModal({ ...modal, s3: false })}
+            cursoId={cursoId}
+          />
+        )}
+        {modal.s4 && (
+          <ModalSeccion4
+            show={modal.s4}
+            onClose={() => setModal({ ...modal, s4: false })}
+            cursoId={cursoId}
+          />
+        )}
+      </main>
+    </div>
+  );
+}
