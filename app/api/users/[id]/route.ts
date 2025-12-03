@@ -1,70 +1,74 @@
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { userController } from '@/controllers/userController';
 
-type Context = { params: { id: string } };
+// Ahora context es compatible con App Router
+type Context = { params: Promise<{ id: string }> };
 
-function parseId(idStr: string) {
-  const id = Number(idStr);
-  if (!Number.isFinite(id) || id <= 0) throw new Error('ID inválido');
-  return id;
+// Función para parsear ID
+async function parseId(paramsPromise: Promise<{ id: string }>) {
+  const { id } = await paramsPromise;
+  const numId = Number(id);
+  if (!Number.isFinite(numId) || numId <= 0) throw new Error('ID inválido');
+  return numId;
 }
 
+// GET
 export async function GET(_req: NextRequest, context: Context) {
   try {
-    const id = parseId(context.params.id);
-    return await userController.getById(id);
+    const id = await parseId(context.params);
+    const user = await userController.getById(id);
+    return NextResponse.json(user);
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : String(err);
-    return new Response(JSON.stringify({ error: message || 'ID inválido' }), { status: 400 });
+    return NextResponse.json({ error: message || 'ID inválido' }, { status: 400 });
   }
 }
 
+// PUT
 export async function PUT(req: NextRequest, context: Context) {
   try {
-    const id = parseId(context.params.id);
-    return await userController.update(req, id);
+    const id = await parseId(context.params);
+    const updated = await userController.update(req, id);
+    return NextResponse.json(updated);
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : String(err);
-    return new Response(JSON.stringify({ error: message || 'Error en PUT' }), { status: 400 });
+    return NextResponse.json({ error: message || 'Error en PUT' }, { status: 400 });
   }
 }
 
+// PATCH
 export async function PATCH(req: NextRequest, context: Context) {
   try {
-    const id = parseId(context.params.id);
-    return await userController.update(req, id);
+    const id = await parseId(context.params);
+    const updated = await userController.update(req, id);
+    return NextResponse.json(updated);
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : String(err);
-    return new Response(JSON.stringify({ error: message || 'Error en PATCH' }), { status: 400 });
+    return NextResponse.json({ error: message || 'Error en PATCH' }, { status: 400 });
   }
 }
 
+// DELETE
 export async function DELETE(req: NextRequest, context: Context) {
   try {
-    const id = parseId(context.params.id);
+    const id = await parseId(context.params);
 
     // Intentamos leer changedBy/changedByRole del body si se envía
     let changedBy: string | undefined;
     let changedByRole: string | undefined;
     try {
-      // req.json() lanzará si no hay body o no es JSON; lo capturamos y seguimos
       const body = await req.json();
       if (body && typeof body === 'object') {
-        const bodyObj = body as Record<string, unknown>;
-        if (typeof bodyObj.changedBy === 'string' && bodyObj.changedBy.trim() !== '') {
-          changedBy = bodyObj.changedBy.trim();
-        }
-        if (typeof bodyObj.changedByRole === 'string' && bodyObj.changedByRole.trim() !== '') {
-          changedByRole = bodyObj.changedByRole.trim();
-        }
+        const obj = body as Record<string, unknown>;
+        if (typeof obj.changedBy === 'string') changedBy = obj.changedBy;
+        if (typeof obj.changedByRole === 'string') changedByRole = obj.changedByRole;
       }
-    } catch {
-      // No hay body o no es JSON -> lo ignoramos
-    }
+    } catch {}
 
-    return await userController.remove(id, changedBy, changedByRole);
+    const deleted = await userController.remove(id, changedBy, changedByRole);
+    return NextResponse.json(deleted);
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : String(err);
-    return new Response(JSON.stringify({ error: message || 'Error en DELETE' }), { status: 400 });
+    return NextResponse.json({ error: message || 'Error en DELETE' }, { status: 400 });
   }
 }
