@@ -96,7 +96,7 @@ async function generarPDF(curso: CursoConRelaciones): Promise<string> {
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } } // ✅ Tipo corregido
 ) {
   try {
     const courseId = parseInt(params.id);
