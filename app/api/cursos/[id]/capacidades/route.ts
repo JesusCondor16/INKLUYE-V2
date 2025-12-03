@@ -25,13 +25,13 @@ function mapCapacidad(cap: CapacidadConProgramacion) {
             actividades: p.actividades ?? "",
             recursos: p.recursos ?? "",
             estrategias: p.estrategias ?? "",
-            // ❌ fixed eliminado porque no existe en BD
+            logroUnidad: p.logroUnidad ?? "", // agregado
           }))
         : [],
   };
 }
 
-// ✅ GET corregido para App Router
+// ✅ GET
 export async function GET(_req: Request, context: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await context.params;
@@ -55,7 +55,7 @@ export async function GET(_req: Request, context: { params: Promise<{ id: string
   }
 }
 
-// ✅ POST corregido para App Router
+// ✅ POST
 export async function POST(req: Request, context: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await context.params;
@@ -75,14 +75,22 @@ export async function POST(req: Request, context: { params: Promise<{ id: string
         descripcion: String(unidad.descripcion ?? "").trim(),
         filas: Array.isArray(unidad.filas)
           ? unidad.filas.map((f: unknown) => {
-              const fila = f as { sem?: string; semana?: string; contenido?: string; actividades?: string; recursos?: string; estrategias?: string };
+              const fila = f as {
+                sem?: string;
+                semana?: string;
+                contenido?: string;
+                actividades?: string;
+                recursos?: string;
+                estrategias?: string;
+                logroUnidad?: string;
+              };
               return {
                 semana: fila.sem ?? fila.semana ?? "",
                 contenido: fila.contenido ?? "",
                 actividades: fila.actividades ?? "",
                 recursos: fila.recursos ?? "",
                 estrategias: fila.estrategias ?? "",
-                // ❌ fixed eliminado
+                logroUnidad: fila.logroUnidad ?? "", // agregado
               };
             })
           : [],
@@ -101,12 +109,12 @@ export async function POST(req: Request, context: { params: Promise<{ id: string
             cursoId,
             programacioncontenido: {
               create: u.filas.map((f) => ({
-                semana: f.semana ?? "",
-                contenido: f.contenido ?? "",
-                actividades: f.actividades ?? "",
-                recursos: f.recursos ?? "",
-                estrategias: f.estrategias ?? "",
-                // ❌ fixed eliminado
+                semana: f.semana,
+                contenido: f.contenido,
+                actividades: f.actividades,
+                recursos: f.recursos,
+                estrategias: f.estrategias,
+                logroUnidad: f.logroUnidad, // agregado
               })),
             },
           },
@@ -131,7 +139,11 @@ export async function POST(req: Request, context: { params: Promise<{ id: string
     const mapped = freshCaps.map(mapCapacidad);
 
     return NextResponse.json(
-      { message: "Capacidades reemplazadas correctamente", deleted: (results[0] as { count?: number }).count ?? 0, capacidades: mapped },
+      {
+        message: "Capacidades reemplazadas correctamente",
+        deleted: (results[0] as { count?: number }).count ?? 0,
+        capacidades: mapped,
+      },
       { status: 200 }
     );
   } catch (error: unknown) {
