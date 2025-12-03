@@ -1,19 +1,19 @@
-import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma"; // ajusta la ruta si tu prisma helper está en otro lugar
 
-const prisma = new PrismaClient();
-
-export async function GET(req: Request, { params }: { params: { id: string } }) {
-  const cursoId = parseInt(params.id);
-
-  if (isNaN(cursoId)) return NextResponse.json({ error: 'ID inválido' }, { status: 400 });
-
+export async function GET(_req: Request, context: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await context.params;
+    const cursoId = parseInt(id, 10);
+
+    if (isNaN(cursoId))
+      return NextResponse.json({ error: "ID inválido" }, { status: 400 });
+
     const course = await prisma.course.findUnique({
       where: { id: cursoId },
       include: {
         competencia: true,
-        logros: true,
+        logro: true,
         capacidad: { include: { programacioncontenido: true } },
         estrategiasdidacticas: true,
         recursos: true,
@@ -22,9 +22,9 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
       },
     });
 
-    if (!course) return NextResponse.json({ error: 'Curso no encontrado' }, { status: 404 });
+    if (!course)
+      return NextResponse.json({ error: "Curso no encontrado" }, { status: 404 });
 
-    // Normalizamos competencias y logros
     const competencias = course.competencia;
     const logros = course.logro;
     const capacidades = course.capacidad;
@@ -45,6 +45,6 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
     });
   } catch (err) {
     console.error(err);
-    return NextResponse.json({ error: 'Error al cargar curso' }, { status: 500 });
+    return NextResponse.json({ error: "Error al cargar curso" }, { status: 500 });
   }
 }
