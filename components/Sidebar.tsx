@@ -16,7 +16,7 @@ export default function Sidebar() {
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [liveMsg, setLiveMsg] = useState('');
-  const liveRef = useRef<HTMLDivElement | null>(null);
+  const liveRef = useRef<HTMLDivElement>(null);
 
   const pathname = usePathname() ?? '/';
   const router = useRouter();
@@ -86,12 +86,9 @@ export default function Sidebar() {
 
       <nav className={styles.nav} aria-label="Menú principal del sistema">
         <ul className={styles.menuList}>
-          {menuItems.map((item) => {
-            // defensivo: asegurarse item.path existe
-            const itemPath = item?.path ?? '/';
+          {menuItems.map((item: MenuItem) => {
+            const itemPath = item.path ?? '/';
             const active = isMenuItemActive(itemPath);
-
-            // clase combinada: link + (activo -> linkActive)
             const className = `${styles.link} ${active ? styles.linkActive : ''}`.trim();
 
             return (

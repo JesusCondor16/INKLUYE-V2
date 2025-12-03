@@ -3,6 +3,21 @@ import { prisma } from "@/lib/prisma"; // ajusta la ruta si tu prisma helper est
 
 type Params = { id?: string };
 
+type CompetenciaInput = {
+  codigo: string;
+  descripcion: string;
+  tipo?: string;
+  nivel?: string;
+  logros?: LogroInput[];
+};
+
+type LogroInput = {
+  codigo: string;
+  descripcion: string;
+  tipo?: string;
+  nivel?: string;
+};
+
 /**
  * GET /api/cursos/:id/competencias
  * Devuelve { competencias: [...], logros: [...] }
@@ -14,18 +29,19 @@ export async function GET(_request: Request, { params }: { params: Params }) {
     const cursoId = parseInt(idStr, 10);
     if (Number.isNaN(cursoId)) return NextResponse.json({ error: "ID inválido" }, { status: 400 });
 
-    // Intentamos primero traer competencias donde competencia.cursoId = cursoId
+    // Intentamos primero traer competencias directas
     let competencias = await prisma.competencia.findMany({
       where: { cursoId },
       select: { id: true, codigo: true, descripcion: true, tipo: true, nivel: true, cursoId: true },
       orderBy: { codigo: "asc" },
     });
 
-    // Si no hay competencias directas, intentamos por pivote coursecompetencia (por compatibilidad)
+    // Si no hay competencias directas, intentamos por pivote coursecompetencia
     if (competencias.length === 0) {
-      
       try {
-        const raw = await prisma.$queryRawUnsafe(
+        const raw = await prisma.$queryRaw<
+          { id: number; codigo: string; descripcion: string; tipo: string; nivel: string; cursoId: number }[]
+        >(
           `SELECT c.id, c.codigo, c.descripcion, c.tipo, c.nivel, c.cursoId
            FROM coursecompetencia cc
            JOIN competencia c ON c.id = cc.competenciaId
@@ -33,10 +49,9 @@ export async function GET(_request: Request, { params }: { params: Params }) {
            ORDER BY c.codigo`,
           cursoId
         );
-        if (Array.isArray(raw) && raw.length > 0) competencias = raw as any;
+        if (Array.isArray(raw) && raw.length > 0) competencias = raw;
       } catch (e) {
-        // si la tabla pivot no existe o falla, simplemente seguimos con competencias vacías
-        // console.warn('Error consultando pivot coursecompetencia (posiblemente no exista):', e);
+        // tabla pivot posiblemente no exista, continuamos con competencias vacías
       }
     }
 
@@ -48,12 +63,14 @@ export async function GET(_request: Request, { params }: { params: Params }) {
     });
 
     return NextResponse.json({ competencias, logros }, { status: 200 });
-  } catch (error: any) {
+  } catch (error) {
     console.error("GET /api/cursos/[id]/competencias error:", error);
-    return NextResponse.json({ error: "Error al obtener competencias del curso", detalle: String(error) }, { status: 500 });
+    return NextResponse.json(
+      { error: "Error al obtener competencias del curso", detalle: String(error) },
+      { status: 500 }
+    );
   }
 }
-
 
 export async function POST(request: Request, { params }: { params: Params }) {
   try {
@@ -62,27 +79,28 @@ export async function POST(request: Request, { params }: { params: Params }) {
     const cursoId = parseInt(idStr, 10);
     if (Number.isNaN(cursoId)) return NextResponse.json({ error: "ID inválido" }, { status: 400 });
 
-    const data = await request.json().catch(() => null);
+    const data = (await request.json().catch(() => null)) as
+      | { competencias?: CompetenciaInput[]; logros?: LogroInput[] }
+      | null;
     if (!data) return NextResponse.json({ error: "Body inválido o no JSON" }, { status: 400 });
 
-    const competenciasInput: any[] = Array.isArray(data.competencias) ? data.competencias : [];
-    const logrosGlobalInput: any[] = Array.isArray(data.logros) ? data.logros : [];
+    const competenciasInput: CompetenciaInput[] = Array.isArray(data.competencias) ? data.competencias : [];
+    const logrosGlobalInput: LogroInput[] = Array.isArray(data.logros) ? data.logros : [];
 
     // Validación básica de estructura
-    if (!Array.isArray(competenciasInput) || competenciasInput.some((c) => !c.codigo || !c.descripcion)) {
-      return NextResponse.json({ error: "Formato inválido: cada competencia requiere codigo y descripcion" }, { status: 400 });
+    if (!competenciasInput.every((c) => c.codigo && c.descripcion)) {
+      return NextResponse.json(
+        { error: "Formato inválido: cada competencia requiere codigo y descripcion" },
+        { status: 400 }
+      );
     }
 
     // Ejecutar en transacción: borrar previos y crear nuevos
     const result = await prisma.$transaction(async (tx) => {
-      // 1) Eliminar competencias previas del curso
       await tx.competencia.deleteMany({ where: { cursoId } });
-
-      // 2) Eliminar logros previos del curso
       await tx.logro.deleteMany({ where: { cursoId } });
 
-      // 3) Crear competencias nuevas (una por una para poder crear logros vinculados)
-      const createdCompetencias: any[] = [];
+      const createdCompetencias = [];
       for (const comp of competenciasInput) {
         const created = await tx.competencia.create({
           data: {
@@ -95,7 +113,6 @@ export async function POST(request: Request, { params }: { params: Params }) {
         });
         createdCompetencias.push(created);
 
-        // si la competencia trae logros anidados, créalos ligados al curso
         if (Array.isArray(comp.logros) && comp.logros.length > 0) {
           for (const logro of comp.logros) {
             await tx.logro.create({
@@ -111,27 +128,31 @@ export async function POST(request: Request, { params }: { params: Params }) {
         }
       }
 
-      // 4) Si el body tiene logros globales (data.logros) los creamos también
-      if (logrosGlobalInput.length > 0) {
-        for (const lg of logrosGlobalInput) {
-          await tx.logro.create({
-            data: {
-              codigo: lg.codigo ?? "",
-              descripcion: lg.descripcion ?? "",
-              tipo: lg.tipo ?? "",
-              nivel: lg.nivel ?? "",
-              cursoId,
-            },
-          });
-        }
+      // Logros globales
+      for (const lg of logrosGlobalInput) {
+        await tx.logro.create({
+          data: {
+            codigo: lg.codigo ?? "",
+            descripcion: lg.descripcion ?? "",
+            tipo: lg.tipo ?? "",
+            nivel: lg.nivel ?? "",
+            cursoId,
+          },
+        });
       }
 
-      return { competenciasCount: createdCompetencias.length, logrosCount: (await tx.logro.count({ where: { cursoId } })) };
+      return {
+        competenciasCount: createdCompetencias.length,
+        logrosCount: await tx.logro.count({ where: { cursoId } }),
+      };
     });
 
     return NextResponse.json({ message: "Competencias y logros actualizados", resultado: result }, { status: 200 });
-  } catch (error: any) {
+  } catch (error) {
     console.error("POST /api/cursos/[id]/competencias error:", error);
-    return NextResponse.json({ error: "Error al guardar competencias del curso", detalle: String(error) }, { status: 500 });
+    return NextResponse.json(
+      { error: "Error al guardar competencias del curso", detalle: String(error) },
+      { status: 500 }
+    );
   }
 }
