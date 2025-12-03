@@ -15,7 +15,7 @@ export async function GET(_req: Request, context: { params: Promise<{ id: string
         competencia: true,
         logro: true,
         capacidad: { include: { programacioncontenido: true } },
-        estrategiasdidacticas: true,
+        estrategiasdidactica: true, // ← corregido
         recursos: true,
         bibliografia: true,
         matrizevaluacion: true,
@@ -28,7 +28,7 @@ export async function GET(_req: Request, context: { params: Promise<{ id: string
     const competencias = course.competencia;
     const logros = course.logro;
     const capacidades = course.capacidad;
-    const estrategias = course.estrategiasdidacticas;
+    const estrategias = course.estrategiadidactica; // ← corregido
     const recursos = course.recursos;
     const bibliografia = course.bibliografia;
     const matrizEvaluacion = course.matrizevaluacion;
