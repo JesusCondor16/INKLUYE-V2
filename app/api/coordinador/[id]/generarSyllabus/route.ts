@@ -16,6 +16,11 @@ type CursoConRelaciones = Course & {
   capacidad?: Capacidad[];
 };
 
+// Tipado mínimo para lastAutoTable de jsPDF
+interface JsPDFWithAutoTable extends jsPDF {
+  lastAutoTable?: { finalY: number };
+}
+
 // Función para generar PDF local en public/syllabus
 async function generarPDF(curso: CursoConRelaciones): Promise<string> {
   const doc = new jsPDF();
@@ -55,7 +60,7 @@ async function generarPDF(curso: CursoConRelaciones): Promise<string> {
       headStyles: { fillColor: [41, 128, 185], textColor: 255 },
     });
 
-    yOffset = (doc as any).lastAutoTable.finalY + 10; // jsPDF no tiene tipado para lastAutoTable
+    yOffset = ((doc as JsPDFWithAutoTable).lastAutoTable?.finalY ?? yOffset) + 10;
   }
 
   // Capacidades
@@ -73,7 +78,7 @@ async function generarPDF(curso: CursoConRelaciones): Promise<string> {
       headStyles: { fillColor: [39, 174, 96], textColor: 255 },
     });
 
-    yOffset = (doc as any).lastAutoTable.finalY + 10;
+    yOffset = ((doc as JsPDFWithAutoTable).lastAutoTable?.finalY ?? yOffset) + 10;
   }
 
   // Guardar en carpeta public/syllabus
