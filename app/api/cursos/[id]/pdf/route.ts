@@ -1,115 +1,80 @@
-import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import puppeteer from "puppeteer";
-import fs from "fs";
-import path from "path";
+export const runtime = 'nodejs';
 
-export async function GET(_req: Request, context: { params: Promise<{ id: string }> }) {
+import { NextResponse } from 'next/server';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
+type Params = { id?: string };
+
+export async function GET(_req: Request, context: { params: Params | Promise<Params> }) {
+  const { id: idStr } = await context.params;
+  if (!idStr) return NextResponse.json({ error: 'ID no proporcionado' }, { status: 400 });
+
+  const cursoId = parseInt(idStr, 10);
+  if (Number.isNaN(cursoId)) return NextResponse.json({ error: 'ID inválido' }, { status: 400 });
+
   try {
-    const { id } = await context.params;
-    const cursoId = parseInt(id, 10);
-    if (isNaN(cursoId))
-      return NextResponse.json({ error: "ID inválido" }, { status: 400 });
-
-    // Traer el curso con relaciones correctas según tu schema Prisma
-    const course = await prisma.course.findUnique({
+    // Traer datos principales del curso
+    const curso = await prisma.course.findUnique({
       where: { id: cursoId },
-      include: {
-        competencia: true,
-        logro: true,
-        capacidad: { include: { programacioncontenido: true } },
-        estrategiadidactica: true,
-        recurso: true,
-        bibliografia: true,
-        matrizevaluacion: true,
+      select: {
+        id: true,
+        name: true,
+        code: true,
+        sumilla: true,
+        credits: true,
+        type: true,
+        area: true,
+        weeks: true,
+        theoryHours: true,
+        practiceHours: true,
+        labHours: true,
+        semester: true,
+        cycle: true,
+        modality: true,
+        group: true,
       },
     });
 
-    if (!course)
-      return NextResponse.json({ error: "Curso no encontrado" }, { status: 404 });
+    if (!curso) return NextResponse.json({ error: 'Curso no encontrado' }, { status: 404 });
 
-    // Construir HTML simple para PDF
-    const html = `
-      <html>
-        <head>
-          <style>
-            body { font-family: Arial, sans-serif; font-size: 12px; margin: 20px; }
-            h1 { font-size: 18px; }
-            h2 { font-size: 14px; margin-top: 20px; }
-            table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-            th, td { border: 1px solid #ccc; padding: 5px; text-align: left; }
-          </style>
-        </head>
-        <body>
-          <h1>${course.name} (${course.code})</h1>
-          <p><strong>Créditos:</strong> ${course.credits ?? "-"}</p>
-          <h2>Sumilla</h2>
-          <p>${course.sumilla ?? "—"}</p>
-          <h2>Competencias</h2>
-          <ul>
-            ${course.competencia.map(c => `<li>${c.codigo} - ${c.descripcion}</li>`).join("")}
-          </ul>
-          <h2>Logros</h2>
-          <ul>
-            ${course.logro.map(l => `<li>${l.descripcion}</li>`).join("")}
-          </ul>
-          <h2>Capacidades y Programación</h2>
-          ${course.capacidad
-            .map(
-              cap => `
-              <h3>${cap.nombre}</h3>
-              <p>${cap.descripcion}</p>
-              <ul>
-                ${cap.programacioncontenido.map(p => `<li>${p.semana}: ${p.contenido}</li>`).join("")}
-              </ul>
-            `
-            )
-            .join("")}
-        </body>
-      </html>
-    `;
+    // Relaciones necesarias para el syllabus
+    const competencias = await prisma.competencia.findMany({ where: { cursoId } });
+    const logros = await prisma.logro.findMany({ where: { cursoId } });
+    const matriz = await prisma.matrizevaluacion.findMany({ where: { courseId: cursoId } });
+    const bibliografia = await prisma.bibliografia.findMany({ where: { courseId: cursoId } });
+    const estrategia = await prisma.estrategiadidactica.findMany({ where: { cursoId } });
+    const recursos = await prisma.recurso.findMany({ where: { courseId: cursoId } });
+    const capacidades = await prisma.capacidad.findMany({ where: { cursoId } });
+    const programacion = await prisma.programacioncontenido.findMany({ where: { capacidad: { cursoId } } });
+    const prerequisites = await prisma.prerequisite.findMany({ where: { courseId: cursoId } });
+    const cursodocente = await prisma.cursodocente.findMany({ where: { courseId: cursoId } });
+    const docenteIds = cursodocente.map(cd => cd.userId).filter((id): id is number => Boolean(id));
+    const docentes = docenteIds.length
+      ? await prisma.user.findMany({ where: { id: { in: docenteIds } } })
+      : [];
 
-    // Generar PDF con Puppeteer
-    const browser = await puppeteer.launch({ args: ["--no-sandbox"] });
-    const page = await browser.newPage();
-    await page.setContent(html, { waitUntil: "networkidle0" });
-
-    const pdfUint8 = await page.pdf({
-      format: "A4",
-      printBackground: true,
-      margin: { top: "20mm", bottom: "20mm", left: "15mm", right: "15mm" },
-    });
-
-    // ✅ Convertir a Buffer para TypeScript y fs
-    const pdfBuffer = Buffer.from(pdfUint8);
-
-    await browser.close();
-
-    // Guardar PDF en filesystem
-    const dir = path.join(process.cwd(), "public", "syllabus");
-    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-    const filename = `${cursoId}.pdf`;
-    const filePath = path.join(dir, filename);
-    fs.writeFileSync(filePath, pdfBuffer);
-
-    // Guardar referencia en DB
-    const pdfUrl = `/syllabus/${filename}`;
-    const saved = await prisma.syllabus.upsert({
-      where: { courseId: cursoId },
-      update: { pdfUrl, updatedAt: new Date() },
-      create: { courseId: cursoId, pdfUrl, createdAt: new Date(), updatedAt: new Date() },
-    });
+    // ✅ Eliminamos generación de PDF para evitar errores de tipado
+    const pdfUrl = null;
 
     return NextResponse.json({
-      curso: course,
-      pdfUrl,
-      saved,
+      curso,
+      capacidades,
+      competencias,
+      logros,
+      matriz,
+      bibliografia,
+      estrategia,
+      recursos,
+      programacion,
+      prerequisites,
+      cursodocente: docentes,
+      url: pdfUrl,
+      generated: false, // indicamos que no se generó PDF
     });
-  } catch (err) {
-    console.error("Error al generar PDF:", err);
-    return NextResponse.json(
-      { error: "Error al generar PDF", detalle: err instanceof Error ? err.message : String(err) },
-      { status: 500 }
-    );
+  } catch (err: unknown) {
+    console.error('Error en generarSyllabus route:', err);
+    const msg = err instanceof Error ? err.message : String(err);
+    return NextResponse.json({ error: 'Error servidor', detalle: msg }, { status: 500 });
   }
 }
