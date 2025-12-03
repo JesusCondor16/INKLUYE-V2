@@ -95,12 +95,10 @@ export async function POST(req: Request, context: { params: Promise<{ id: string
       };
     });
 
-    // 👇 Tipado correcto sin usar 'any'
-    const ops: (Prisma.Prisma__CapacidadClient<capacidad> | Prisma.BatchPayload)[] = [];
-    ops.push(prisma.capacidad.deleteMany({ where: { cursoId } }));
-
-    for (const u of unidades) {
-      ops.push(
+    // ❌ Ya no tipamos manualmente $transaction, TS infiere todo
+    const ops = [
+      prisma.capacidad.deleteMany({ where: { cursoId } }),
+      ...unidades.map((u) =>
         prisma.capacidad.create({
           data: {
             nombre: u.nombre,
@@ -118,8 +116,8 @@ export async function POST(req: Request, context: { params: Promise<{ id: string
             },
           },
         })
-      );
-    }
+      ),
+    ];
 
     const results = await prisma.$transaction(ops);
 
