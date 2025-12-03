@@ -1,9 +1,20 @@
-// app/api/syllabus/[id]/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
 import { PDFDocument, StandardFonts } from "pdf-lib";
 import prisma from "@/lib/prisma";
+
+interface CursoDocente {
+  user?: {
+    id: number;
+    name: string;
+    email: string;
+  };
+}
+
+interface Logro {
+  descripcion: string;
+}
 
 export async function GET(req: NextRequest, context: { params: { id: string } }) {
   try {
@@ -27,17 +38,19 @@ export async function GET(req: NextRequest, context: { params: { id: string } })
       return NextResponse.json({ success: false, error: "Curso no encontrado" }, { status: 404 });
     }
 
-    // Construir contenido básico del PDF (adapta esto para incluir tus secciones completas)
+    // Construir contenido básico del PDF
     const lines: string[] = [];
     lines.push(`Curso: ${curso.name}`);
     lines.push(`Código: ${curso.code}`);
     lines.push(`Coordinador: ${curso.user?.name ?? "—"}`);
-    const docentesList = (curso.cursodocente ?? []).map((cd: any) => cd.user?.name ?? "-").join(", ");
+
+    const docentesList = (curso.cursodocente ?? []).map((cd: CursoDocente) => cd.user?.name ?? "-").join(", ");
     lines.push(`Docentes: ${docentesList || "—"}`);
     lines.push("");
     lines.push("Logros:");
+
     if (Array.isArray(curso.logro) && curso.logro.length > 0) {
-      curso.logro.forEach((l: any, i: number) => {
+      curso.logro.forEach((l: Logro, i: number) => {
         lines.push(`${i + 1}. ${l.descripcion}`);
       });
     } else {
@@ -53,7 +66,6 @@ export async function GET(req: NextRequest, context: { params: { id: string } })
     let cursorY = page.getHeight() - 40;
 
     const drawLine = (text: string) => {
-      // Si el cursor llega al pie, añadimos nueva página y actualizamos cursor
       if (cursorY < 40) {
         page = pdfDoc.addPage(pageSize);
         cursorY = page.getHeight() - 40;
@@ -75,7 +87,7 @@ export async function GET(req: NextRequest, context: { params: { id: string } })
     const filePath = path.join(dir, `${id}.pdf`);
     fs.writeFileSync(filePath, Buffer.from(pdfBytes));
 
-    // Construir la URL pública relativa (frontend puede hacer window.location.origin + pdfUrl)
+    // Construir la URL pública relativa
     const pdfUrl = `/syllabus/${id}.pdf`;
 
     // Upsert en la tabla syllabus (Prisma)
@@ -86,8 +98,9 @@ export async function GET(req: NextRequest, context: { params: { id: string } })
     });
 
     return NextResponse.json({ success: true, message: "PDF generado y guardado", pdfUrl }, { status: 200 });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("❌ Error GET /api/syllabus/[id]:", error);
-    return NextResponse.json({ success: false, error: String(error?.message ?? error) }, { status: 500 });
+    const detail = error instanceof Error ? error.message : String(error);
+    return NextResponse.json({ success: false, error: detail }, { status: 500 });
   }
 }
