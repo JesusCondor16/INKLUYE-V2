@@ -1,3 +1,5 @@
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // app/api/cursos/route.ts
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
