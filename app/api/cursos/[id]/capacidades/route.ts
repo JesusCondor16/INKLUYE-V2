@@ -47,9 +47,7 @@ export async function GET(_req: Request, context: { params: Promise<{ id: string
       orderBy: { id: "asc" },
     });
 
-    const mapped = capacidades.map(mapCapacidad);
-
-    return NextResponse.json({ cursoId, capacidades: mapped }, { status: 200 });
+    return NextResponse.json({ cursoId, capacidades: capacidades.map(mapCapacidad) }, { status: 200 });
   } catch (error: unknown) {
     console.error("❌ GET /api/cursos/:id/capacidades error:", error);
     const message = error instanceof Error ? error.message : "Error desconocido";
@@ -100,7 +98,7 @@ export async function POST(req: Request, context: { params: Promise<{ id: string
     });
 
     // 👇 Tipado correcto para Prisma $transaction
-    const ops: Prisma.PrismaPromise<any>[] = [];
+    const ops: (Prisma.Prisma__CapacidadClient<capacidad> | Prisma.PrismaBatchPayload)[] = [];
     ops.push(prisma.capacidad.deleteMany({ where: { cursoId } }));
 
     for (const u of unidades) {
@@ -139,13 +137,11 @@ export async function POST(req: Request, context: { params: Promise<{ id: string
           })
         : [];
 
-    const mapped = freshCaps.map(mapCapacidad);
-
     return NextResponse.json(
       {
         message: "Capacidades reemplazadas correctamente",
-        deleted: (results[0] as { count?: number }).count ?? 0,
-        capacidades: mapped,
+        deleted: (results[0] as Prisma.PrismaBatchPayload).count ?? 0,
+        capacidades: freshCaps.map(mapCapacidad),
       },
       { status: 200 }
     );
