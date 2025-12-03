@@ -1,23 +1,40 @@
 'use server';
 
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, course, cursodocente, logro, user, prerequisite } from '@prisma/client';
 
 /* prisma singleton (dev hot reload protection) */
 declare global {
-  // eslint-disable-next-line no-var
   var prisma: PrismaClient | undefined;
 }
 const prisma = global.prisma ?? new PrismaClient();
 if (process.env.NODE_ENV !== 'production') global.prisma = prisma;
 
-/* mapCursoResponse (mantener igual) */
-function mapCursoResponse(c: any) {
-  const rawCursodocente = Array.isArray(c.cursodocente) ? c.cursodocente : [];
-  const cursoDocentes = rawCursodocente.map((cd: any) =>
-    cd.user ? { user: { id: cd.user.id, name: cd.user.name, email: cd.user.email } } : { user: { id: cd.userId, name: '', email: '' } }
-  );
-  const docentesSimple = cursoDocentes.map((cd: any) => cd.user);
+/* Interfaces para tipar correctamente */
+interface CursoDocenteWithUser extends cursodocente {
+  user: Pick<user, 'id' | 'name' | 'email'> | null;
+}
+
+interface CursoFull extends course {
+  user: Pick<user, 'id' | 'name' | 'email'> | null;
+  cursodocente: CursoDocenteWithUser[];
+  logro: logro[];
+  prerequisite_prerequisite_courseIdTocourse: prerequisite[];
+}
+
+interface LogroInput {
+  codigo?: string;
+  descripcion?: string;
+  tipo?: string;
+  nivel?: string;
+}
+
+/* mapCursoResponse con tipado fuerte */
+function mapCursoResponse(c: CursoFull) {
+  const cursoDocentes = c.cursodocente.map(cd => ({
+    user: cd.user ? { id: cd.user.id, name: cd.user.name, email: cd.user.email } : { id: cd.userId, name: '', email: '' },
+  }));
+  const docentesSimple = cursoDocentes.map(cd => cd.user);
 
   return {
     id: c.id,
@@ -39,13 +56,12 @@ function mapCursoResponse(c: any) {
     cursoDocentes,
     docentes: docentesSimple,
     logros: c.logro ?? [],
-    prerrequisitos: c.prerequisite_prerequisite_courseIdTocourse?.map((p: any) => ({ id: p.prerequisiteId })) ?? [],
+    prerrequisitos: c.prerequisite_prerequisite_courseIdTocourse?.map(p => ({ id: p.prerequisiteId })) ?? [],
   };
 }
 
 /**
  * GET /api/cursos/:id
- * - Devuelve el curso completo con coordinador, docentes, logros y prerrequisitos
  */
 export async function GET(
   req: Request,
@@ -70,16 +86,15 @@ export async function GET(
 
     if (!curso) return NextResponse.json({ error: 'Curso no encontrado' }, { status: 404 });
 
-    return NextResponse.json(mapCursoResponse(curso), { status: 200 });
-  } catch (error: any) {
+    return NextResponse.json(mapCursoResponse(curso as CursoFull), { status: 200 });
+  } catch (error: unknown) {
     console.error('❌ GET /api/cursos/[id] error:', error);
-    return NextResponse.json({ error: 'Error al obtener el curso', detalle: error?.message ?? String(error) }, { status: 500 });
+    return NextResponse.json({ error: 'Error al obtener el curso', detalle: error instanceof Error ? error.message : String(error) }, { status: 500 });
   }
 }
 
 /**
  * PUT /api/cursos/:id
- * - Actualiza parcial o totalmente el curso
  */
 export async function PUT(
   req: Request,
@@ -109,57 +124,59 @@ export async function PUT(
       group,
       sumilla,
       coordinadorId,
-      docentes = [],
-      logros = [],
+      docentes = [] as number[],
+      logros = [] as LogroInput[],
     } = data;
 
     const cursoExist = await prisma.course.findUnique({ where: { id } });
     if (!cursoExist) return NextResponse.json({ error: 'Curso no encontrado' }, { status: 404 });
 
-    if (typeof coordinadorId !== 'undefined' && coordinadorId !== null) {
+    if (coordinadorId !== undefined && coordinadorId !== null) {
       const coordExists = await prisma.user.findUnique({ where: { id: coordinadorId } });
       if (!coordExists) return NextResponse.json({ error: 'coordinadorId no existe' }, { status: 400 });
     }
 
-    const updateData: any = {};
-    if (typeof code !== 'undefined') updateData.code = code;
-    if (typeof name !== 'undefined') updateData.name = name;
-    if (typeof credits !== 'undefined') updateData.credits = credits;
-    if (typeof type !== 'undefined') updateData.type = type;
-    if (typeof area !== 'undefined') updateData.area = area;
-    if (typeof weeks !== 'undefined') updateData.weeks = weeks;
-    if (typeof theoryHours !== 'undefined') updateData.theoryHours = theoryHours;
-    if (typeof practiceHours !== 'undefined') updateData.practiceHours = practiceHours;
-    if (typeof labHours !== 'undefined') updateData.labHours = labHours;
-    if (typeof semester !== 'undefined') updateData.semester = semester;
-    if (typeof cycle !== 'undefined') updateData.cycle = cycle;
-    if (typeof modality !== 'undefined') updateData.modality = modality;
-    if (typeof group !== 'undefined') updateData.group = group;
-    if (typeof sumilla !== 'undefined') updateData.sumilla = sumilla;
-    if (typeof coordinadorId !== 'undefined') updateData.coordinadorId = coordinadorId;
+    const updateData: Partial<course> & { coordinadorId?: number } = {};
+    if (code !== undefined) updateData.code = code;
+    if (name !== undefined) updateData.name = name;
+    if (credits !== undefined) updateData.credits = credits;
+    if (type !== undefined) updateData.type = type;
+    if (area !== undefined) updateData.area = area;
+    if (weeks !== undefined) updateData.weeks = weeks;
+    if (theoryHours !== undefined) updateData.theoryHours = theoryHours;
+    if (practiceHours !== undefined) updateData.practiceHours = practiceHours;
+    if (labHours !== undefined) updateData.labHours = labHours;
+    if (semester !== undefined) updateData.semester = semester;
+    if (cycle !== undefined) updateData.cycle = cycle;
+    if (modality !== undefined) updateData.modality = modality;
+    if (group !== undefined) updateData.group = group;
+    if (sumilla !== undefined) updateData.sumilla = sumilla;
+    if (coordinadorId !== undefined) updateData.coordinadorId = coordinadorId;
 
     if (Object.keys(updateData).length > 0) {
       await prisma.course.update({ where: { id }, data: updateData });
     }
 
+    // Logros
     if (Array.isArray(logros)) {
       await prisma.logro.deleteMany({ where: { cursoId: id } });
       if (logros.length > 0) {
-        const createLogros = logros.map((l: any) => ({
-          codigo: l.codigo,
-          descripcion: l.descripcion,
-          tipo: l.tipo,
-          nivel: l.nivel,
+        const createLogros = logros.map(l => ({
+          codigo: l.codigo ?? '',
+          descripcion: l.descripcion ?? '',
+          tipo: l.tipo ?? '',
+          nivel: l.nivel ?? '',
           cursoId: id,
         }));
         await prisma.logro.createMany({ data: createLogros });
       }
     }
 
+    // Docentes
     if (Array.isArray(docentes)) {
       await prisma.cursodocente.deleteMany({ where: { courseId: id } });
       if (docentes.length > 0) {
-        const createData = docentes.map((userId: number) => ({ courseId: id, userId }));
+        const createData = docentes.map(userId => ({ courseId: id, userId }));
         await prisma.cursodocente.createMany({ data: createData });
       }
     }
@@ -174,9 +191,12 @@ export async function PUT(
       },
     });
 
-    return NextResponse.json({ message: '✅ Curso actualizado correctamente', curso: mapCursoResponse(cursoActualizado) }, { status: 200 });
-  } catch (error: any) {
+    return NextResponse.json(
+      { message: '✅ Curso actualizado correctamente', curso: mapCursoResponse(cursoActualizado as CursoFull) },
+      { status: 200 }
+    );
+  } catch (error: unknown) {
     console.error('❌ PUT /api/cursos/[id] error:', error);
-    return NextResponse.json({ error: 'Error al actualizar el curso', detalle: error?.message ?? String(error) }, { status: 500 });
+    return NextResponse.json({ error: 'Error al actualizar el curso', detalle: error instanceof Error ? error.message : String(error) }, { status: 500 });
   }
 }

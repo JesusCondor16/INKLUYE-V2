@@ -6,6 +6,11 @@ import Sidebar from "@/components/Sidebar";
 import styles from "@/styles/coordinador.module.css";
 import { obtenerUsuarioDesdeToken } from "@/lib/authClient"; // cliente
 
+interface Docente {
+  id: number;
+  name: string;
+}
+
 interface Curso {
   id: number;
   code: string;
@@ -13,8 +18,8 @@ interface Curso {
   type?: string | null;
   cycle?: string | null;
   credits?: number | null;
-  docentes?: { id: number; name: string }[];
-  syllabusUrl?: string | null; // ruta al PDF en BD (se mantiene por si la usas en otro lugar)
+  docentes?: Docente[];
+  syllabusUrl?: string | null; // ruta al PDF en BD
 }
 
 export default function CursosCoordinadorPage() {
@@ -36,7 +41,7 @@ export default function CursosCoordinadorPage() {
 
       try {
         const res = await fetch(`/api/coordinador/cursos`);
-        const data = await res.json();
+        const data: { success: boolean; data?: unknown[]; error?: string } = await res.json();
 
         if (!mounted) return;
 
@@ -44,22 +49,41 @@ export default function CursosCoordinadorPage() {
           setError(data.error || "No se pudieron cargar los cursos");
           setCursos([]);
         } else {
-          const mapped = (data.data ?? []).map((c: any) => ({
-            id: c.id,
-            code: c.code ?? c.codigo ?? "",
-            name: c.name ?? c.nombre ?? "",
-            type: c.type ?? c.tipo ?? null,
-            cycle: c.cycle ?? c.ciclo ?? null,
-            credits: c.credits ?? c.creditos ?? null,
-            docentes: c.docentes ?? c.teachers ?? [],
-            syllabusUrl: c.syllabus?.pdfUrl ?? null
-          }));
+          const mapped: Curso[] = (data.data ?? []).map((c) => {
+            const cursoObj = c as {
+              id: number;
+              code?: string;
+              codigo?: string;
+              name?: string;
+              nombre?: string;
+              type?: string | null;
+              tipo?: string | null;
+              cycle?: string | null;
+              ciclo?: string | null;
+              credits?: number | null;
+              creditos?: number | null;
+              docentes?: Docente[];
+              teachers?: Docente[];
+              syllabus?: { pdfUrl?: string };
+            };
+
+            return {
+              id: cursoObj.id,
+              code: cursoObj.code ?? cursoObj.codigo ?? "",
+              name: cursoObj.name ?? cursoObj.nombre ?? "",
+              type: cursoObj.type ?? cursoObj.tipo ?? null,
+              cycle: cursoObj.cycle ?? cursoObj.ciclo ?? null,
+              credits: cursoObj.credits ?? cursoObj.creditos ?? null,
+              docentes: cursoObj.docentes ?? cursoObj.teachers ?? [],
+              syllabusUrl: cursoObj.syllabus?.pdfUrl ?? null,
+            };
+          });
           setCursos(mapped);
           setError(null);
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
         if (!mounted) return;
-        setError(err?.message ?? "Error desconocido");
+        setError(err instanceof Error ? err.message : "Error desconocido");
         setCursos([]);
       } finally {
         if (mounted) setLoading(false);
@@ -70,9 +94,8 @@ export default function CursosCoordinadorPage() {
     return () => { mounted = false; };
   }, []);
 
-  // Redirige a la página del syllabus (donde están los modals y la generación)
   const handleIrASyllabus = (cursoId: number | undefined) => {
-    if (!cursoId || isNaN(Number(cursoId))) {
+    if (!cursoId || isNaN(cursoId)) {
       alert("ID de curso inválido");
       return;
     }

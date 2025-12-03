@@ -4,6 +4,15 @@ import { useEffect, useState } from "react";
 import Sidebar from "@/components/Sidebar";
 import styles from "@/styles/buscar-syllabus.module.css";
 
+interface Usuario {
+  id?: number;
+  name?: string;
+}
+
+interface CursoDocente {
+  user?: Usuario | null;
+}
+
 interface Curso {
   id: number;
   code: string;
@@ -11,9 +20,9 @@ interface Curso {
   type?: string | null;
   cycle?: string | null;
   credits?: number | null;
-  user?: { name?: string } | null;
-  cursodocente?: { user?: { name?: string } | null }[];
-  pdfUrl?: string | null; // <--- ahora sí
+  user?: Usuario | null;
+  cursodocente?: CursoDocente[];
+  pdfUrl?: string | null;
 }
 
 export default function BuscarSyllabusPage() {
@@ -36,8 +45,7 @@ export default function BuscarSyllabusPage() {
           return;
         }
 
-        // Mapeo inicial (sin pdfUrl todavía)
-        const mapped: Curso[] = (data.data || []).map((c: any) => ({
+        const mapped: Curso[] = (data.data || []).map((c: Curso) => ({
           id: c.id,
           code: c.code,
           name: c.name,
@@ -46,41 +54,36 @@ export default function BuscarSyllabusPage() {
           credits: c.credits,
           user: c.user ?? null,
           cursodocente: c.cursodocente ?? [],
-          pdfUrl: c.syllabus?.pdfUrl ?? null, // si ya viene en la lista, lo usamos
+          pdfUrl: (c as any).syllabus?.pdfUrl ?? c.pdfUrl ?? null, // aún puede venir de syllabus
         }));
 
         if (!mounted) return;
         setCursos(mapped);
         setError(null);
 
-        // Ahora, por cada curso que no tenga pdfUrl, intentar obtener metadata desde /api/cursos/:id
-        // Usamos Promise.all para paralelo; protegemos cada llamada con try/catch para que una falla no afecte a las demás
         const fetchPdfForCourse = async (course: Curso) => {
-          if (course.pdfUrl) return course; // ya lo tenemos
+          if (course.pdfUrl) return course;
           try {
             const r = await fetch(`/api/cursos/${course.id}`);
             if (!r.ok) return course;
-            const j = await r.json();
-            // la respuesta puede estar en j.curso o en j directamente
-            const payload = j?.curso ?? j ?? {};
-            const pdfUrl = payload?.syllabus?.pdfUrl ?? payload?.syllabusUrl ?? null;
+            const j: { curso?: Curso; syllabusUrl?: string } = await r.json();
+            const payload = j.curso ?? j ?? {};
+            const pdfUrl = payload.syllabus?.pdfUrl ?? payload.syllabusUrl ?? null;
             return { ...course, pdfUrl };
           } catch (err) {
-            // si algo falla, devolvemos el curso original sin bloquear todo
             console.warn(`No se pudo obtener syllabus para courseId=${course.id}`, err);
             return course;
           }
         };
 
-        // Ejecutar todas (si son muchas, ajustar batching)
-        const promises = mapped.map((c) => fetchPdfForCourse(c));
+        const promises = mapped.map(fetchPdfForCourse);
         const withPdf = await Promise.all(promises);
 
         if (!mounted) return;
         setCursos(withPdf);
-      } catch (err: any) {
+      } catch (err: unknown) {
         if (!mounted) return;
-        setError(err?.message || "Error desconocido");
+        setError(err instanceof Error ? err.message : "Error desconocido");
         setCursos([]);
       } finally {
         if (mounted) setLoading(false);
@@ -89,15 +92,15 @@ export default function BuscarSyllabusPage() {
 
     fetchCursos();
 
-    // BroadcastChannel + localStorage listener para actualizaciones en caliente
+    // BroadcastChannel + localStorage listener
     let bc: BroadcastChannel | null = null;
     const onStorage = (ev: StorageEvent) => {
       if (ev.key === "syllabus_updated" && ev.newValue) {
         try {
-          const payload = JSON.parse(ev.newValue);
+          const payload: { courseId: number; pdfUrl?: string } = JSON.parse(ev.newValue);
           if (payload?.courseId) {
-            setCursos((prev) =>
-              prev.map((c) =>
+            setCursos(prev =>
+              prev.map(c =>
                 c.id === payload.courseId ? { ...c, pdfUrl: payload.pdfUrl ?? c.pdfUrl ?? `/syllabus/${c.id}.pdf` } : c
               )
             );
@@ -111,11 +114,11 @@ export default function BuscarSyllabusPage() {
     try {
       if (typeof window !== "undefined" && "BroadcastChannel" in window) {
         bc = new BroadcastChannel("syllabus_channel");
-        bc.onmessage = (ev) => {
+        bc.onmessage = (ev: MessageEvent<{ type: string; courseId?: number; pdfUrl?: string }>) => {
           const msg = ev.data;
           if (msg?.type === "updated" && msg.courseId) {
-            setCursos((prev) =>
-              prev.map((c) =>
+            setCursos(prev =>
+              prev.map(c =>
                 c.id === msg.courseId ? { ...c, pdfUrl: msg.pdfUrl ?? c.pdfUrl ?? `/syllabus/${c.id}.pdf` } : c
               )
             );
@@ -123,7 +126,6 @@ export default function BuscarSyllabusPage() {
         };
       }
     } catch (e) {
-      // no fatal; si falla el canal, usamos solo storage
       console.warn("BroadcastChannel no disponible", e);
       bc = null;
     }
@@ -133,15 +135,15 @@ export default function BuscarSyllabusPage() {
     return () => {
       mounted = false;
       if (bc) {
-        try { bc.close(); } catch (e) { /* ignore */ }
+        try { bc.close(); } catch (_) { }
       }
       window.removeEventListener("storage", onStorage);
     };
   }, []);
 
-  const safeDocentesNames = (cursodocente: any): string => {
-    if (!Array.isArray(cursodocente) || cursodocente.length === 0) return '—';
-    const names = cursodocente.map((cd: any) => cd?.user?.name).filter(Boolean);
+  const safeDocentesNames = (cursodocente?: CursoDocente[]): string => {
+    if (!cursodocente || cursodocente.length === 0) return '—';
+    const names = cursodocente.map(cd => cd.user?.name).filter(Boolean);
     return names.length > 0 ? names.join(', ') : '—';
   };
 
@@ -174,7 +176,7 @@ export default function BuscarSyllabusPage() {
               </tr>
             </thead>
             <tbody>
-              {cursos.map((c) => (
+              {cursos.map(c => (
                 <tr key={c.id}>
                   <td>{c.code}</td>
                   <td>{c.name}</td>

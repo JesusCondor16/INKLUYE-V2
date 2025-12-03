@@ -26,14 +26,15 @@ export default function GestionDocentesPage() {
     try {
       const res = await fetch('/api/docentes');
       if (!res.ok) {
-        const errData = await res.json();
-        throw new Error(errData?.error || 'Error al obtener docentes');
+        const errData: { error?: string } = await res.json().catch(() => ({}));
+        throw new Error(errData.error ?? 'Error al obtener docentes');
       }
       const data: Docente[] = await res.json();
       setDocentes(data);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error al cargar docentes:', error);
-      setMensaje(`❌ ${error.message}`);
+      const msg = error instanceof Error ? error.message : String(error);
+      setMensaje(`❌ ${msg}`);
       setTimeout(() => setMensaje(''), 5000);
     }
   };
@@ -46,14 +47,15 @@ export default function GestionDocentesPage() {
     if (!confirm('¿Seguro que desea eliminar este docente?')) return;
     try {
       const res = await fetch(`/api/users/${id}`, { method: 'DELETE' });
-      const resData = await res.json();
-      if (!res.ok) throw new Error(resData?.error || 'No se pudo eliminar');
+      const resData: { error?: string } = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(resData.error ?? 'No se pudo eliminar');
       setMensaje('✅ Docente eliminado correctamente.');
       cargarDocentes();
       setTimeout(() => setMensaje(''), 5000);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error al eliminar docente:', error);
-      setMensaje(`❌ ${error.message}`);
+      const msg = error instanceof Error ? error.message : String(error);
+      setMensaje(`❌ ${msg}`);
       setTimeout(() => setMensaje(''), 5000);
     }
   };
