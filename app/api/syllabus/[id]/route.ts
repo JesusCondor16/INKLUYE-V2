@@ -45,7 +45,8 @@ export async function GET(req: NextRequest, context: { params: Promise<{ id: str
     } else lines.push("—");
 
     const pdfDoc = await PDFDocument.create();
-    const font = await pdfDoc.embedFont(StandardFonts.TIMES_ROMAN);
+    // <-- CORRECCIÓN: usar TimesRoman (así lo exporta pdf-lib)
+    const font = await pdfDoc.embedFont(StandardFonts.TimesRoman);
     const fontSize = 12;
     const pageSize = [595.28, 841.89];
     let page = pdfDoc.addPage(pageSize);
