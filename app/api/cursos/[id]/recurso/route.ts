@@ -4,6 +4,10 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
+interface BibliografiaInput {
+  texto: string;
+}
+
 // GET: obtener estrategia didáctica, recursos, bibliografía y matriz de evaluación
 export async function GET(
   _req: Request,
@@ -16,7 +20,7 @@ export async function GET(
     }
 
     // Estrategia didáctica
-    const estrategiaDidactica = await prisma.estrategiaDidactica.findMany({
+    const estrategiaDidactica = await prisma.estrategiadidactica.findMany({
       where: { cursoId },
       orderBy: { createdAt: 'asc' },
     });
@@ -27,13 +31,13 @@ export async function GET(
       orderBy: { createdAt: 'asc' },
     });
 
-    // Bibliografía - GET
+    // Bibliografía
     const bibliografia = await prisma.bibliografia.findMany({
       where: { courseId: cursoId },
       orderBy: { id: 'asc' },
       select: {
         id: true,
-        texto: true, // hasta 1000 caracteres según tu schema
+        texto: true,
       },
     });
 
@@ -53,8 +57,8 @@ export async function GET(
 
     // Calcular nota final
     const notaFinal = matrizevaluacion.reduce((acc, fila) => {
-      const nota = parseFloat(fila.nota_sum?.replace(/[^\d.]/g, '') || '0');
-      const peso = fila.nota_peso || 0;
+      const nota = parseFloat(fila.nota_sum?.replace(/[^\d.]/g, '') ?? '0');
+      const peso = fila.nota_peso ?? 0;
       return acc + (nota * peso) / 100;
     }, 0);
 
@@ -65,9 +69,10 @@ export async function GET(
       matrizevaluacion,
       notaFinal,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error GET curso:', error);
-    return NextResponse.json({ error: 'Error al obtener los datos', detalle: error.message }, { status: 500 });
+    const msg = error instanceof Error ? error.message : String(error);
+    return NextResponse.json({ error: 'Error al obtener los datos', detalle: msg }, { status: 500 });
   }
 }
 
@@ -82,13 +87,14 @@ export async function PUT(
       return NextResponse.json({ error: 'ID de curso inválido' }, { status: 400 });
     }
 
-    const { bibliografia } = await req.json();
-    if (!Array.isArray(bibliografia)) {
+    const body = (await req.json()) as { bibliografia: BibliografiaInput[] };
+
+    if (!Array.isArray(body.bibliografia)) {
       return NextResponse.json({ error: 'bibliografia debe ser un array' }, { status: 400 });
     }
 
     // Validar longitud de texto antes de guardar
-    for (const b of bibliografia) {
+    for (const b of body.bibliografia) {
       if (typeof b.texto !== 'string' || b.texto.length > 1000) {
         return NextResponse.json({
           error: 'Cada texto de bibliografía debe ser string y máximo 1000 caracteres',
@@ -100,8 +106,8 @@ export async function PUT(
     await prisma.bibliografia.deleteMany({ where: { courseId } });
 
     // Crear nuevos registros
-    if (bibliografia.length > 0) {
-      const data = bibliografia.map((b: any) => ({
+    if (body.bibliografia.length > 0) {
+      const data = body.bibliografia.map((b) => ({
         courseId,
         texto: b.texto,
       }));
@@ -109,8 +115,9 @@ export async function PUT(
     }
 
     return NextResponse.json({ message: 'Bibliografía actualizada correctamente' });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error PUT bibliografía:', error);
-    return NextResponse.json({ error: 'Error al actualizar bibliografía', detalle: error.message }, { status: 500 });
+    const msg = error instanceof Error ? error.message : String(error);
+    return NextResponse.json({ error: 'Error al actualizar bibliografía', detalle: msg }, { status: 500 });
   }
 }
