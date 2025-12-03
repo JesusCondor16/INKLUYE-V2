@@ -1,9 +1,11 @@
+// app/api/cursos/[id]/capacidades/route.ts
 import { NextResponse } from "next/server";
-import { PrismaClient, capacidad, programacioncontenido } from "@prisma/client";
+import { PrismaClient, capacidad, programacioncontenido, Prisma } from "@prisma/client";
 
 declare global {
   var prisma: PrismaClient | undefined;
 }
+
 const prisma = global.prisma ?? new PrismaClient();
 if (process.env.NODE_ENV !== "production") global.prisma = prisma;
 
@@ -25,7 +27,7 @@ function mapCapacidad(cap: CapacidadConProgramacion) {
             actividades: p.actividades ?? "",
             recursos: p.recursos ?? "",
             estrategias: p.estrategias ?? "",
-            logroUnidad: p.logroUnidad ?? "", // agregado
+            logroUnidad: p.logroUnidad ?? "",
           }))
         : [],
   };
@@ -90,14 +92,15 @@ export async function POST(req: Request, context: { params: Promise<{ id: string
                 actividades: fila.actividades ?? "",
                 recursos: fila.recursos ?? "",
                 estrategias: fila.estrategias ?? "",
-                logroUnidad: fila.logroUnidad ?? "", // agregado
+                logroUnidad: fila.logroUnidad ?? "",
               };
             })
           : [],
       };
     });
 
-    const ops: Promise<unknown>[] = [];
+    // 👇 Tipado correcto para Prisma $transaction
+    const ops: Prisma.PrismaPromise<any>[] = [];
     ops.push(prisma.capacidad.deleteMany({ where: { cursoId } }));
 
     for (const u of unidades) {
@@ -114,7 +117,7 @@ export async function POST(req: Request, context: { params: Promise<{ id: string
                 actividades: f.actividades,
                 recursos: f.recursos,
                 estrategias: f.estrategias,
-                logroUnidad: f.logroUnidad, // agregado
+                logroUnidad: f.logroUnidad,
               })),
             },
           },
