@@ -39,8 +39,9 @@ export default function ModalHistorialDocente({ docente, onClose }: Props) {
         }
         const data = await res.json();
         setHistorial(data);
-      } catch (err: any) {
-        console.error('Error al cargar historial:', err);
+      } catch (err: unknown) {
+        const e = err instanceof Error ? err : new Error('Error al cargar historial');
+        console.error('Error al cargar historial:', e);
         setError('No se pudo cargar el historial');
       } finally {
         setLoading(false);

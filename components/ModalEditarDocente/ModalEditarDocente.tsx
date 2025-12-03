@@ -1,4 +1,3 @@
-// app/(mvc)/views/docentes/ModalEditarDocente.tsx
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
@@ -18,12 +17,6 @@ interface Props {
   onSuccess: () => void;
 }
 
-/**
- * ModalEditarDocente (Vista)
- * - Usa updateDocenteView (view controller cliente)
- * - Mantiene solo lógica de UI / accesibilidad (no mezcla modelo/service)
- * - Focus trap + retorno de foco + Escape para cerrar
- */
 export default function ModalEditarDocente({ docente, onClose, onSuccess }: Props) {
   const [form, setForm] = useState({ name: '', email: '', role: 'docente' });
   const [loading, setLoading] = useState(false);
@@ -34,12 +27,10 @@ export default function ModalEditarDocente({ docente, onClose, onSuccess }: Prop
   const firstFieldRef = useRef<HTMLInputElement | null>(null);
   const previouslyFocused = useRef<HTMLElement | null>(null);
 
-  // IDs para aria
   const titleId = 'editar-docente-title';
   const errId = 'editar-docente-error';
 
   useEffect(() => {
-    // populate form when docente prop changes
     if (docente) {
       setForm({
         name: docente.name ?? '',
@@ -50,14 +41,10 @@ export default function ModalEditarDocente({ docente, onClose, onSuccess }: Prop
   }, [docente]);
 
   useEffect(() => {
-    // save previously focused element to restore on close
     previouslyFocused.current = document.activeElement as HTMLElement | null;
-
-    // lock scroll
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
 
-    // focus first input after paint
     const t = setTimeout(() => firstFieldRef.current?.focus(), 0);
 
     const onKey = (e: KeyboardEvent) => {
@@ -66,7 +53,6 @@ export default function ModalEditarDocente({ docente, onClose, onSuccess }: Prop
         onClose();
       }
       if (e.key === 'Tab') {
-        // focus trap
         trapFocus(e);
       }
     };
@@ -76,13 +62,10 @@ export default function ModalEditarDocente({ docente, onClose, onSuccess }: Prop
       clearTimeout(t);
       window.removeEventListener('keydown', onKey, true);
       document.body.style.overflow = previousOverflow;
-      // return focus
       previouslyFocused.current?.focus();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onClose]);
 
-  // Focus trap implementation
   const trapFocus = (e: KeyboardEvent) => {
     const dialog = dialogRef.current;
     if (!dialog) return;
@@ -99,7 +82,7 @@ export default function ModalEditarDocente({ docente, onClose, onSuccess }: Prop
       '[contentEditable=true]',
     ];
     const nodes = Array.from(dialog.querySelectorAll<HTMLElement>(focusableSelectors.join(',')))
-      .filter((n) => n.offsetParent !== null); // visible only
+      .filter((n) => n.offsetParent !== null);
 
     if (nodes.length === 0) {
       e.preventDefault();
@@ -111,19 +94,14 @@ export default function ModalEditarDocente({ docente, onClose, onSuccess }: Prop
     const active = document.activeElement as HTMLElement | null;
 
     if (!e.shiftKey && active === last) {
-      // Tab forward on last element -> go to first
       e.preventDefault();
       first.focus();
     } else if (e.shiftKey && active === first) {
-      // Shift+Tab on first element -> go to last
       e.preventDefault();
       last.focus();
     }
-    // otherwise allow default tab behavior
   };
 
-  // Basic client-side validation (name/email)
-  // Returns an errors object and sets state for inline error rendering.
   const validate = (): { name?: string; email?: string } => {
     const errors: { name?: string; email?: string } = {};
     const nameTrim = (form.name || '').trim();
@@ -139,7 +117,6 @@ export default function ModalEditarDocente({ docente, onClose, onSuccess }: Prop
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setForm((s) => ({ ...s, [e.target.name]: e.target.value }));
-    // clear per-field error on change
     setFieldErrors((fe) => ({ ...fe, [e.target.name]: undefined }));
     setError(null);
   };
@@ -155,7 +132,6 @@ export default function ModalEditarDocente({ docente, onClose, onSuccess }: Prop
 
     const errors = validate();
     if (Object.keys(errors).length > 0) {
-      // focus first field with error (use the freshly computed errors)
       if (errors.name) {
         (document.getElementById('name') as HTMLInputElement | null)?.focus();
       } else if (errors.email) {
@@ -176,16 +152,15 @@ export default function ModalEditarDocente({ docente, onClose, onSuccess }: Prop
 
       if (!res.ok) {
         setError(res.message || 'Error al actualizar el docente.');
-        // focus error
         (document.getElementById(errId) as HTMLDivElement | null)?.focus();
         return;
       }
 
-      // success: notify and close
       onSuccess();
       onClose();
-    } catch (err: any) {
-      setError(err?.message || 'Error inesperado');
+    } catch (err: unknown) {
+      const e = err instanceof Error ? err : new Error('Error inesperado');
+      setError(e.message);
       (document.getElementById(errId) as HTMLDivElement | null)?.focus();
     } finally {
       setLoading(false);

@@ -28,29 +28,33 @@ export function useModalSeccion3Controller() {
         const res = await fetch(`/api/cursos/${cursoId}/capacidades`, { signal });
         if (!res.ok) throw new Error('Error al cargar capacidades del curso');
 
-        const data = (await res.json()) as { capacidades?: Capacidad[] } | Capacidad[];
+        const data: unknown = await res.json();
 
-        // Normalización de datos
-        const capsArray: Capacidad[] = Array.isArray((data as any).capacidades)
-          ? (data as any).capacidades
-          : Array.isArray(data)
-          ? data
-          : [];
+        // Normalización de datos con type guard
+        let capsArray: Capacidad[] = [];
+        if (Array.isArray(data)) {
+          capsArray = data as Capacidad[];
+        } else if (data && typeof data === 'object' && 'capacidades' in data && Array.isArray((data as any).capacidades)) {
+          capsArray = (data as { capacidades: Capacidad[] }).capacidades;
+        }
 
         const inicialCapacidades: Capacidad[] = capsArray.length > 0 ? capsArray : [{ nombre: '', descripcion: '' }];
 
         const inicialProgramaciones: Programacion[] = inicialCapacidades.map((unidad) => {
-          const filasRaw = unidad.filas ?? [];
+          const filasRaw = Array.isArray(unidad.filas) ? unidad.filas : [];
           const filas: Fila[] =
             filasRaw.length > 0
-              ? filasRaw.map((fila: Partial<Fila>) => ({
-                  semana: fila.semana ?? '',
-                  contenido: fila.contenido ?? '',
-                  actividades: fila.actividades ?? '',
-                  recursos: fila.recursos ?? '',
-                  estrategias: fila.estrategias ?? '',
-                  fixed: fila.fixed ?? false,
-                }))
+              ? filasRaw.map((fila: unknown) => {
+                  const f = fila as Partial<Fila>;
+                  return {
+                    semana: f.semana ?? '',
+                    contenido: f.contenido ?? '',
+                    actividades: f.actividades ?? '',
+                    recursos: f.recursos ?? '',
+                    estrategias: f.estrategias ?? '',
+                    fixed: f.fixed ?? false,
+                  };
+                })
               : Array.from({ length: 4 }).map(() => ({
                   semana: '',
                   contenido: '',
