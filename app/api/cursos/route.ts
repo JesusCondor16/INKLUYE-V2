@@ -15,10 +15,14 @@ export async function GET() {
     });
 
     return NextResponse.json({ success: true, data: cursos });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error(err);
     return NextResponse.json(
-      { success: false, error: 'Error al obtener cursos', detalle: err.message },
+      { 
+        success: false, 
+        error: 'Error al obtener cursos', 
+        detalle: err instanceof Error ? err.message : String(err) 
+      },
       { status: 500 }
     );
   }
