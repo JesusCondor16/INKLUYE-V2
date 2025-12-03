@@ -63,12 +63,9 @@ function mapCursoResponse(c: CursoFull) {
 /**
  * GET /api/cursos/:id
  */
-export async function GET(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
+export async function GET(req: Request, context: { params: Promise<{ id: string }> }) {
   try {
-    const idStr = params.id;
+    const { id: idStr } = await context.params;
     if (!idStr) return NextResponse.json({ error: 'ID no proporcionado' }, { status: 400 });
 
     const id = parseInt(idStr, 10);
@@ -96,12 +93,9 @@ export async function GET(
 /**
  * PUT /api/cursos/:id
  */
-export async function PUT(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(req: Request, context: { params: Promise<{ id: string }> }) {
   try {
-    const idStr = params.id;
+    const { id: idStr } = await context.params;
     if (!idStr) return NextResponse.json({ error: 'ID no proporcionado' }, { status: 400 });
 
     const id = parseInt(idStr, 10);
