@@ -9,10 +9,8 @@ declare global {
 const prisma = global.prisma ?? new PrismaClient();
 if (process.env.NODE_ENV !== "production") global.prisma = prisma;
 
-/** Tipos parciales para mapCapacidad */
 type CapacidadConProgramacion = capacidad & { programacioncontenido?: programacioncontenido[] };
 
-/** Normaliza una capacidad para la respuesta */
 function mapCapacidad(cap: CapacidadConProgramacion) {
   return {
     id: cap.id,
@@ -97,8 +95,8 @@ export async function POST(req: Request, context: { params: Promise<{ id: string
       };
     });
 
-    // 👇 Tipado correcto para Prisma $transaction
-    const ops: (Prisma.Prisma__CapacidadClient<capacidad> | Prisma.PrismaBatchPayload)[] = [];
+    // 👇 Tipado correcto para $transaction
+    const ops: (Prisma.PrismaPromise<any> | Prisma.BatchPayload)[] = [];
     ops.push(prisma.capacidad.deleteMany({ where: { cursoId } }));
 
     for (const u of unidades) {
@@ -140,7 +138,7 @@ export async function POST(req: Request, context: { params: Promise<{ id: string
     return NextResponse.json(
       {
         message: "Capacidades reemplazadas correctamente",
-        deleted: (results[0] as Prisma.PrismaBatchPayload).count ?? 0,
+        deleted: (results[0] as Prisma.BatchPayload).count ?? 0,
         capacidades: freshCaps.map(mapCapacidad),
       },
       { status: 200 }
