@@ -1,7 +1,5 @@
-// app/api/coordinador/[id]/generarSyllabus/route.ts
-
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient, Course, CursoDocente, Competencia, Capacidad } from "@prisma/client";
+import { PrismaClient, course, cursodocente, competencia, capacidad } from "@prisma/client";
 import fs from "fs";
 import path from "path";
 import jsPDF from "jspdf";
@@ -10,10 +8,10 @@ import autoTable from "jspdf-autotable";
 const prisma = new PrismaClient();
 
 // Tipos parciales para lo que necesitamos en el PDF
-type CursoConRelaciones = Course & {
-  cursodocente?: (CursoDocente & { user?: { name: string } })[];
-  competencia?: Competencia[];
-  capacidad?: Capacidad[];
+type CursoConRelaciones = course & {
+  cursodocente?: (cursodocente & { user?: { name: string } })[];
+  competencia?: competencia[];
+  capacidad?: capacidad[];
 };
 
 // Tipado mínimo para lastAutoTable de jsPDF
