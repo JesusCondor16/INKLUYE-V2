@@ -25,7 +25,7 @@ function mapCapacidad(cap: CapacidadConProgramacion) {
             actividades: p.actividades ?? "",
             recursos: p.recursos ?? "",
             estrategias: p.estrategias ?? "",
-            fixed: Boolean(p.fixed ?? false),
+            // ❌ fixed eliminado porque no existe en BD
           }))
         : [],
   };
@@ -75,14 +75,14 @@ export async function POST(req: Request, context: { params: Promise<{ id: string
         descripcion: String(unidad.descripcion ?? "").trim(),
         filas: Array.isArray(unidad.filas)
           ? unidad.filas.map((f: unknown) => {
-              const fila = f as { sem?: string; semana?: string; contenido?: string; actividades?: string; recursos?: string; estrategias?: string; fixed?: boolean };
+              const fila = f as { sem?: string; semana?: string; contenido?: string; actividades?: string; recursos?: string; estrategias?: string };
               return {
                 semana: fila.sem ?? fila.semana ?? "",
                 contenido: fila.contenido ?? "",
                 actividades: fila.actividades ?? "",
                 recursos: fila.recursos ?? "",
                 estrategias: fila.estrategias ?? "",
-                fixed: Boolean(fila.fixed ?? false),
+                // ❌ fixed eliminado
               };
             })
           : [],
@@ -106,7 +106,7 @@ export async function POST(req: Request, context: { params: Promise<{ id: string
                 actividades: f.actividades ?? "",
                 recursos: f.recursos ?? "",
                 estrategias: f.estrategias ?? "",
-                ...(typeof f.fixed === "boolean" ? { fixed: f.fixed } : {}),
+                // ❌ fixed eliminado
               })),
             },
           },
