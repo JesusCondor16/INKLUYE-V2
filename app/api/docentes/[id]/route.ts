@@ -1,12 +1,24 @@
 // app/api/docentes/[id]/route.ts
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { docenteController } from '@/controllers/docenteController';
+import { obtenerUsuarioDesdeTokenServer, requiereRol } from '@/lib/authServer';
 
 function badIdResponse() {
   return new Response(JSON.stringify({ error: 'ID inválido o no proporcionado' }), {
     status: 400,
     headers: { 'Content-Type': 'application/json' },
   });
+}
+
+function verificarDirector(req: NextRequest): NextResponse | null {
+  const usuario = obtenerUsuarioDesdeTokenServer(req);
+  if (!usuario) {
+    return NextResponse.json({ error: 'Usuario no autenticado' }, { status: 401 });
+  }
+  if (!requiereRol(usuario, 'director')) {
+    return NextResponse.json({ error: 'No autorizado' }, { status: 403 });
+  }
+  return null;
 }
 
 /**
@@ -26,6 +38,9 @@ export async function GET(_req: NextRequest, context: { params: Promise<{ id: st
  * PUT /api/docentes/:id
  */
 export async function PUT(req: NextRequest, context: { params: Promise<{ id: string }> }) {
+  const authError = verificarDirector(req);
+  if (authError) return authError;
+
   const { id: idStr } = await context.params;
   if (!idStr) return badIdResponse();
 
@@ -38,7 +53,10 @@ export async function PUT(req: NextRequest, context: { params: Promise<{ id: str
 /**
  * DELETE /api/docentes/:id
  */
-export async function DELETE(_req: NextRequest, context: { params: Promise<{ id: string }> }) {
+export async function DELETE(req: NextRequest, context: { params: Promise<{ id: string }> }) {
+  const authError = verificarDirector(req);
+  if (authError) return authError;
+
   const { id: idStr } = await context.params;
   if (!idStr) return badIdResponse();
 

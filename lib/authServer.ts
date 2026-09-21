@@ -40,3 +40,7 @@ export function obtenerUsuarioDesdeTokenServer(req: NextRequest): CustomJwtPaylo
     return null;
   }
 }
+
+export function requiereRol(usuario: CustomJwtPayload | null, ...rolesPermitidos: string[]): boolean {
+  return !!usuario && !!usuario.role && rolesPermitidos.includes(usuario.role);
+}
