@@ -3,18 +3,12 @@
 import React, { useState, useEffect } from 'react';
 import styles from './ModalSeccion1.module.css';
 import { useModalSeccion1Controller } from './ModalSeccion1.controller';
-import { Curso } from './ModalSeccion1.model';
+import { Usuario } from './ModalSeccion1.model';
 
 interface ModalSeccion1Props {
   show: boolean;
   onClose: () => void;
   cursoId: number;
-}
-
-interface Usuario {
-  id: number;
-  name: string;
-  email: string;
 }
 
 export default function ModalSeccion1({ show, onClose, cursoId }: ModalSeccion1Props) {
@@ -26,18 +20,23 @@ export default function ModalSeccion1({ show, onClose, cursoId }: ModalSeccion1P
   const [selectedDocentes, setSelectedDocentes] = useState<number[]>([]);
 
   useEffect(() => {
-    // Filtrar usuarios del curso por rol
     if (!curso) return;
 
-    // Coordinadores y docentes registrados en BD
-    const allCoordinadores = curso.docentes?.filter(u => u.role === 'coordinador') || [];
-    const allDocentes = curso.docentes?.filter(u => u.role === 'docente') || [];
+    const allCoordinadores =
+      curso.docentes?.filter(u => u.role === 'coordinador') || [];
+
+    const allDocentes =
+      curso.docentes?.filter(u => u.role === 'docente') || [];
 
     setCoordinadores(allCoordinadores);
     setDocentes(allDocentes);
 
     setSelectedCoordinador(curso.coordinador?.id ?? null);
-    setSelectedDocentes(curso.cursoDocentes?.map(d => d.user.id) || []);
+
+    setSelectedDocentes(
+      curso.cursoDocentes?.map(d => d.user.id) || []
+    );
+
   }, [curso]);
 
   if (!show) return null;
@@ -54,7 +53,12 @@ export default function ModalSeccion1({ show, onClose, cursoId }: ModalSeccion1P
   };
 
   const handleDocentesChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const options = Array.from(e.target.selectedOptions, option => parseInt(option.value, 10));
+
+    const options = Array.from(
+      e.target.selectedOptions,
+      option => parseInt(option.value, 10)
+    );
+
     setSelectedDocentes(options);
   };
 
@@ -70,6 +74,7 @@ export default function ModalSeccion1({ show, onClose, cursoId }: ModalSeccion1P
       <div className={styles.modalContainer}>
         <header className={styles.modalHeader}>
           <h2 id="modalTitle">1. Información general del curso</h2>
+
           <button
             type="button"
             className={styles.closeButton}
@@ -84,7 +89,9 @@ export default function ModalSeccion1({ show, onClose, cursoId }: ModalSeccion1P
           <p className={styles.loadingText}>Cargando datos...</p>
         ) : (
           <div className={styles.modalBody}>
+
             <dl className={styles.datalist}>
+
               <dt>1.1 Nombre:</dt>
               <dd>{curso?.name || '—'}</dd>
 
@@ -102,7 +109,9 @@ export default function ModalSeccion1({ show, onClose, cursoId }: ModalSeccion1P
 
               <dt>1.6 Horas semanales:</dt>
               <dd>
-                Teoría: {curso?.theoryHours ?? 0}, Laboratorio: {curso?.labHours ?? 0}, Práctica: {curso?.practiceHours ?? 0}
+                Teoría: {curso?.theoryHours ?? 0},
+                Laboratorio: {curso?.labHours ?? 0},
+                Práctica: {curso?.practiceHours ?? 0}
               </dd>
 
               <dt>1.7 Semestre:</dt>
@@ -120,47 +129,60 @@ export default function ModalSeccion1({ show, onClose, cursoId }: ModalSeccion1P
               <dt>1.11 Pre-requisitos:</dt>
               <dd>
                 {curso?.prerequisites?.length
-                  ? curso.prerequisites.map(p => p.prerequisite.name).join(', ')
+                  ? curso.prerequisites
+                      .map(p => p.prerequisite.name)
+                      .join(', ')
                   : '—'}
               </dd>
 
-              <dt>1.12 Docente(s):</dt>
+              <dt id="docentesLabel">1.12 Docente(s):</dt>
               <dd>
+
                 <select
                   multiple
-                  value={selectedDocentes}
+                  value={selectedDocentes.map(String)}
                   onChange={handleDocentesChange}
                   className={styles.select}
                   size={docentes.length || 3}
-                  aria-label="Seleccionar docentes"
+                  aria-labelledby="docentesLabel"
                 >
+
                   {docentes.map(d => (
-                    <option key={d.id} value={d.id}>
+                    <option key={d.id} value={String(d.id)}>
                       {d.name} ({d.email})
                     </option>
                   ))}
+
                 </select>
+
               </dd>
 
-              <dt>1.13 Coordinador:</dt>
+              <dt id="coordinadorLabel">1.13 Coordinador:</dt>
               <dd>
+
                 <select
-                  value={selectedCoordinador ?? ''}
+                  value={selectedCoordinador?.toString() ?? ''}
                   onChange={handleCoordinadorChange}
                   className={styles.select}
-                  aria-label="Seleccionar coordinador"
+                  aria-labelledby="coordinadorLabel"
                 >
+
                   <option value="">—</option>
+
                   {coordinadores.map(c => (
-                    <option key={c.id} value={c.id}>
+                    <option key={c.id} value={String(c.id)}>
                       {c.name} ({c.email})
                     </option>
                   ))}
+
                 </select>
+
               </dd>
+
             </dl>
 
             <hr className={styles.separator} />
+
             <h3 id="modalDescription">2. Sumilla</h3>
 
             <textarea
@@ -170,15 +192,25 @@ export default function ModalSeccion1({ show, onClose, cursoId }: ModalSeccion1P
               maxLength={2000}
               value={sumilla}
               readOnly
-              aria-label="Sumilla del curso"
+              aria-labelledby="modalDescription"
             />
-            <div className={styles.charCount}>{sumilla.length}/2000 caracteres</div>
+
+            <div className={styles.charCount}>
+              {sumilla.length}/2000 caracteres
+            </div>
 
             <div className={styles.buttonContainer}>
-              <button type="button" onClick={onClose} className={styles.buttonSecondary}>
+
+              <button
+                type="button"
+                onClick={onClose}
+                className={styles.buttonSecondary}
+              >
                 Cerrar
               </button>
+
             </div>
+
           </div>
         )}
       </div>
