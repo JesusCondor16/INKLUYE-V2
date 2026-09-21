@@ -36,10 +36,10 @@ export async function GET(_req: NextRequest, context: Context) {
 
   } catch (err: unknown) {
 
-    const message = err instanceof Error ? err.message : String(err);
+    console.error('❌ GET /api/users/[id] error:', err);
 
     return NextResponse.json(
-      { error: message || 'ID inválido' },
+      { error: 'ID inválido' },
       { status: 400 }
     );
 
@@ -61,16 +61,15 @@ export async function PUT(req: NextRequest, context: Context) {
 
   } catch (err: unknown) {
 
-    const message = err instanceof Error ? err.message : String(err);
+    console.error('❌ PUT /api/users/[id] error:', err);
 
     return NextResponse.json(
-      { error: message || 'Error en PUT' },
+      { error: 'Error en PUT' },
       { status: 400 }
     );
 
   }
 }
-
 
 
 // PATCH
@@ -86,16 +85,15 @@ export async function PATCH(req: NextRequest, context: Context) {
 
   } catch (err: unknown) {
 
-    const message = err instanceof Error ? err.message : String(err);
+    console.error('❌ PATCH /api/users/[id] error:', err);
 
     return NextResponse.json(
-      { error: message || 'Error en PATCH' },
+      { error: 'Error en PATCH' },
       { status: 400 }
     );
 
   }
 }
-
 
 
 // DELETE
@@ -129,10 +127,10 @@ export async function DELETE(req: NextRequest, context: Context) {
 
   } catch (err: unknown) {
 
-    const message = err instanceof Error ? err.message : String(err);
+    console.error('❌ DELETE /api/users/[id] error:', err);
 
     return NextResponse.json(
-      { error: message || 'Error en DELETE' },
+      { error: 'Error en DELETE' },
       { status: 400 }
     );
 

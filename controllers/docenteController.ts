@@ -8,7 +8,7 @@ export const docenteController = {
       return NextResponse.json(docentes, { status: 200 });
     } catch (error: any) {
       console.error('❌ Error docenteController.getAll:', error);
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      return NextResponse.json({ error: 'Error al obtener docentes' }, { status: 500 });
     }
   },
 
@@ -19,7 +19,7 @@ export const docenteController = {
       return NextResponse.json(docente, { status: 200 });
     } catch (error: any) {
       console.error('❌ Error docenteController.getById:', error);
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      return NextResponse.json({ error: 'Error al obtener docente' }, { status: 500 });
     }
   },
 
@@ -33,7 +33,7 @@ export const docenteController = {
       return NextResponse.json(newDocente, { status: 201 });
     } catch (error: any) {
       console.error('❌ Error docenteController.create:', error);
-      return NextResponse.json({ error: error.message }, { status: 400 });
+      return NextResponse.json({ error: 'Error al crear docente' }, { status: 400 });
     }
   },
 
@@ -44,7 +44,7 @@ export const docenteController = {
       return NextResponse.json(updated, { status: 200 });
     } catch (error: any) {
       console.error('❌ Error docenteController.update:', error);
-      return NextResponse.json({ error: error.message }, { status: 400 });
+      return NextResponse.json({ error: 'Error al actualizar docente' }, { status: 400 });
     }
   },
 
@@ -54,7 +54,7 @@ export const docenteController = {
       return NextResponse.json(deleted, { status: 200 });
     } catch (error: any) {
       console.error('❌ Error docenteController.remove:', error);
-      return NextResponse.json({ error: error.message }, { status: 400 });
+      return NextResponse.json({ error: 'Error al eliminar docente' }, { status: 400 });
     }
   },
 };
