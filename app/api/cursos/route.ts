@@ -1,8 +1,6 @@
 // app/api/cursos/route.ts
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
 
 export async function GET() {
   try {
@@ -18,10 +16,10 @@ export async function GET() {
   } catch (err: unknown) {
     console.error(err);
     return NextResponse.json(
-      { 
-        success: false, 
-        error: 'Error al obtener cursos', 
-        detalle: err instanceof Error ? err.message : String(err) 
+      {
+        success: false,
+        error: 'Error al obtener cursos',
+        detalle: err instanceof Error ? err.message : String(err)
       },
       { status: 500 }
     );

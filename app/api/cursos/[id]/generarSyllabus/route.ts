@@ -1,12 +1,11 @@
 export const runtime = 'nodejs';
 
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/lib/prisma';
 import { PDFDocument, StandardFonts } from 'pdf-lib';
 import fs from 'fs';
 import path from 'path';
 
-const prisma = new PrismaClient();
 type Params = { id?: string };
 
 export async function GET(_req: Request, context: { params: Params | Promise<Params> }) {

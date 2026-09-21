@@ -1,14 +1,8 @@
 // app/api/cursos/[id]/capacidades/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient, capacidad, programacioncontenido, Prisma } from "@prisma/client";
+import { capacidad, programacioncontenido, Prisma } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
 import { obtenerUsuarioDesdeTokenServer, esCoordinadorDelCurso } from "@/lib/authServer";
-
-declare global {
-  var prisma: PrismaClient | undefined;
-}
-
-const prisma = global.prisma ?? new PrismaClient();
-if (process.env.NODE_ENV !== "production") global.prisma = prisma;
 
 type CapacidadConProgramacion = capacidad & { programacioncontenido?: programacioncontenido[] };
 

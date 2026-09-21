@@ -1,12 +1,6 @@
 // app/api/coordinadores/route.ts
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
-
-declare global {
-  var prisma: PrismaClient | undefined;
-}
-const prisma = global.prisma ?? new PrismaClient();
-if (process.env.NODE_ENV !== "production") global.prisma = prisma;
+import { prisma } from "@/lib/prisma";
 
 export async function GET() {
   try {
