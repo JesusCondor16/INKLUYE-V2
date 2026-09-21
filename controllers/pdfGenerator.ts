@@ -3,6 +3,7 @@
 
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { SyllabusLang, t } from '@/lib/i18n/syllabusLabels';
 
 type Curso = any;
 type Row = string[];
@@ -13,6 +14,7 @@ export async function generarPDF(
   logros: any[] = [],
   capacidades: any[] = [],
   programacion: any[] = [],
+  lang: SyllabusLang = 'es',
   options?: { uploadToServer?: boolean; filename?: string }
 ) {
   // Si recibes solo un ID, intentamos cargar datos desde la API del syllabus
@@ -69,22 +71,22 @@ export async function generarPDF(
   let y = MARGINS.top;
 
   // BLOQUES (orden)
-  y = await renderEncabezado(doc, y, pageWidth, MARGINS);
-  y = renderTitulo(doc, y, pageWidth, MARGINS);
-  y = renderInformacionGeneral(doc, y, curso, MARGINS, pageHeight);
-  y = renderSumilla(doc, y, curso, MARGINS, pageHeight);
-  y = await renderCompetencias(doc, y, curso, MARGINS, pageHeight);
-  y = await renderLogros(doc, y, curso, MARGINS, pageHeight);
-  y = await renderCapacidades(doc, y, curso, MARGINS, pageHeight);
-  y = await renderProgramacion(doc, y, curso, MARGINS, pageHeight); // SECCIÓN 6: Programación de contenidos (tabla)
-  y = await renderEstrategiaDidactica(doc, y, curso, MARGINS, pageHeight); // SECCIÓN 7
-  y = await renderRecursos(doc, y, curso, MARGINS, pageHeight); // SECCIÓN 8
-  y = await renderMatrizEvaluacion(doc, y, curso, MARGINS, pageHeight); // SECCIÓN 9
-  y = await renderBibliografia(doc, y, curso, MARGINS, pageHeight); // SECCIÓN 10
+  y = await renderEncabezado(doc, y, pageWidth, MARGINS, lang);
+  y = renderTitulo(doc, y, pageWidth, MARGINS, lang);
+  y = renderInformacionGeneral(doc, y, curso, MARGINS, pageHeight, lang);
+  y = renderSumilla(doc, y, curso, MARGINS, lang);
+  y = await renderCompetencias(doc, y, curso, MARGINS, pageHeight, lang);
+  y = await renderLogros(doc, y, curso, MARGINS, pageHeight, lang);
+  y = await renderCapacidades(doc, y, curso, MARGINS, pageHeight, lang);
+  y = await renderProgramacion(doc, y, curso, MARGINS, pageHeight, lang); // SECCIÓN 6: Programación de contenidos (tabla)
+  y = await renderEstrategiaDidactica(doc, y, curso, MARGINS, pageHeight, lang); // SECCIÓN 7
+  y = await renderRecursos(doc, y, curso, MARGINS, pageHeight, lang); // SECCIÓN 8
+  y = await renderMatrizEvaluacion(doc, y, curso, MARGINS, pageHeight, lang); // SECCIÓN 9
+  y = await renderBibliografia(doc, y, curso, MARGINS, pageHeight, lang); // SECCIÓN 10
 
   // Nombre por defecto
   const nombreCurso = sanitizeTextForPdf(curso?.name ?? 'Curso');
-  const defaultFilename = `Sílabo - ${nombreCurso}.pdf`;
+  const defaultFilename = `${t(lang, 'filenamePrefix')} - ${nombreCurso}.pdf`;
 
   // Si no se solicita upload, descargamos como antes
   if (!options?.uploadToServer) {
@@ -97,11 +99,12 @@ export async function generarPDF(
     const arrayBuffer = doc.output('arraybuffer');
     const base64 = arrayBufferToBase64(arrayBuffer);
 
-    // Determinar filename en servidor: preferencia options.filename, luego curso.id, luego default sanitized
+    // Determinar filename en servidor: preferencia options.filename, luego curso.id + idioma, luego default sanitized
+    // Se incluye el idioma en el nombre para que ES/EN/ZH no se sobrescriban entre sí en disco.
     const serverFilename =
       options?.filename && typeof options.filename === 'string'
         ? options.filename
-        : (typeof curso === 'object' && (curso.id || curso.courseId)) ? `${curso.id ?? curso.courseId}.pdf` :
+        : (typeof curso === 'object' && (curso.id || curso.courseId)) ? `${curso.id ?? curso.courseId}-${lang}.pdf` :
         `${sanitizeFilename(defaultFilename)}`;
 
     const cursoIdForUpload = (typeof curso === 'object' && (curso.id || curso.courseId)) ? (curso.id ?? curso.courseId) : (typeof curso === 'number' ? curso : null);
@@ -183,7 +186,7 @@ function sanitizeTextForPdf(s: any): string {
    ENCABEZADO / TÍTULO
 ------------------------------ */
 
-async function renderEncabezado(doc: jsPDF, y: number, pageWidth: number, MARGINS: any): Promise<number> {
+async function renderEncabezado(doc: jsPDF, y: number, pageWidth: number, MARGINS: any, lang: SyllabusLang): Promise<number> {
   try {
     const logo = await loadImageAsBase64('/images/logo-unmsm.png');
     const W = 30, H = 30;
@@ -194,27 +197,27 @@ async function renderEncabezado(doc: jsPDF, y: number, pageWidth: number, MARGIN
 
   doc.setFont('times', 'normal');
   doc.setFontSize(12);
-  doc.text('UNIVERSIDAD NACIONAL MAYOR DE SAN MARCOS', pageWidth / 2, y + 6, { align: 'center' });
+  doc.text(t(lang, 'universidad'), pageWidth / 2, y + 6, { align: 'center' });
   y += 8;
 
   doc.setFontSize(10);
-  doc.text('(Universidad del Perú, DECANA DE AMÉRICA)', pageWidth / 2, y + 2, { align: 'center' });
+  doc.text(t(lang, 'universidadSub'), pageWidth / 2, y + 2, { align: 'center' });
   y += 6;
 
   doc.setFontSize(11);
-  doc.text('FACULTAD DE INGENIERÍA DE SISTEMAS E INFORMÁTICA', pageWidth / 2, y + 2, { align: 'center' });
+  doc.text(t(lang, 'facultad'), pageWidth / 2, y + 2, { align: 'center' });
   y += 6;
 
-  doc.text('ESCUELA PROFESIONAL DE INGENIERÍA DE SOFTWARE', pageWidth / 2, y + 2, { align: 'center' });
+  doc.text(t(lang, 'escuela'), pageWidth / 2, y + 2, { align: 'center' });
   y += 12;
 
   return y;
 }
 
-function renderTitulo(doc: jsPDF, y: number, pageWidth: number, MARGINS: any): number {
+function renderTitulo(doc: jsPDF, y: number, pageWidth: number, MARGINS: any, lang: SyllabusLang): number {
   doc.setFont('times', 'bold');
   doc.setFontSize(14);
-  doc.text('SÍLABO', pageWidth / 2, y, { align: 'center' });
+  doc.text(t(lang, 'silabo'), pageWidth / 2, y, { align: 'center' });
   return y + 12;
 }
 
@@ -227,11 +230,12 @@ function renderInformacionGeneral(
   y: number,
   curso: Curso,
   MARGINS: any,
-  pageHeight: number
+  pageHeight: number,
+  lang: SyllabusLang
 ): number {
   doc.setFont('times', 'bold');
   doc.setFontSize(12);
-  doc.text('1. INFORMACIÓN GENERAL', MARGINS.left, y);
+  doc.text(t(lang, 's1Titulo'), MARGINS.left, y);
   y += 9;
 
   const INDENT = MARGINS.left + 10;
@@ -246,27 +250,27 @@ function renderInformacionGeneral(
   const modalidad = curso?.mode ?? curso?.modality ?? '-';
 
   const rows = [
-    { label: '1.1 Nombre de la asignatura', value: sanitizeTextForPdf(curso?.name ?? '-') },
-    { label: '1.2 Código de la asignatura', value: sanitizeTextForPdf(curso?.code ?? '-') },
-    { label: '1.3 Tipo de Asignatura', value: sanitizeTextForPdf(curso?.type ?? '-') },
-    { label: '1.4 Área de Estudios', value: sanitizeTextForPdf(curso?.area ?? '-') },
-    { label: '1.5 Número de semanas', value: sanitizeTextForPdf(String(curso?.weeks ?? '-')) },
-    { label: '1.6 Horas semanales', value: sanitizeTextForPdf(String(horasSem ?? '-')) },
-    { label: '1.7 Semestre Académico', value: sanitizeTextForPdf(curso?.semester ?? '-') },
-    { label: '1.8 Ciclo', value: sanitizeTextForPdf(curso?.cycle ?? '') },
-    { label: '1.9 Créditos', value: sanitizeTextForPdf(String(curso?.credits ?? '-')) },
-    { label: '1.10 Modalidad', value: sanitizeTextForPdf(modalidad) },
+    { label: t(lang, 's1Nombre'), value: sanitizeTextForPdf(curso?.name ?? '-') },
+    { label: t(lang, 's1Codigo'), value: sanitizeTextForPdf(curso?.code ?? '-') },
+    { label: t(lang, 's1Tipo'), value: sanitizeTextForPdf(curso?.type ?? '-') },
+    { label: t(lang, 's1Area'), value: sanitizeTextForPdf(curso?.area ?? '-') },
+    { label: t(lang, 's1Semanas'), value: sanitizeTextForPdf(String(curso?.weeks ?? '-')) },
+    { label: t(lang, 's1Horas'), value: sanitizeTextForPdf(String(horasSem ?? '-')) },
+    { label: t(lang, 's1Semestre'), value: sanitizeTextForPdf(curso?.semester ?? '-') },
+    { label: t(lang, 's1Ciclo'), value: sanitizeTextForPdf(curso?.cycle ?? '') },
+    { label: t(lang, 's1Creditos'), value: sanitizeTextForPdf(String(curso?.credits ?? '-')) },
+    { label: t(lang, 's1Modalidad'), value: sanitizeTextForPdf(modalidad) },
     {
-      label: '1.11 Prerrequisitos',
+      label: t(lang, 's1Prerrequisitos'),
       value: (curso?.prerequisites && curso.prerequisites.length)
         ? sanitizeTextForPdf(curso.prerequisites.map((p: any) => p.code ?? p.name ?? '').join(', '))
-        : 'Ninguno',
+        : t(lang, 'ninguno'),
     },
     {
-      label: '1.12 Docentes',
+      label: t(lang, 's1Docentes'),
       value: (curso?.cursodocente && curso.cursodocente.length)
         ? sanitizeTextForPdf(curso.cursodocente.map((d: any) => d.name ?? d.fullname ?? d.email ?? '').join(', '))
-        : 'No asignados',
+        : t(lang, 'noAsignados'),
     },
   ];
 
@@ -292,10 +296,10 @@ function renderInformacionGeneral(
    SECCIÓN 2 — SUMILLA
 ------------------------------ */
 
-function renderSumilla(doc: jsPDF, y: number, curso: Curso, MARGINS: any): number {
+function renderSumilla(doc: jsPDF, y: number, curso: Curso, MARGINS: any, lang: SyllabusLang): number {
   doc.setFont('times', 'bold');
   doc.setFontSize(12);
-  doc.text('2. SUMILLA:', MARGINS.left, y);
+  doc.text(t(lang, 's2Titulo'), MARGINS.left, y);
   y += 8;
 
   doc.setFont('times', 'normal');
@@ -312,10 +316,10 @@ function renderSumilla(doc: jsPDF, y: number, curso: Curso, MARGINS: any): numbe
    SECCIÓN 3 — COMPETENCIAS
 ------------------------------ */
 
-async function renderCompetencias(doc: jsPDF, y: number, curso: Curso, MARGINS: any, pageHeight: number) {
+async function renderCompetencias(doc: jsPDF, y: number, curso: Curso, MARGINS: any, pageHeight: number, lang: SyllabusLang) {
   doc.setFont('times', 'bold');
   doc.setFontSize(12);
-  doc.text('3. COMPETENCIAS', MARGINS.left, y);
+  doc.text(t(lang, 's3Titulo'), MARGINS.left, y);
   y += 8;
 
   const pageWidth = doc.internal.pageSize.getWidth();
@@ -324,7 +328,7 @@ async function renderCompetencias(doc: jsPDF, y: number, curso: Curso, MARGINS: 
   const competencias = Array.isArray(curso?.competencias) ? curso.competencias : [];
 
   if (!competencias.length) {
-    const noData = 'No hay competencias registradas para este curso.';
+    const noData = t(lang, 's3Vacio');
     const wrapped = doc.splitTextToSize(noData, contentWidth - 10);
     if (y + wrapped.length * 6 > pageHeight - MARGINS.bottom) {
       y = addFooterAndNewPage(doc, MARGINS);
@@ -343,7 +347,7 @@ async function renderCompetencias(doc: jsPDF, y: number, curso: Curso, MARGINS: 
 
   autoTable(doc as any, {
     startY: y,
-    head: [['Código', 'Descripción', 'Tipo', 'Nivel']],
+    head: [[t(lang, 's3ColCodigo'), t(lang, 's3ColDescripcion'), t(lang, 's3ColTipo'), t(lang, 's3ColNivel')]],
     body,
     margin: { left: MARGINS.left, right: MARGINS.right },
     styles: { font: 'times', fontSize: 10, cellPadding: 3 },
@@ -374,17 +378,18 @@ async function renderLogros(
   y: number,
   curso: Curso,
   MARGINS: any,
-  pageHeight: number
+  pageHeight: number,
+  lang: SyllabusLang
 ) {
   doc.setFont('times', 'bold');
   doc.setFontSize(12);
-  doc.text('4. LOGROS DE APRENDIZAJE', MARGINS.left, y);
+  doc.text(t(lang, 's4Titulo'), MARGINS.left, y);
   y += 8;
 
   doc.setFont('times', 'normal');
   doc.setFontSize(10);
 
-  const frase = 'Al finalizar la asignatura, el estudiante:';
+  const frase = t(lang, 's4Frase');
   const pageWidth = doc.internal.pageSize.getWidth();
   const contentWidth = pageWidth - MARGINS.left - MARGINS.right;
   const fraseLines = doc.splitTextToSize(frase, contentWidth);
@@ -405,7 +410,7 @@ async function renderLogros(
   const indent = 5;
 
   if (!logros.length) {
-    const noData = 'No hay logros registrados para este curso.';
+    const noData = t(lang, 's4Vacio');
     const wrapped = doc.splitTextToSize(noData, contentWidth - indent);
     if (y + wrapped.length * lineHeight > pageHeight - MARGINS.bottom) {
       y = addFooterAndNewPage(doc, MARGINS);
@@ -449,11 +454,12 @@ async function renderCapacidades(
   y: number,
   curso: any,
   MARGINS: any,
-  pageHeight: number
+  pageHeight: number,
+  lang: SyllabusLang
 ) {
   doc.setFont('times', 'bold');
   doc.setFontSize(12);
-  doc.text('5. CAPACIDADES (Logros por unidad)', MARGINS.left, y);
+  doc.text(t(lang, 's5Titulo'), MARGINS.left, y);
   y += 8;
 
   doc.setFont('times', 'normal');
@@ -476,7 +482,7 @@ async function renderCapacidades(
   const contentWidth = pageWidth - MARGINS.left - MARGINS.right;
 
   if (!capacidades.length) {
-    const noData = 'No hay capacidades registradas para este curso.';
+    const noData = t(lang, 's5Vacio');
     const wrapped = doc.splitTextToSize(noData, contentWidth - indent);
     if (y + wrapped.length * lineHeight > pageHeight - MARGINS.bottom) {
       y = addFooterAndNewPage(doc, MARGINS);
@@ -552,11 +558,12 @@ async function renderProgramacion(
   y: number,
   curso: any,
   MARGINS: any,
-  pageHeight: number
+  pageHeight: number,
+  lang: SyllabusLang
 ) {
   doc.setFont('times', 'bold');
   doc.setFontSize(12);
-  doc.text('6. PROGRAMACIÓN DE CONTENIDOS', MARGINS.left, y);
+  doc.text(t(lang, 's6Titulo'), MARGINS.left, y);
   y += 8;
 
   doc.setFont('times', 'normal');
@@ -570,7 +577,7 @@ async function renderProgramacion(
   else rowsSource = [];
 
   if (!rowsSource.length) {
-    const noData = 'No hay programación de contenidos registrada para este curso.';
+    const noData = t(lang, 's6Vacio');
     const wrapped = doc.splitTextToSize(noData, doc.internal.pageSize.getWidth() - MARGINS.left - MARGINS.right - 10);
     if (y + wrapped.length * 6 > pageHeight - MARGINS.bottom) {
       y = addFooterAndNewPage(doc, MARGINS);
@@ -630,7 +637,7 @@ async function renderProgramacion(
 
   autoTable(doc as any, {
     startY: y,
-    head: [['Sesión', 'Contenido', 'Actividades', 'Recursos', 'Estrategias']],
+    head: [[t(lang, 's6ColSesion'), t(lang, 's6ColContenido'), t(lang, 's6ColActividades'), t(lang, 's6ColRecursos'), t(lang, 's6ColEstrategias')]],
     body,
     margin: { left: MARGINS.left, right: MARGINS.right },
     styles: { font: 'times', fontSize: 9, cellPadding: 3 },
@@ -665,11 +672,12 @@ async function renderEstrategiaDidactica(
   y: number,
   curso: any,
   MARGINS: any,
-  pageHeight: number
+  pageHeight: number,
+  lang: SyllabusLang
 ) {
   doc.setFont('times', 'bold');
   doc.setFontSize(12);
-  doc.text('7. ESTRATEGIA DIDÁCTICA', MARGINS.left, y);
+  doc.text(t(lang, 's7Titulo'), MARGINS.left, y);
   y += 8;
 
   doc.setFont('times', 'normal');
@@ -710,7 +718,7 @@ async function renderEstrategiaDidactica(
   };
 
   if (!estrategias.length) {
-    const noData = 'No hay estrategias didácticas registradas para este curso.';
+    const noData = t(lang, 's7Vacio');
     const wrapped = doc.splitTextToSize(noData, contentWidth - indent);
     if (y + wrapped.length * lineHeight > pageHeight - MARGINS.bottom) {
       y = addFooterAndNewPage(doc, MARGINS);
@@ -771,11 +779,12 @@ async function renderRecursos(
   y: number,
   curso: any,
   MARGINS: any,
-  pageHeight: number
+  pageHeight: number,
+  lang: SyllabusLang
 ) {
   doc.setFont('times', 'bold');
   doc.setFontSize(12);
-  doc.text('8. RECURSOS', MARGINS.left, y);
+  doc.text(t(lang, 's8Titulo'), MARGINS.left, y);
   y += 4;
 
   doc.setFont('times', 'normal');
@@ -816,7 +825,7 @@ async function renderRecursos(
   };
 
   if (!recursos.length) {
-    const noData = 'No hay recursos registrados para este curso.';
+    const noData = t(lang, 's8Vacio');
     const wrapped = doc.splitTextToSize(noData, contentWidth - indent);
     if (y + wrapped.length * lineHeight > pageHeight - MARGINS.bottom) {
       y = addFooterAndNewPage(doc, MARGINS);
@@ -877,11 +886,12 @@ async function renderMatrizEvaluacion(
   y: number,
   curso: any,
   MARGINS: any,
-  pageHeight: number
+  pageHeight: number,
+  lang: SyllabusLang
 ) {
   doc.setFont('times', 'bold');
   doc.setFontSize(12);
-  doc.text('9. MATRIZ DE EVALUACIÓN', MARGINS.left, y);
+  doc.text(t(lang, 's9Titulo'), MARGINS.left, y);
   y += 6;
 
   const matriz =
@@ -892,7 +902,7 @@ async function renderMatrizEvaluacion(
       : [];
 
   if (!matriz.length) {
-    const noData = 'No hay registros de evaluación para este curso.';
+    const noData = t(lang, 's9Vacio');
     const wrapped = doc.splitTextToSize(noData, doc.internal.pageSize.getWidth() - MARGINS.left - MARGINS.right);
     doc.setFont('times', 'normal');
     doc.setFontSize(10);
@@ -916,12 +926,12 @@ async function renderMatrizEvaluacion(
   });
 
   const head = [[
-    'Unidad de aprendizaje',
-    'Criterios y logros de aprendizaje',
-    'Procedimientos (Producto)',
-    'Instrumento de Evaluación',
-    'Peso (%)',
-    'SUM'
+    t(lang, 's9ColUnidad'),
+    t(lang, 's9ColCriterios'),
+    t(lang, 's9ColProducto'),
+    t(lang, 's9ColInstrumento'),
+    t(lang, 's9ColPeso'),
+    t(lang, 's9ColSum'),
   ]];
 
   autoTable(doc, {
@@ -950,7 +960,7 @@ async function renderMatrizEvaluacion(
     },
     margin: { left: MARGINS.left, right: MARGINS.right },
     didDrawPage: function (data) {
-      y = data.cursor.y + 4;
+      if (data.cursor) y = data.cursor.y + 4;
     }
   });
 
@@ -968,11 +978,12 @@ async function renderBibliografia(
   y: number,
   curso: any,
   MARGINS: any,
-  pageHeight: number
+  pageHeight: number,
+  lang: SyllabusLang
 ) {
   doc.setFont('times', 'bold');
   doc.setFontSize(12);
-  doc.text('10. BIBLIOGRAFÍA', MARGINS.left, y + 15);
+  doc.text(t(lang, 's10Titulo'), MARGINS.left, y + 15);
   y += 20;
 
   doc.setFont('times', 'normal');
@@ -1003,7 +1014,7 @@ async function renderBibliografia(
   };
 
   if (!bibliografias.length) {
-    const noData = 'No hay bibliografía registrada para este curso.';
+    const noData = t(lang, 's10Vacio');
     const wrapped = doc.splitTextToSize(noData, doc.internal.pageSize.getWidth() - MARGINS.left - MARGINS.right);
     if (y + wrapped.length * 6 > pageHeight - MARGINS.bottom) {
       y = addFooterAndNewPage(doc, MARGINS);

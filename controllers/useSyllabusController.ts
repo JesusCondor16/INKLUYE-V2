@@ -2,6 +2,7 @@
 'use client';
 import { useState, useCallback } from 'react';
 import { generarPDF } from './pdfGenerator'; // ajustar ruta si hace falta
+import { SyllabusLang } from '@/lib/i18n/syllabusLabels';
 
 interface Capacidad {
   id: number;
@@ -61,9 +62,107 @@ interface Curso {
 }
 
 /**
+ * Llama a /api/translate para traducir un lote de textos.
+ * Lanza un error con .code = 'NOT_CONFIGURED' si la API key todavía no está puesta en el servidor.
+ */
+async function traducirTextos(texts: string[], targetLang: 'en' | 'zh'): Promise<string[]> {
+  const res = await fetch('/api/translate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ texts, targetLang }),
+  });
+
+  if (res.status === 503) {
+    const err: any = new Error('Traducción no configurada');
+    err.code = 'NOT_CONFIGURED';
+    throw err;
+  }
+
+  if (!res.ok) {
+    throw new Error(`Error al traducir (HTTP ${res.status})`);
+  }
+
+  const json = await res.json();
+  return (json.translated as string[]) ?? [];
+}
+
+/**
+ * Junta todo el texto libre traducible del curso en un solo lote (una sola llamada a la API),
+ * y reconstruye copias traducidas de curso/capacidades/programacion en el mismo orden en que se enviaron.
+ * Los identificadores (nombre de curso, código, nombres de docentes) NO se traducen a propósito.
+ */
+async function construirCursoTraducido(
+  curso: Curso,
+  capacidades: Capacidad[],
+  programacion: Programacion[],
+  estrategias: Estrategia[],
+  targetLang: 'en' | 'zh'
+) {
+  const competencias = curso.competencias ?? [];
+  const logros = curso.logros ?? (curso as any).logro ?? [];
+  const recursos = curso.recursos ?? [];
+  const bibliografia = curso.bibliografia ?? [];
+
+  const textos: string[] = [];
+  textos.push(curso.sumilla ?? '');
+  for (const c of competencias) textos.push(c.descripcion ?? '');
+  for (const l of logros) textos.push(l.descripcion ?? '');
+  for (const c of capacidades) textos.push(c.descripcion ?? '');
+  for (const p of programacion) {
+    textos.push(p.contenido ?? '');
+    textos.push(p.actividades ?? '');
+    textos.push(p.recursos ?? '');
+  }
+  for (const e of estrategias) textos.push(e.texto ?? '');
+  for (const r of recursos) textos.push((r as any).descripcion ?? '');
+  for (const b of bibliografia) textos.push((b as any).texto ?? '');
+
+  const traducidos = await traducirTextos(textos, targetLang);
+  let i = 0;
+  const next = () => traducidos[i++] ?? '';
+
+  const sumillaTraducida = next();
+  const competenciasTraducidas = competencias.map((c: any) => ({ ...c, descripcion: next() }));
+  const logrosTraducidos = logros.map((l: any) => ({ ...l, descripcion: next() }));
+  const capacidadesTraducidas = capacidades.map((c) => ({ ...c, descripcion: next() }));
+  const programacionTraducida = programacion.map((p) => ({
+    ...p,
+    contenido: next(),
+    actividades: next(),
+    recursos: next(),
+  }));
+  const estrategiasTraducidas = estrategias.map((e) => ({ ...e, texto: next() }));
+  const recursosTraducidos = recursos.map((r: any) => ({ ...r, descripcion: next() }));
+  const bibliografiaTraducida = bibliografia.map((b: any) => ({ ...b, texto: next() }));
+
+  const cursoTraducido: Curso = {
+    ...curso,
+    sumilla: sumillaTraducida,
+    competencias: competenciasTraducidas,
+    logros: logrosTraducidos,
+    capacidad: capacidadesTraducidas,
+    capacidades: capacidadesTraducidas,
+    programacion: programacionTraducida,
+    programacioncontenido: programacionTraducida,
+    estrategias: estrategiasTraducidas,
+    estrategiasdidacticas: estrategiasTraducidas,
+    recursos: recursosTraducidos,
+    bibliografia: bibliografiaTraducida,
+  };
+  (cursoTraducido as any).logro = logrosTraducidos;
+
+  return {
+    curso: cursoTraducido,
+    capacidades: capacidadesTraducidas,
+    programacion: programacionTraducida,
+  };
+}
+
+/**
  * useSyllabusController
  * - loadCurso(cursoId) carga datos desde /api/cursos/:id/generarSyllabus
- * - generarPDF usa generarPDF(...) pasando capacidades, programacion y estrategias explícitamente
+ * - generarPDF(lang) traduce (si lang !== 'es') y genera el PDF, subiéndolo al servidor
  */
 export function useSyllabusController() {
   const [curso, setCurso] = useState<Curso | null>(null);
@@ -170,23 +269,44 @@ export function useSyllabusController() {
   // ======================================================
   // GENERAR PDF (USANDO generarPDF)
   // ======================================================
-  const generarPDFController = useCallback(async () => {
+  const generarPDFController = useCallback(async (lang: SyllabusLang = 'es') => {
     if (!curso) return;
     setGenerating(true);
     setError(null);
 
     try {
-      const capacidades = curso.capacidad ?? curso.capacidades ?? [];
-      const programacion = curso.programacion ?? curso.programacioncontenido ?? [];
+      let capacidades = curso.capacidad ?? curso.capacidades ?? [];
+      let programacion = curso.programacion ?? curso.programacioncontenido ?? [];
       const estrategias = curso.estrategias ?? curso.estrategiasdidacticas ?? [];
+
+      let cursoParaPdf: Curso = curso;
+      let langFinal: SyllabusLang = lang;
+
+      if (lang !== 'es') {
+        try {
+          const traducido = await construirCursoTraducido(curso, capacidades, programacion, estrategias, lang);
+          cursoParaPdf = traducido.curso;
+          capacidades = traducido.capacidades;
+          programacion = traducido.programacion;
+        } catch (err: any) {
+          if (err?.code === 'NOT_CONFIGURED') {
+            alert('La traducción automática todavía no está configurada (falta la API key). Se generará el syllabus en español.');
+          } else {
+            console.error('Error traduciendo syllabus:', err);
+            alert('No se pudo traducir el syllabus. Se generará en español.');
+          }
+          cursoParaPdf = curso;
+          langFinal = 'es';
+        }
+      }
 
       // Depuración antes de generar
       // eslint-disable-next-line no-console
-      console.log('generarPDFController - curso.id:', curso.id);
+      console.log('generarPDFController - curso.id:', cursoParaPdf.id, '| lang:', langFinal);
       // eslint-disable-next-line no-console
-      console.log('generarPDFController - competencias:', (curso.competencias ?? []).length);
+      console.log('generarPDFController - competencias:', (cursoParaPdf.competencias ?? []).length);
       // eslint-disable-next-line no-console
-      console.log('generarPDFController - logros:', (curso.logros ?? curso.logro ?? []).length);
+      console.log('generarPDFController - logros:', (cursoParaPdf.logros ?? (cursoParaPdf as any).logro ?? []).length);
       // eslint-disable-next-line no-console
       console.log('generarPDFController - capacidades:', capacidades.length);
       // eslint-disable-next-line no-console
@@ -194,15 +314,14 @@ export function useSyllabusController() {
       // eslint-disable-next-line no-console
       console.log('generarPDFController - estrategias:', estrategias.length);
 
-      // Llamada al generador: le pasamos programacion como 5º argumento y estrategias como 6º
-      // Nota: asegúrate de actualizar la firma de generarPDF si actualmente no acepta este argumento.
-      await generarPDF(
-        curso,
-        curso.competencias ?? [],
-        curso.logros ?? curso.logro ?? [],
+      return await generarPDF(
+        cursoParaPdf,
+        cursoParaPdf.competencias ?? [],
+        cursoParaPdf.logros ?? (cursoParaPdf as any).logro ?? [],
         capacidades,
         programacion,
-        estrategias,
+        langFinal,
+        { uploadToServer: true },
       );
     } catch (err: any) {
       console.error('Error generando PDF:', err);

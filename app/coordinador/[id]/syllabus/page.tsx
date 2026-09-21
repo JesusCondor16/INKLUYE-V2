@@ -25,24 +25,16 @@ export default function SyllabusCursoPage() {
 
   // Handler que llama a generarPDF y notifica a otras pestañas (BroadcastChannel + localStorage fallback)
   const handleGenerarYNotificar = useCallback(
-    async (lang: "es" | "en") => {
+    async (lang: "es" | "en" | "zh") => {
       if (!cursoId || isNaN(cursoId)) {
         alert("ID de curso inválido");
         return;
       }
 
       try {
-        const result = await generarPDF(lang);
+         const result = await generarPDF(lang);
 
-        const pdfUrl = result?.pdfUrl ?? null;
-        if (pdfUrl) {
-          try {
-            window.open(pdfUrl, "_blank");
-          } catch (_e) {
-            // si no se pudo abrir, no rompe todo
-            console.warn("No se pudo abrir PDF automáticamente:", _e);
-          }
-        }
+        const pdfUrl = result?.url ?? null;
 
         if (typeof window !== "undefined") {
           try {
@@ -151,6 +143,14 @@ export default function SyllabusCursoPage() {
           >
             {generating ? "Generando..." : "🌍 Generar y Abrir Syllabus (EN)"}
           </button>
+
+          <button
+            className={`${styles.btn} btn-outline-secondary`}
+            onClick={() => handleGenerarYNotificar("zh")}
+            disabled={generating || !curso}
+          >
+            {generating ? "Generando..." : "🇨🇳 Generar y Abrir Syllabus (ZH)"}
+          </button>
         </div>
 
         {modal.s1 && (
@@ -162,23 +162,18 @@ export default function SyllabusCursoPage() {
         )}
         {modal.s2 && (
           <ModalSeccion2
-            show={modal.s2}
             onClose={() => setModal({ ...modal, s2: false })}
             cursoId={cursoId}
           />
         )}
         {modal.s3 && (
           <ModalSeccion3
-            show={modal.s3}
             onClose={() => setModal({ ...modal, s3: false })}
-            cursoId={cursoId}
           />
         )}
         {modal.s4 && (
           <ModalSeccion4
-            show={modal.s4}
             onClose={() => setModal({ ...modal, s4: false })}
-            cursoId={cursoId}
           />
         )}
       </main>
