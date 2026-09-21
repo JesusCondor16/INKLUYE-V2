@@ -1,22 +1,40 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { userController } from '@/controllers/userController';
+import { userHistoryController } from '@/controllers/userHistoryController';
+import { obtenerUsuarioDesdeTokenServer, requiereRol } from '@/lib/authServer';
 
-export async function GET(_req: NextRequest, context: { params: Promise<{ id: string }> }) {
+export async function GET(
+  req: NextRequest,
+  context: { params: Promise<{ id: string }> }
+) {
+
   try {
-    // Resolver el id desde la promesa
+
+    const usuario = obtenerUsuarioDesdeTokenServer(req);
+    if (!usuario) {
+      return NextResponse.json({ error: 'Usuario no autenticado' }, { status: 401 });
+    }
+    if (!requiereRol(usuario, 'director')) {
+      return NextResponse.json({ error: 'No autorizado' }, { status: 403 });
+    }
+
     const { id: idStr } = await context.params;
 
     const id = Number(idStr);
+
     if (!Number.isFinite(id) || id <= 0) {
-      return NextResponse.json({ error: 'ID inválido' }, { status: 400 });
+      return NextResponse.json([], { status: 200 });
     }
 
-    // Llamamos al controlador
-    const history = await userController.getHistory(id);
+    const history = await userHistoryController.getHistory(id);
 
-    return NextResponse.json(history, { status: 200 });
-  } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : String(err);
-    return NextResponse.json({ error: message || 'ID inválido' }, { status: 400 });
+    return NextResponse.json(history ?? [], { status: 200 });
+
+  } catch (error) {
+
+    console.error("Error obteniendo historial:", error);
+
+    return NextResponse.json([], { status: 200 });
+
   }
+
 }

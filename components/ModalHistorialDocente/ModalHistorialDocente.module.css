@@ -1,67 +1,129 @@
 .modalBackdrop {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 1050;
+  inset: 0;
+  background: rgba(0,0,0,0.72);
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
+  z-index: 2000;
 }
 
 .modalContent {
-  background-color: #fff;
-  border-radius: 8px;
-  overflow: hidden;
-  width: 90%;
-  max-width: 800px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  background: #ffffff;
+  width: 92%;
+  max-width: 960px;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.35);
+  display: flex;
+  flex-direction: column;
+  outline: none;
 }
 
 .modalHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem;
-  background-color: #003366;
-  color: #fff;
+  padding: 1.4rem 1.6rem;
+  background: #002f5b;
+  color: #ffffff;
 }
 
 .modalTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
   margin: 0;
-  font-weight: bold;
+}
+
+.closeButton {
+  border: none;
+  background: transparent;
+  color: #ffffff;
+  font-size: 1.4rem;
+  cursor: pointer;
+}
+
+.closeButton:focus {
+  outline: 3px solid #ffd54d;
+  outline-offset: 2px;
 }
 
 .modalBody {
-  padding: 1rem;
+  padding: 1.6rem;
   max-height: 60vh;
   overflow-y: auto;
 }
 
-.tableHeader {
-  background-color: #f8f9fa;
-  color: #212529;
+.tableContainer {
+  overflow-x: auto;
+}
+
+.historyTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.historyTable th {
+  background: #f1f5f9;
+  color: #0f172a;
+  font-weight: 700;
+  text-align: left;
+  padding: 0.8rem;
+  border-bottom: 2px solid #cbd5e1;
+}
+
+.historyTable td {
+  padding: 0.8rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.historyTable tr:hover {
+  background: #f8fafc;
 }
 
 .modalFooter {
   display: flex;
   justify-content: flex-end;
-  padding: 1rem;
-  gap: 0.5rem;
+  padding: 1.2rem 1.6rem;
+  border-top: 1px solid #e2e8f0;
 }
 
-.btnClose {
-  background-color: #6c757d;
-  color: #fff;
+.primaryButton {
+  background: #003366;
+  color: white;
   border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  font-weight: bold;
+  padding: 0.65rem 1.4rem;
+  border-radius: 6px;
+  font-weight: 600;
   cursor: pointer;
 }
 
-.btnClose:hover {
-  background-color: #565e64;
+.primaryButton:hover {
+  background: #004c99;
+}
+
+.primaryButton:focus {
+  outline: 3px solid #ffd54d;
+  outline-offset: 2px;
+}
+
+.statusText {
+  color: #1e293b;
+  font-size: 0.95rem;
+}
+
+.errorText {
+  color: #b91c1c;
+  font-weight: 600;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  border: 0;
+  clip: rect(0,0,0,0);
 }
