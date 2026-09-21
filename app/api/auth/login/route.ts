@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { authController } from "@/controllers/authController";
+import { AuthError } from "@/services/authService";
 
 export async function POST(request: Request) {
   try {
@@ -23,24 +24,29 @@ export async function POST(request: Request) {
       );
     }
 
-    // ✅ Crear respuesta
     const res = NextResponse.json({
       ok: true,
       message: "Autenticación exitosa",
-      token: result.token, // opcional mantenerlo en JSON si quieres
+      token: result.token,
     });
 
-    // ✅ Guardar token en cookie HTTP-only para server-side
     res.cookies.set("token", result.token, {
       httpOnly: true,
       path: "/",
-      maxAge: 2 * 60 * 60, // 2 horas
+      maxAge: 2 * 60 * 60,
       sameSite: "lax",
       secure: process.env.NODE_ENV === "production",
     });
 
     return res;
   } catch (error) {
+    if (error instanceof AuthError) {
+      return NextResponse.json(
+        { message: error.publicMessage },
+        { status: 401 }
+      );
+    }
+
     console.error("❌ Error en /api/auth/login:", error);
     return NextResponse.json(
       { message: "Error interno del servidor" },

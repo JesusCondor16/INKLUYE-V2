@@ -1,6 +1,6 @@
 // lib/authServer.ts
-import jwtDecode from 'jwt-decode';
 import { NextRequest } from 'next/server';
+import { verifyToken } from './jwt';
 
 export interface CustomJwtPayload {
   id: number;
@@ -10,23 +10,33 @@ export interface CustomJwtPayload {
   exp?: number;
 }
 
+function esCustomJwtPayload(decoded: unknown): decoded is CustomJwtPayload {
+  return (
+    typeof decoded === 'object' &&
+    decoded !== null &&
+    'id' in decoded
+  );
+}
+
 export function obtenerUsuarioDesdeTokenServer(req: NextRequest): CustomJwtPayload | null {
   try {
-    // 1️⃣ Obtener token desde la cookie 'token'
     const token = req.cookies.get('token')?.value;
 
     if (!token) {
-      console.warn("⚠️ No se recibió token o no se pudo decodificar");
+      console.warn("⚠️ No se recibió token");
       return null;
     }
 
-    // 2️⃣ Decodificar token
-    const decoded = jwtDecode<CustomJwtPayload>(token);
+    const decoded = verifyToken(token);
 
-    // ✅ Retornar usuario decodificado
+    if (!decoded || !esCustomJwtPayload(decoded)) {
+      console.warn("⚠️ Token inválido, expirado o con formato inesperado");
+      return null;
+    }
+
     return decoded;
   } catch (error) {
-    console.error('❌ Error al decodificar token en server:', error);
+    console.error('❌ Error al verificar token en server:', error);
     return null;
   }
 }
