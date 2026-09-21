@@ -19,7 +19,8 @@
     "incremental": true,
     "types": [
       "node",
-      "react"
+      "react",
+      "jest"
     ],
     "plugins": [
       {
