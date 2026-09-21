@@ -22,7 +22,7 @@ async function main() {
       email: "lpro1@unmsm.edu.pe",
       password: "123456",
       role: "docente",
-    },
+    },  
     {
       name: "Sergio Quiroz",
       email: "sergioq1@unmsm.edu.pe",
