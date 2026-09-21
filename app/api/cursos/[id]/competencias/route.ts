@@ -1,7 +1,8 @@
 // app/api/cursos/[id]/competencias/route.ts
-import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma"; // ajusta la ruta si tu prisma helper está en otro lugar
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
+import { obtenerUsuarioDesdeTokenServer, esCoordinadorDelCurso } from "@/lib/authServer";
 
 type CompetenciaInput = {
   codigo: string;
@@ -18,7 +19,7 @@ type LogroInput = {
   nivel?: string;
 };
 
-// ✅ GET corregido
+// GET
 export async function GET(_request: Request, context: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await context.params;
@@ -67,13 +68,21 @@ export async function GET(_request: Request, context: { params: Promise<{ id: st
   }
 }
 
-// ✅ POST corregido (sin cambios, ya estaba correcto)
-export async function POST(request: Request, context: { params: Promise<{ id: string }> }) {
+// POST
+export async function POST(request: NextRequest, context: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await context.params;
     if (!id) return NextResponse.json({ error: "ID no proporcionado" }, { status: 400 });
     const cursoId = parseInt(id, 10);
     if (Number.isNaN(cursoId)) return NextResponse.json({ error: "ID inválido" }, { status: 400 });
+
+    const usuario = obtenerUsuarioDesdeTokenServer(request);
+    if (!usuario) {
+      return NextResponse.json({ error: "Usuario no autenticado" }, { status: 401 });
+    }
+    if (!(await esCoordinadorDelCurso(usuario, cursoId))) {
+      return NextResponse.json({ error: "No autorizado" }, { status: 403 });
+    }
 
     const data = (await request.json().catch(() => null)) as
       | { competencias?: CompetenciaInput[]; logros?: LogroInput[] }

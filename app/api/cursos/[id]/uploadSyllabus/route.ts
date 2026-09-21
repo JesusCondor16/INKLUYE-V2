@@ -1,8 +1,9 @@
 // app/api/cursos/[id]/uploadSyllabus/route.ts
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
-import prisma from "@/lib/prisma"; // Ajusta si tu prisma está en otra ruta
+import prisma from "@/lib/prisma";
+import { obtenerUsuarioDesdeTokenServer, esCoordinadorDelCurso } from "@/lib/authServer";
 
 type Params = { id?: string };
 
@@ -11,7 +12,7 @@ interface UploadSyllabusBody {
   data: string; // base64
 }
 
-export async function POST(req: Request, context: { params: Params | Promise<Params> }) {
+export async function POST(req: NextRequest, context: { params: Params | Promise<Params> }) {
   try {
     const { id: idStr } = await context.params;
     if (!idStr) {
@@ -21,6 +22,14 @@ export async function POST(req: Request, context: { params: Params | Promise<Par
     const courseId = parseInt(idStr, 10);
     if (Number.isNaN(courseId)) {
       return NextResponse.json({ success: false, error: "ID inválido" }, { status: 400 });
+    }
+
+    const usuario = obtenerUsuarioDesdeTokenServer(req);
+    if (!usuario) {
+      return NextResponse.json({ success: false, error: "Usuario no autenticado" }, { status: 401 });
+    }
+    if (!(await esCoordinadorDelCurso(usuario, courseId))) {
+      return NextResponse.json({ success: false, error: "No autorizado" }, { status: 403 });
     }
 
     // leer body

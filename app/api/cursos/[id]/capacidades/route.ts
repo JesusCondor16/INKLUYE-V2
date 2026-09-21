@@ -1,6 +1,7 @@
 // app/api/cursos/[id]/capacidades/route.ts
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient, capacidad, programacioncontenido, Prisma } from "@prisma/client";
+import { obtenerUsuarioDesdeTokenServer, esCoordinadorDelCurso } from "@/lib/authServer";
 
 declare global {
   var prisma: PrismaClient | undefined;
@@ -31,7 +32,7 @@ function mapCapacidad(cap: CapacidadConProgramacion) {
   };
 }
 
-// ✅ GET
+// GET
 export async function GET(_req: Request, context: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await context.params;
@@ -53,13 +54,21 @@ export async function GET(_req: Request, context: { params: Promise<{ id: string
   }
 }
 
-// ✅ POST
-export async function POST(req: Request, context: { params: Promise<{ id: string }> }) {
+// POST
+export async function POST(req: NextRequest, context: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await context.params;
     if (!id) return NextResponse.json({ error: "ID de curso no proporcionado" }, { status: 400 });
     const cursoId = parseInt(id, 10);
     if (isNaN(cursoId)) return NextResponse.json({ error: "ID inválido" }, { status: 400 });
+
+    const usuario = obtenerUsuarioDesdeTokenServer(req);
+    if (!usuario) {
+      return NextResponse.json({ error: "Usuario no autenticado" }, { status: 401 });
+    }
+    if (!(await esCoordinadorDelCurso(usuario, cursoId))) {
+      return NextResponse.json({ error: "No autorizado" }, { status: 403 });
+    }
 
     const body = await req.json();
     if (!Array.isArray(body)) {
@@ -95,7 +104,6 @@ export async function POST(req: Request, context: { params: Promise<{ id: string
       };
     });
 
-    // ❌ Ya no tipamos manualmente $transaction, TS infiere todo
     const ops = [
       prisma.capacidad.deleteMany({ where: { cursoId } }),
       ...unidades.map((u) =>

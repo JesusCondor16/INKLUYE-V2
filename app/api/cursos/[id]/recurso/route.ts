@@ -1,5 +1,6 @@
-import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma"; // ajusta la ruta si tu prisma helper está en otro lugar
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { obtenerUsuarioDesdeTokenServer, esCoordinadorDelCurso } from "@/lib/authServer";
 
 interface BibliografiaInput {
   texto: string;
@@ -64,7 +65,7 @@ export async function GET(_req: Request, context: { params: Promise<{ id: string
 }
 
 // PUT: actualizar la bibliografía del curso
-export async function PUT(_req: Request, context: { params: Promise<{ id: string }> }) {
+export async function PUT(req: NextRequest, context: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await context.params;
     const courseId = parseInt(id, 10);
@@ -72,7 +73,15 @@ export async function PUT(_req: Request, context: { params: Promise<{ id: string
       return NextResponse.json({ error: "ID de curso inválido" }, { status: 400 });
     }
 
-    const body = (await _req.json()) as { bibliografia: BibliografiaInput[] };
+    const usuario = obtenerUsuarioDesdeTokenServer(req);
+    if (!usuario) {
+      return NextResponse.json({ error: "Usuario no autenticado" }, { status: 401 });
+    }
+    if (!(await esCoordinadorDelCurso(usuario, courseId))) {
+      return NextResponse.json({ error: "No autorizado" }, { status: 403 });
+    }
+
+    const body = (await req.json()) as { bibliografia: BibliografiaInput[] };
     if (!Array.isArray(body.bibliografia)) {
       return NextResponse.json({ error: "bibliografia debe ser un array" }, { status: 400 });
     }

@@ -1,49 +1,48 @@
 'use server';
 
-import { NextResponse } from 'next/server';
-import { PrismaClient, course, cursodocente, logro, user, prerequisite } from '@prisma/client';
+import { NextRequest, NextResponse } from 'next/server';
+import { PrismaClient } from '@prisma/client';
+import { obtenerUsuarioDesdeTokenServer, esCoordinadorDelCurso } from '@/lib/authServer';
 
-/* prisma singleton (dev hot reload protection) */
-declare global {
-  var prisma: PrismaClient | undefined;
-}
-const prisma = global.prisma ?? new PrismaClient();
-if (process.env.NODE_ENV !== 'production') global.prisma = prisma;
+const prisma =
+  globalThis.prisma ??
+  new PrismaClient();
 
-/* Interfaces para tipar correctamente */
-interface CursoDocenteWithUser extends cursodocente {
-  user: Pick<user, 'id' | 'name' | 'email' | 'role'> | null;
+if (process.env.NODE_ENV !== 'production') {
+  (globalThis as any).prisma = prisma;
 }
 
-interface CursoFull extends course {
-  user: Pick<user, 'id' | 'name' | 'email' | 'role'> | null;
-  cursodocente: CursoDocenteWithUser[];
-  logro: logro[];
-  prerequisite_prerequisite_courseIdTocourse: prerequisite[];
-}
+function mapCursoResponse(c: any) {
 
-interface LogroInput {
-  codigo?: string;
-  descripcion?: string;
-  tipo?: string;
-  nivel?: string;
-}
+  const coordinador =
+    c.user?.role === 'coordinador'
+      ? {
+          id: c.user.id,
+          name: c.user.name,
+          email: c.user.email,
+          role: c.user.role
+        }
+      : null;
 
-/* mapCursoResponse con tipado fuerte y filtrado de roles */
-function mapCursoResponse(c: CursoFull) {
-  // Solo docentes con role 'docente'
-  const cursoDocentes = c.cursodocente
-    .filter(cd => cd.user?.role === 'docente')
-    .map(cd => ({
-      user: cd.user ? { id: cd.user.id, name: cd.user.name, email: cd.user.email } : { id: cd.userId, name: '', email: '' },
-    }));
+  const cursoDocentes =
+    (c.cursodocente ?? [])
+      .filter((cd: any) => cd.user?.role === 'docente')
+      .map((cd: any) => ({
+        user: {
+          id: cd.user.id,
+          name: cd.user.name,
+          email: cd.user.email,
+          role: cd.user.role
+        }
+      }));
 
-  const docentesSimple = cursoDocentes.map(cd => cd.user);
-
-  // Solo coordinador con role 'coordinador'
-  const coordinador = c.user?.role === 'coordinador' ? { id: c.user.id, name: c.user.name, email: c.user.email } : null;
+  const docentesSimple =
+    (c.cursodocente ?? [])
+      .map((cd: any) => cd.user)
+      .filter(Boolean);
 
   return {
+
     id: c.id,
     code: c.code,
     name: c.name,
@@ -59,60 +58,235 @@ function mapCursoResponse(c: CursoFull) {
     modality: c.modality,
     group: c.group,
     sumilla: c.sumilla,
-    coordinador,
-    cursoDocentes,
-    docentes: docentesSimple,
-    logros: c.logro ?? [],
-    prerrequisitos:
-  (c.prerequisite_prerequisite_courseIdTocourse ?? []).map((p: unknown) => {
-    const _p = p as any;
-    // intentar varios nombres posibles de la relación (según cómo Prisma generó los campos)
-    const relatedCourse =
-      _p.course_prerequisite_prerequisiteIdTocourse ??
-      _p.course ??
-      _p.prerequisiteCourse ??
-      _p.prerequisite_course ??
-      null;
 
-    return {
-      id: _p.prerequisiteId,
-      name: relatedCourse?.name ?? '',
-      code: relatedCourse?.code ?? '',
-    };
-  }) ?? [],
+    coordinador,
+
+    cursoDocentes,
+
+    docentes: docentesSimple,
+
+    logros: c.logro ?? [],
+
+    prerequisites:
+      (c.prerequisite_prerequisite_courseIdTocourse ?? [])
+        .map((p: any) => ({
+          prerequisite: {
+            name:
+              p.course_prerequisite_prerequisiteIdTocourse?.name ?? ''
+          }
+        }))
   };
 }
 
-/**
- * GET /api/cursos/:id
- */
-export async function GET(req: Request, context: { params: Promise<{ id: string }> }) {
+export async function GET(
+  req: Request,
+  context: { params: Promise<{ id: string }> }
+) {
+
   try {
+
     const { id: idStr } = await context.params;
-    if (!idStr) return NextResponse.json({ error: 'ID no proporcionado' }, { status: 400 });
+    const id = parseInt(idStr);
 
-    const id = parseInt(idStr, 10);
-    if (isNaN(id)) return NextResponse.json({ error: 'ID inválido' }, { status: 400 });
+    if (isNaN(id)) {
+      return NextResponse.json(
+        { error: 'ID inválido' },
+        { status: 400 }
+      );
+    }
 
-    const curso = await prisma.course.findUnique({
-      where: { id },
-      include: {
-        user: { select: { id: true, name: true, email: true, role: true } },
-        cursodocente: { include: { user: { select: { id: true, name: true, email: true, role: true } } } },
-        logro: true,
-        prerequisite_prerequisite_courseIdTocourse: {
-          include: {
-            course_prerequisite_prerequisiteIdTocourse: { select: { id: true, name: true, code: true } },
+    const curso =
+      await prisma.course.findUnique({
+
+        where: { id },
+
+        include: {
+
+          user: true,
+
+          cursodocente: {
+            include: {
+              user: true
+            }
           },
-        },
+
+          logro: true,
+
+          prerequisite_prerequisite_courseIdTocourse: {
+            include: {
+              course_prerequisite_prerequisiteIdTocourse: true
+            }
+          }
+
+        }
+
+      });
+
+    if (!curso) {
+      return NextResponse.json(
+        { error: 'Curso no encontrado' },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(
+      mapCursoResponse(curso),
+      { status: 200 }
+    );
+
+  }
+
+  catch (error: unknown) {
+
+    console.error(
+      '❌ GET /api/cursos/[id] error:',
+      error
+    );
+
+    return NextResponse.json(
+      {
+        error: 'Error al obtener el curso',
+        detalle:
+          error instanceof Error
+            ? error.message
+            : String(error)
       },
+      { status: 500 }
+    );
+  }
+}
+
+
+/* ===========================
+   PUT - ACTUALIZAR CURSO
+=========================== */
+
+export async function PUT(
+  req: NextRequest,
+  context: { params: Promise<{ id: string }> }
+) {
+
+  try {
+
+    const { id: idStr } = await context.params;
+    const id = parseInt(idStr);
+
+    if (isNaN(id)) {
+      return NextResponse.json(
+        { error: 'ID inválido' },
+        { status: 400 }
+      );
+    }
+
+    const usuario = obtenerUsuarioDesdeTokenServer(req);
+    if (!usuario) {
+      return NextResponse.json({ error: 'Usuario no autenticado' }, { status: 401 });
+    }
+    if (!(await esCoordinadorDelCurso(usuario, id))) {
+      return NextResponse.json({ error: 'No autorizado' }, { status: 403 });
+    }
+
+    const body = await req.json();
+
+    const {
+      cycle,
+      coordinadorId,
+      docentes
+    } = body;
+
+    // actualizar curso
+    await prisma.course.update({
+
+      where: { id },
+
+      data: {
+        cycle: cycle ?? null,
+
+        user: coordinadorId
+          ? { connect: { id: coordinadorId } }
+          : { disconnect: true }
+      }
+
     });
 
-    if (!curso) return NextResponse.json({ error: 'Curso no encontrado' }, { status: 404 });
+    // actualizar docentes
+    if (Array.isArray(docentes)) {
 
-    return NextResponse.json(mapCursoResponse(curso as CursoFull), { status: 200 });
-  } catch (error: unknown) {
-    console.error('❌ GET /api/cursos/[id] error:', error);
-    return NextResponse.json({ error: 'Error al obtener el curso', detalle: error instanceof Error ? error.message : String(error) }, { status: 500 });
+      await prisma.cursodocente.deleteMany({
+        where: { courseId: id }
+      });
+
+      if (docentes.length > 0) {
+
+        await prisma.cursodocente.createMany({
+
+          data: docentes.map((docenteId: number) => ({
+            courseId: id,
+            userId: docenteId
+          }))
+
+        });
+
+      }
+
+    }
+
+    // devolver curso actualizado
+    const cursoActualizado =
+      await prisma.course.findUnique({
+
+        where: { id },
+
+        include: {
+
+          user: true,
+
+          cursodocente: {
+            include: {
+              user: true
+            }
+          },
+
+          logro: true,
+
+          prerequisite_prerequisite_courseIdTocourse: {
+            include: {
+              course_prerequisite_prerequisiteIdTocourse: true
+            }
+          }
+
+        }
+
+      });
+
+    return NextResponse.json(
+      {
+        message: 'Curso actualizado correctamente',
+        curso: mapCursoResponse(cursoActualizado)
+      },
+      { status: 200 }
+    );
+
   }
+
+  catch (error: unknown) {
+
+    console.error(
+      '❌ PUT /api/cursos/[id] error:',
+      error
+    );
+
+    return NextResponse.json(
+      {
+        error: 'Error al actualizar curso',
+        detalle:
+          error instanceof Error
+            ? error.message
+            : String(error)
+      },
+      { status: 500 }
+    );
+
+  }
+
 }

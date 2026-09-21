@@ -1,6 +1,7 @@
 // lib/authServer.ts
 import { NextRequest } from 'next/server';
 import { verifyToken } from './jwt';
+import { prisma } from './prisma';
 
 export interface CustomJwtPayload {
   id: number;
@@ -44,3 +45,15 @@ export function obtenerUsuarioDesdeTokenServer(req: NextRequest): CustomJwtPaylo
 export function requiereRol(usuario: CustomJwtPayload | null, ...rolesPermitidos: string[]): boolean {
   return !!usuario && !!usuario.role && rolesPermitidos.includes(usuario.role);
 }
+
+export async function esCoordinadorDelCurso(usuario: CustomJwtPayload | null, cursoId: number): Promise<boolean> {
+  if (!usuario || usuario.role !== 'coordinador') return false;
+
+  const curso = await prisma.course.findUnique({
+    where: { id: cursoId },
+    select: { coordinadorId: true },
+  });
+
+  return curso?.coordinadorId === usuario.id;
+}
+
