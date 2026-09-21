@@ -31,7 +31,7 @@ export const userController = {
 
       return NextResponse.json(users, { status: 200 });
 
-    } catch (error: any) {
+    } catch (error: unknown) {
 
       console.error('❌ Error en userController.getAll:', error);
 
@@ -70,7 +70,7 @@ export const userController = {
 
       return NextResponse.json(newUser, { status: 201 });
 
-    } catch (error: any) {
+    } catch (error: unknown) {
 
       console.error('❌ Error en userController.create:', error);
 
@@ -129,7 +129,7 @@ export const userController = {
 
       return NextResponse.json(updatedUser, { status: 200 });
 
-    } catch (error: any) {
+    } catch (error: unknown) {
 
       console.error('❌ Error en userController.update:', error);
 
@@ -158,7 +158,7 @@ export const userController = {
 
       return NextResponse.json(deletedUser, { status: 200 });
 
-    } catch (error: any) {
+    } catch (error: unknown) {
 
       console.error('❌ Error en userController.remove:', error);
 
@@ -180,7 +180,7 @@ export const userController = {
 
       return NextResponse.json(user, { status: 200 });
 
-    } catch (error: any) {
+    } catch (error: unknown) {
 
       console.error('❌ Error en userController.getById:', error);
 

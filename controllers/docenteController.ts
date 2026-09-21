@@ -6,7 +6,7 @@ export const docenteController = {
     try {
       const docentes = await docenteService.getAll();
       return NextResponse.json(docentes, { status: 200 });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ Error docenteController.getAll:', error);
       return NextResponse.json({ error: 'Error al obtener docentes' }, { status: 500 });
     }
@@ -17,7 +17,7 @@ export const docenteController = {
       const docente = await docenteService.getById(id);
       if (!docente) return NextResponse.json({ error: 'Docente no encontrado' }, { status: 404 });
       return NextResponse.json(docente, { status: 200 });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ Error docenteController.getById:', error);
       return NextResponse.json({ error: 'Error al obtener docente' }, { status: 500 });
     }
@@ -31,7 +31,7 @@ export const docenteController = {
       }
       const newDocente = await docenteService.create(data);
       return NextResponse.json(newDocente, { status: 201 });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ Error docenteController.create:', error);
       return NextResponse.json({ error: 'Error al crear docente' }, { status: 400 });
     }
@@ -42,7 +42,7 @@ export const docenteController = {
       const data = await req.json();
       const updated = await docenteService.update(id, data);
       return NextResponse.json(updated, { status: 200 });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ Error docenteController.update:', error);
       return NextResponse.json({ error: 'Error al actualizar docente' }, { status: 400 });
     }
@@ -52,7 +52,7 @@ export const docenteController = {
     try {
       const deleted = await docenteService.remove(id);
       return NextResponse.json(deleted, { status: 200 });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ Error docenteController.remove:', error);
       return NextResponse.json({ error: 'Error al eliminar docente' }, { status: 400 });
     }
