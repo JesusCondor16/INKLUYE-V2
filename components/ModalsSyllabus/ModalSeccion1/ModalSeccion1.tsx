@@ -22,8 +22,14 @@ export default function ModalSeccion1({ show, onClose, cursoId }: ModalSeccion1P
   useEffect(() => {
     if (!curso) return;
 
-    const allCoordinadores =
-      curso.docentes?.filter(u => u.role === 'coordinador') || [];
+    const allCoordinadores: Usuario[] = curso.coordinador
+  ? [{
+      id: curso.coordinador.id,
+      name: curso.coordinador.name,
+      email: curso.coordinador.email,
+      role: curso.coordinador.role ?? 'coordinador',
+    }]
+  : [];
 
     const allDocentes =
       curso.docentes?.filter(u => u.role === 'docente') || [];
