@@ -1,11 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
 import type { BibliografiaItem, EvaluacionFila } from './ModalSeccion4.model';
 
-export function useModalSeccion4Controller() {
-  const { id } = useParams();
+export function useModalSeccion4Controller(cursoId: number) {
   const [estrategia, setEstrategia] = useState('');
   const [recursos, setRecursos] = useState('');
   const [bibliografia, setBibliografia] = useState<BibliografiaItem[]>([]);
@@ -17,11 +15,11 @@ export function useModalSeccion4Controller() {
 
   // 🔹 Cargar datos al montar
   useEffect(() => {
-    if (!id) return;
+    if (!cursoId) return;
 
     const fetchData = async () => {
       try {
-        const res = await fetch(`/api/cursos/${id}/recurso`);
+        const res = await fetch(`/api/cursos/${cursoId}/recurso`);
         const data = (await res.json()) as {
           estrategiaDidactica?: { texto: string }[];
           recursos?: { descripcion: string }[];
@@ -55,7 +53,7 @@ export function useModalSeccion4Controller() {
     };
 
     fetchData();
-  }, [id]);
+  },  [cursoId]);
 
   // 🔹 Funciones para modificar bibliografía
   const handleChangeBibliografia = (index: number, value: string) => {
@@ -75,10 +73,10 @@ export function useModalSeccion4Controller() {
   };
 
   const handleGuardarBibliografia = async () => {
-    if (!id) return;
+    if (!cursoId) return;
     setLoading(true);
     try {
-      const res = await fetch(`/api/cursos/${id}/recurso`, {
+      const res = await fetch(`/api/cursos/${cursoId}/recurso`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ bibliografia }),

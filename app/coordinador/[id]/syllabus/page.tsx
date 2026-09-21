@@ -168,11 +168,13 @@ export default function SyllabusCursoPage() {
         )}
         {modal.s3 && (
           <ModalSeccion3
+            cursoId={cursoId}
             onClose={() => setModal({ ...modal, s3: false })}
           />
         )}
         {modal.s4 && (
           <ModalSeccion4
+            cursoId={cursoId}
             onClose={() => setModal({ ...modal, s4: false })}
           />
         )}

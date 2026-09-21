@@ -1,12 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
 import type { Capacidad, Programacion, Fila } from './ModalSeccion3.model';
 
-export function useModalSeccion3Controller() {
-  const params = useParams() as { id?: string } | null;
-  const cursoId = params?.id;
+export function useModalSeccion3Controller(cursoId: number) {
   const [capacidades, setCapacidades] = useState<Capacidad[]>([]);
   const [programaciones, setProgramaciones] = useState<Programacion[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
