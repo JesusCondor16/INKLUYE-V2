@@ -1,183 +1,457 @@
-/* Contenedor principal */
+/* =====================================================
+   SISTEMA INKLUYE
+   Gestión de Docentes
+   Enterprise UI – WCAG 2.1 AAA
+   Compatible con Next.js CSS Modules
+   ===================================================== */
+
+
+/* =====================================================
+   CONTENEDOR PRINCIPAL
+   ===================================================== */
+
 .container {
-  margin: 2rem auto;
+
+  max-width: 1240px;
+
+  margin: 2.5rem auto;
+
   padding: 0 2rem;
-  font-family: "Segoe UI", "Roboto", Tahoma, sans-serif;
-  color: #1c1c1c; /* texto muy oscuro para alto contraste */
-  background-color: #ffffff;
+
+  font-family:
+    "Inter",
+    "Segoe UI",
+    system-ui,
+    -apple-system,
+    sans-serif;
+
+  color: #0f172a;
+
 }
 
-/* Header */
+
+/* =====================================================
+   HEADER
+   ===================================================== */
+
 .header {
+
   display: flex;
-  flex-direction: column;
-  flex-wrap: wrap;
+
+  align-items: center;
+
   justify-content: space-between;
-  align-items: flex-start;
+
+  flex-wrap: wrap;
+
+  gap: 1rem;
+
   margin-bottom: 2rem;
+
 }
+
+
+/* =====================================================
+   TITLE
+   ===================================================== */
 
 .title {
-  font-size: 2.25rem;
-  color: #0b3d91; /* azul institucional intenso */
+
+  font-size: 2rem;
+
   font-weight: 800;
-  margin-bottom: 0.5rem;
+
+  color: #0a3a8a;
+
+  letter-spacing: -0.3px;
+
+  margin: 0;
+
 }
 
-/* Botón principal */
+
+/* =====================================================
+   PRIMARY ACTION BUTTON
+   ===================================================== */
+
 .btnPrimary {
-  background-color: #0b3d91;
-  color: #ffffff;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  min-height: 44px;
+
+  padding: 0.65rem 1.4rem;
+
+  border-radius: 10px;
+
+  font-size: 0.95rem;
+
   font-weight: 700;
-  font-size: 1rem;
-  padding: 0.6rem 1.2rem;
+
   border: none;
-  border-radius: 0.5rem;
+
+  background: #0a3a8a;
+
+  color: #ffffff;
+
   cursor: pointer;
-  transition: all 0.25s ease;
+
+  transition:
+    background 0.18s ease,
+    transform 0.05s ease;
+
 }
 
-.btnPrimary:hover,
-.btnPrimary:focus {
-  background-color: #082b6d;
-  outline: 3px solid #ffc107; /* alto contraste para focus */
+.btnPrimary:hover {
+
+  background: #072c67;
+
+}
+
+.btnPrimary:active {
+
+  transform: translateY(1px);
+
+}
+
+.btnPrimary:focus-visible {
+
+  outline: 4px solid #ffbf47;
+
   outline-offset: 2px;
+
 }
 
-/* Mensaje de alerta */
+
+/* =====================================================
+   ALERTA DE SISTEMA
+   ===================================================== */
+
 .alert {
-  background-color: #eaf2ff;
-  color: #0b3d91;
+
   padding: 1rem 1.25rem;
-  border-radius: 0.5rem;
+
+  border-radius: 10px;
+
+  background: #eef4ff;
+
+  color: #0a3a8a;
+
   font-weight: 600;
+
   margin-bottom: 1.5rem;
+
+  border-left: 5px solid #0a3a8a;
+
 }
 
-/* Contenedor de la tabla */
+
+/* =====================================================
+   CARD SURFACE
+   ===================================================== */
+
 .tableContainer {
+
+  border-radius: 12px;
+
+  border: 1px solid #e5eaf2;
+
+  box-shadow: 0 8px 26px rgba(0,0,0,0.06);
+
   overflow-x: auto;
-  box-shadow: 0 0.25rem 0.5rem rgba(0,0,0,0.1);
-  border-radius: 0.5rem;
+
+  background: #ffffff;
+
 }
 
-/* Tabla formal */
+
+/* =====================================================
+   TABLE
+   ===================================================== */
+
 .table {
+
   width: 100%;
+
   border-collapse: collapse;
-  text-align: center;
-  font-size: 1rem;
+
+  font-size: 0.95rem;
+
 }
 
-.table th,
-.table td {
-  border: 1px solid #dee2e6;
-  padding: 0.75rem 1rem;
+
+/* =====================================================
+   CAPTION (ACCESIBLE)
+   ===================================================== */
+
+.table caption {
+
+  text-align: left;
+
+  padding: 1rem;
+
+  font-size: 0.85rem;
+
+  color: #475569;
+
+}
+
+
+/* =====================================================
+   TABLE HEADER
+   ===================================================== */
+
+.table thead {
+
+  background: #f6f8fc;
+
 }
 
 .table th {
-  background-color: #f0f2f5;
-  color: #1c1c1c;
+
+  text-align: left;
+
+  padding: 0.95rem 1.1rem;
+
   font-weight: 700;
+
+  color: #1e293b;
+
+  border-bottom: 2px solid #e5eaf2;
+
+  white-space: nowrap;
+
 }
 
-.table tr:nth-child(even) {
-  background-color: #fafafa;
+
+/* =====================================================
+   TABLE BODY
+   ===================================================== */
+
+.table td {
+
+  padding: 0.9rem 1.1rem;
+
+  border-bottom: 1px solid #edf1f7;
+
+  color: #0f172a;
+
 }
 
-.table tr:hover,
-.table tr:focus-within {
-  background-color: #e2e6ea;
-  outline: 3px solid #ffc107; /* indicador de foco visible */
-  outline-offset: -1px;
+
+/* =====================================================
+   ROW STATES
+   ===================================================== */
+
+.table tbody tr:nth-child(even) {
+
+  background: #fafcff;
+
 }
 
-/* Mensaje “sin datos” */
+.table tbody tr:hover {
+
+  background: #f2f6ff;
+
+}
+
+.table tbody tr:focus-within {
+
+  outline: 3px solid #ffbf47;
+
+  outline-offset: -2px;
+
+}
+
+
+/* =====================================================
+   NO DATA STATE
+   ===================================================== */
+
 .noData {
-  color: #6c757d;
-  padding: 1.5rem 0;
+
+  text-align: center;
+
+  padding: 1.8rem;
+
   font-style: italic;
+
+  color: #64748b;
+
 }
 
-/* Grupo de acciones */
+
+/* =====================================================
+   ACTION GROUP
+   ===================================================== */
+
 .actionGroup {
+
   display: flex;
+
+  gap: 0.4rem;
+
   flex-wrap: wrap;
-  gap: 0.5rem;
-  justify-content: center;
+
 }
 
-/* Botones de acción */
+
+/* =====================================================
+   ACTION BUTTON BASE
+   ===================================================== */
+
 .btnEdit,
 .btnDelete,
 .btnHistorial {
-  display: flex;
+
+  display: inline-flex;
+
   align-items: center;
-  gap: 0.25rem;
-  padding: 0.4rem 0.75rem;
-  font-size: 0.9rem;
-  border-radius: 0.5rem;
-  cursor: pointer;
+
+  gap: 0.3rem;
+
+  min-height: 34px;
+
+  padding: 0.35rem 0.75rem;
+
+  border-radius: 8px;
+
+  font-size: 0.82rem;
+
   font-weight: 600;
+
+  cursor: pointer;
+
   border: 1px solid transparent;
-  transition: all 0.2s ease;
+
+  background: #ffffff;
+
+  transition:
+    background 0.15s ease,
+    color 0.15s ease,
+    border 0.15s ease;
+
 }
 
-/* Editar */
+
+/* =====================================================
+   EDIT
+   ===================================================== */
+
 .btnEdit {
-  background-color: #ffffff;
-  color: #0b3d91;
-  border: 1px solid #0b3d91;
+
+  color: #0a3a8a;
+
+  border-color: #0a3a8a;
+
 }
 
-.btnEdit:hover,
-.btnEdit:focus {
-  background-color: #0b3d91;
+.btnEdit:hover {
+
+  background: #0a3a8a;
+
   color: #ffffff;
-  outline: 3px solid #ffc107;
+
 }
 
-/* Eliminar */
+.btnEdit:focus-visible {
+
+  outline: 3px solid #ffbf47;
+
+}
+
+
+/* =====================================================
+   DELETE
+   ===================================================== */
+
 .btnDelete {
-  background-color: #ffffff;
-  color: #b02a37; /* rojo formal */
-  border: 1px solid #b02a37;
+
+  color: #a61b2b;
+
+  border-color: #a61b2b;
+
 }
 
-.btnDelete:hover,
-.btnDelete:focus {
-  background-color: #b02a37;
+.btnDelete:hover {
+
+  background: #a61b2b;
+
   color: #ffffff;
-  outline: 3px solid #ffc107;
+
 }
 
-/* Historial */
+.btnDelete:focus-visible {
+
+  outline: 3px solid #ffbf47;
+
+}
+
+
+/* =====================================================
+   HISTORIAL
+   ===================================================== */
+
 .btnHistorial {
-  background-color: #ffffff;
-  color: #146c43; /* verde formal */
-  border: 1px solid #146c43;
+
+  color: #1f7a4d;
+
+  border-color: #1f7a4d;
+
 }
 
-.btnHistorial:hover,
-.btnHistorial:focus {
-  background-color: #146c43;
+.btnHistorial:hover {
+
+  background: #1f7a4d;
+
   color: #ffffff;
-  outline: 3px solid #ffc107;
+
 }
 
-/* Iconos */
+.btnHistorial:focus-visible {
+
+  outline: 3px solid #ffbf47;
+
+}
+
+
+/* =====================================================
+   ICON
+   ===================================================== */
+
 .icon {
-  display: inline-block;
+
+  display: inline-flex;
+
+  width: 16px;
+
+  height: 16px;
+
 }
 
-/* Botones y elementos accesibles */
-button:focus {
-  outline: 3px solid #ffc107;
-  outline-offset: 2px;
-}
 
-/* Tipografía legible para AAA */
-body {
-  font-size: 1rem;
-  line-height: 1.6;
+/* =====================================================
+   RESPONSIVE
+   ===================================================== */
+
+@media (max-width: 768px) {
+
+  .header {
+
+    flex-direction: column;
+
+    align-items: flex-start;
+
+  }
+
+  .title {
+
+    font-size: 1.6rem;
+
+  }
+
 }

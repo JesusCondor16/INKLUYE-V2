@@ -1,243 +1,479 @@
 /* coordinador.module.css
-   CSS Module compatible con Next.js/Turbopack
-   Accesibilidad: WCAG 2.1 AAA (contraste, foco, tamaños táctiles)
-   Evita selectores \"puros\" fuera de :global(...)
+   Sistema Inkluye
+   Accesibilidad: WCAG 2.1 AAA
+   Compatible: Next.js + CSS Modules
 */
 
-/* Variables globales */
-:global(:root) {
-  --primary-color: #003366;
-  --primary-color-dark: #00264d;
-  --secondary-color: #6c757d;
-  --success-color: #157347;
-  --error-color: #b02a37;
-  --bg-color: #ffffff;
-  --surface-color: #f8fafc;
-  --text-color: #212529;
-  --heading-color: #0b2c4d;
-  --table-header-bg: #e9ecef;
-  --table-row-hover: #f1f3f5;
-  --focus-ring: #ffbf47;
-  --muted: #6c757d;
-  --touch-min: 2.75rem; /* ≈44px */
+/* ===============================
+   VARIABLES DE SISTEMA
+================================ */
+
+:global(:root){
+
+  --primary:#0a2540;
+  --primary-strong:#071833;
+
+  --accent:#ffbf47;
+
+  --success:#0f6b3c;
+  --danger:#8a0b0b;
+
+  --bg:#ffffff;
+  --surface:#f6f9fc;
+
+  --text:#0b1f3a;
+  --text-soft:#5a6a7a;
+
+  --table-header:#eef2f6;
+  --table-hover:#f4f7fb;
+
+  --border:#dbe3ec;
+
+  --radius:10px;
+
+  --focus:4px solid var(--accent);
+
+  --touch:44px;
+
+  --font-ui:
+    "Inter",
+    "Segoe UI",
+    system-ui,
+    -apple-system,
+    sans-serif;
+
 }
 
-/* Global element rules (envueltos en :global) */
-:global(html) {
-  box-sizing: border-box;
-  font-family: "Inter", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial;
-  line-height: 1.6;
-  -webkit-text-size-adjust: 100%;
-}
-:global(*), :global(*::before), :global(*::after) { box-sizing: inherit; }
+/* ===============================
+   GLOBALS CONTROLADOS
+================================ */
 
-/* Respeto a prefers-reduced-motion (global) */
-@media (prefers-reduced-motion: reduce) {
-  :global(*) {
-    animation-duration: 0.001ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.001ms !important;
+:global(html){
+
+  box-sizing:border-box;
+
+  font-family:var(--font-ui);
+
+  line-height:1.6;
+
+  -webkit-text-size-adjust:100%;
+
+}
+
+:global(*),
+:global(*::before),
+:global(*::after){
+
+  box-sizing:inherit;
+
+}
+
+/* ===============================
+   REDUCED MOTION
+================================ */
+
+@media (prefers-reduced-motion: reduce){
+
+  :global(*){
+
+    animation:none !important;
+    transition:none !important;
+
   }
+
 }
 
-/* Layout principal (local) */
-.wrapper {
-  display: flex;
-  min-height: 100vh;
-  background-color: var(--bg-color);
-  color: var(--text-color);
+/* ===============================
+   LAYOUT
+================================ */
+
+.wrapper{
+
+  display:flex;
+
+  min-height:100vh;
+
+  background:var(--bg);
+
+  color:var(--text);
+
 }
 
-/* Contenedor principal centrado para pantallas grandes */
-.main {
-  flex: 1;
-  padding: 2rem;
-  max-width: 1200px;
-  margin: 0 auto; /* centrado */
-  width: 100%;
-  box-sizing: border-box;
+/* ===============================
+   MAIN CONTENT
+================================ */
+
+.main{
+
+  flex:1;
+
+  padding:2.4rem;
+
+  max-width:1200px;
+
+  margin:0 auto;
+
+  width:100%;
+
 }
 
-/* SKIP LINK accesible (local) */
-.skipLink {
-  position: absolute;
-  left: -9999px;
-  top: auto;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  white-space: nowrap;
-  color: #000 !important;
-  background: #fff !important;
-  text-decoration: none;
-  z-index: 1000;
-}
-.skipLink:focus,
-.skipLink:active {
-  left: 1rem;
-  top: 1rem;
-  width: auto;
-  height: auto;
-  padding: 0.6rem 0.9rem;
-  background-color: var(--primary-color) !important;
-  color: #ffffff !important;
-  font-weight: 700;
-  border-radius: 6px;
-  text-decoration: none;
-  outline: none;
-  box-shadow: 0px 3px 10px rgba(0,0,0,0.2);
+/* ===============================
+   SKIP LINK
+================================ */
+
+.skipLink{
+
+  position:absolute;
+
+  left:-9999px;
+
+  width:1px;
+  height:1px;
+
+  overflow:hidden;
+
+  background:#fff;
+
+  color:#000;
+
 }
 
-/* Títulos y texto */
-.title {
-  font-size: 1.6rem;
-  font-weight: 700;
-  color: var(--heading-color);
-  margin-bottom: 0.25rem;
-}
-.lead {
-  font-size: 1.05rem;
-  color: var(--muted);
-  margin-bottom: 1rem;
+.skipLink:focus{
+
+  left:1rem;
+
+  top:1rem;
+
+  width:auto;
+  height:auto;
+
+  padding:0.65rem 1rem;
+
+  background:var(--primary);
+
+  color:#fff;
+
+  border-radius:8px;
+
+  font-weight:700;
+
+  outline:var(--focus);
+
 }
 
-/* Status / error boxes: contraste AAA garantizado */
+/* ===============================
+   TITLES
+================================ */
+
+.title{
+
+  font-size:1.7rem;
+
+  font-weight:800;
+
+  letter-spacing:-0.3px;
+
+  margin-bottom:0.4rem;
+
+  color:var(--primary);
+
+}
+
+.lead{
+
+  font-size:1.05rem;
+
+  color:var(--text-soft);
+
+  margin-bottom:1.4rem;
+
+}
+
+/* ===============================
+   STATUS / ERROR BOX
+================================ */
+
 .statusBox,
-.emptyBox,
-.errorBox {
-  border-radius: 6px;
-  padding: 1rem;
-  margin-bottom: 1rem;
-  box-sizing: border-box;
+.errorBox{
+
+  padding:1rem;
+
+  border-radius:8px;
+
+  margin-bottom:1rem;
+
 }
 
-/* StatusBox (informativo) */
-.statusBox {
-  background-color: #eaf3ff; /* fondo claro */
-  color: var(--primary-color); /* texto oscuro (contraste AAA) */
-  border: 1px solid rgba(0,62,102,0.08);
+.statusBox{
+
+  background:#eaf3ff;
+
+  color:#0a2540;
+
+  border:1px solid #cfe0ff;
+
 }
 
-/* Error box (alto contraste para errores) */
-.errorBox {
-  background-color: #f8d7da;
-  color: var(--error-color);
-  border: 1px solid rgba(176,42,55,0.12);
+.errorBox{
+
+  background:#fdecea;
+
+  color:var(--danger);
+
+  border:1px solid #f3c2c2;
+
 }
 
-/* Forzar que elementos con estilos inline dentro del statusBox no rompan el contraste */
-.statusBox *[style] {
-  background: transparent !important;
-  color: inherit !important;
+/* ===============================
+   TABLA CONTENEDOR
+================================ */
+
+.tableWrapper{
+
+  width:100%;
+
+  overflow:auto;
+
+  border-radius:var(--radius);
+
+  border:1px solid var(--border);
+
+  background:#fff;
+
 }
 
-/* Celdas y tabla */
-.tableWrapper {
-  overflow: auto;
-  border-radius: 8px;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
-  background: #fff;
-  width: 100%;
-}
-.table {
-  width: 100%;
-  border-collapse: collapse;
-  background: #fff;
-  font-size: 0.95rem;
-  table-layout: auto;
-  min-width: 0;
-}
-.caption {
-  text-align: left;
-  padding: 0.75rem 1rem;
-  font-weight: 600;
-  color: var(--heading-color);
-}
-.table thead th {
-  text-align: left;
-  font-weight: 600;
-  padding: 0.75rem 1rem;
-  background: var(--table-header-bg);
-  color: var(--heading-color);
-  border-bottom: 1px solid #e9ecef;
-}
-.table tbody td {
-  padding: 0.75rem 1rem;
-  border-bottom: 1px solid #f1f3f5;
-  color: var(--text-color);
-  vertical-align: middle;
-}
-.table tbody tr:nth-child(even) { background-color: #f8f9fa; }
-.table tbody tr:hover { background-color: var(--table-row-hover); }
+/* ===============================
+   TABLA
+================================ */
 
-/* Data labels para mobile (oculto en desktop) */
-.table tbody td[data-label]::before {
-  content: attr(data-label) ": ";
-  display: none;
-  font-weight: 600;
-  color: var(--muted);
+.table{
+
+  width:100%;
+
+  border-collapse:collapse;
+
+  font-size:0.95rem;
+
 }
 
-/* Botones y variantes */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.45rem 0.65rem;
-  border-radius: 6px;
-  font-weight: 600;
-  font-size: 0.95rem;
-  border: none;
-  cursor: pointer;
-  user-select: none;
-  min-height: var(--touch-min);
-}
-.btn:focus-visible {
-  outline: 3px solid var(--focus-ring);
-  outline-offset: 3px;
-  border-radius: 6px;
-}
-.btn-primary,
-.generateButton {
-  background-color: var(--primary-color);
-  color: #ffffff;
-}
-.btn-primary:hover,
-.generateButton:hover {
-  background-color: var(--primary-color-dark);
-  transform: translateY(-1px);
-}
-.generateButton:focus-visible {
-  outline: 3px solid var(--focus-ring);
-  outline-offset: 3px;
-}
-.btnIcon, .generateIcon {
-  font-size: 1.05rem;
-  line-height: 1;
-  display: inline-block;
-  color: inherit;
+/* caption oculto accesible */
+
+.caption{
+
+  position:absolute;
+
+  width:1px;
+  height:1px;
+
+  overflow:hidden;
+
 }
 
-/* Util visually hidden local */
-.visuallyHidden {
-  position: absolute !important;
-  height: 1px;
-  width: 1px;
-  overflow: hidden;
-  clip: rect(1px, 1px, 1px, 1px);
-  white-space: nowrap;
+/* header */
+
+.table thead th{
+
+  text-align:left;
+
+  padding:0.9rem 1rem;
+
+  font-weight:700;
+
+  background:var(--table-header);
+
+  color:var(--primary);
+
+  border-bottom:2px solid var(--border);
+
 }
 
-/* Responsive: en pantallas pequeñas mostramos data-label y reducimos padding */
-@media (max-width: 700px) {
-  .table { font-size: 0.9rem; }
-  .table tbody td[data-label]::before { display: inline-block; margin-right: 0.25rem; }
-  .generateButton, .btn { font-size: 0.9rem; padding: 0.4rem 0.6rem; }
-  .main { padding: 1rem; }
+/* body */
+
+.table tbody td{
+
+  padding:0.85rem 1rem;
+
+  border-bottom:1px solid var(--border);
+
+  vertical-align:middle;
+
 }
 
-/* Extra: visibilidad en pantallas muy grandes */
-@media (min-width: 1200px) {
-  .tableWrapper { overflow: visible; }
-  .table { table-layout: auto; }
+/* zebra */
+
+.table tbody tr:nth-child(even){
+
+  background:#fafbfd;
+
+}
+
+/* hover */
+
+.table tbody tr:hover{
+
+  background:var(--table-hover);
+
+}
+
+/* ===============================
+   BOTONES
+================================ */
+
+.btn{
+
+  display:inline-flex;
+
+  align-items:center;
+
+  justify-content:center;
+
+  gap:0.4rem;
+
+  padding:0.55rem 0.8rem;
+
+  min-height:var(--touch);
+
+  border-radius:8px;
+
+  font-weight:700;
+
+  font-size:0.92rem;
+
+  border:2px solid transparent;
+
+  cursor:pointer;
+
+  background:var(--primary);
+
+  color:#fff;
+
+}
+
+.btn:hover{
+
+  background:var(--primary-strong);
+
+}
+
+.btn:focus-visible{
+
+  outline:var(--focus);
+
+  outline-offset:3px;
+
+}
+
+/* ===============================
+   BOTONES GENERAR
+================================ */
+
+.generateRow{
+
+  display:flex;
+
+  gap:0.8rem;
+
+  margin-top:1.2rem;
+
+  flex-wrap:wrap;
+
+}
+
+.btnES{
+
+  background:var(--success);
+
+}
+
+.btnES:hover{
+
+  background:#0b4e2b;
+
+}
+
+.btnEN{
+
+  background:#ffffff;
+
+  border:2px solid var(--primary);
+
+  color:var(--primary);
+
+}
+
+.btnEN:hover{
+
+  background:#eef4ff;
+
+}
+
+/* ===============================
+   ACCESSIBILITY UTIL
+================================ */
+
+.visuallyHidden{
+
+  position:absolute;
+
+  width:1px;
+  height:1px;
+
+  overflow:hidden;
+
+  clip:rect(1px,1px,1px,1px);
+
+}
+
+/* ===============================
+   MOBILE
+================================ */
+
+@media (max-width:768px){
+
+  .main{
+
+    padding:1.2rem;
+
+  }
+
+  .table{
+
+    font-size:0.9rem;
+
+  }
+
+}
+
+/* ===============================
+   LARGE SCREENS
+================================ */
+
+@media (min-width:1400px){
+
+  .main{
+
+    max-width:1300px;
+
+  }
+
+}
+
+/* ===============================
+   HIGH CONTRAST MODE
+================================ */
+
+@media (prefers-contrast: more){
+
+  .table thead th{
+
+    border-bottom:3px solid #000;
+
+  }
+
+  .btn{
+
+    border:3px solid #000;
+
+  }
+
 }
