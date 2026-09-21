@@ -30,6 +30,28 @@ interface Estrategia {
   cursoId?: number;
 }
 
+// Forma parcialmente conocida: el código solo lee el campo declarado, pero preserva
+// cualquier otro campo que venga del servidor sin necesidad de enumerarlo.
+interface Competencia {
+  descripcion?: string;
+  [key: string]: unknown;
+}
+
+interface Logro {
+  descripcion?: string;
+  [key: string]: unknown;
+}
+
+interface Recurso {
+  descripcion?: string;
+  [key: string]: unknown;
+}
+
+interface Bibliografia {
+  texto?: string;
+  [key: string]: unknown;
+}
+
 interface Curso {
   id: number;
   code: string;
@@ -44,15 +66,16 @@ interface Curso {
   mode?: string;
   group?: string;
   sumilla?: string;
-  coordinador?: any;
-  competencias?: any[];
-  logros?: any[];
-  matriz?: any[];
-  bibliografia?: any[];
-  estrategia?: any[];
-  recursos?: any[];
-  prerequisites?: any[];
-  cursodocente?: any[];
+  coordinador?: unknown;
+  competencias?: Competencia[];
+  logros?: Logro[];
+  logro?: Logro[]; // nombre usado por Prisma; se normaliza a 'logros' en loadCurso
+  matriz?: unknown[];
+  bibliografia?: Bibliografia[];
+  estrategia?: unknown[];
+  recursos?: Recurso[];
+  prerequisites?: unknown[];
+  cursodocente?: unknown[];
   capacidad?: Capacidad[]; // prisma name
   capacidades?: Capacidad[]; // alternative
   programacion?: Programacion[]; // programación de contenidos
@@ -61,9 +84,17 @@ interface Curso {
   estrategiasdidacticas?: Estrategia[]; // agregado: coincidir con prisma
 }
 
+class TranslateNotConfiguredError extends Error {
+  readonly code = 'NOT_CONFIGURED' as const;
+  constructor(message: string) {
+    super(message);
+    this.name = 'TranslateNotConfiguredError';
+  }
+}
+
 /**
  * Llama a /api/translate para traducir un lote de textos.
- * Lanza un error con .code = 'NOT_CONFIGURED' si la API key todavía no está puesta en el servidor.
+ * Lanza TranslateNotConfiguredError si la API key todavía no está puesta en el servidor.
  */
 async function traducirTextos(texts: string[], targetLang: 'en' | 'zh'): Promise<string[]> {
   const res = await fetch('/api/translate', {
@@ -74,9 +105,7 @@ async function traducirTextos(texts: string[], targetLang: 'en' | 'zh'): Promise
   });
 
   if (res.status === 503) {
-    const err: any = new Error('Traducción no configurada');
-    err.code = 'NOT_CONFIGURED';
-    throw err;
+    throw new TranslateNotConfiguredError('Traducción no configurada');
   }
 
   if (!res.ok) {
@@ -100,7 +129,7 @@ async function construirCursoTraducido(
   targetLang: 'en' | 'zh'
 ) {
   const competencias = curso.competencias ?? [];
-  const logros = curso.logros ?? (curso as any).logro ?? [];
+  const logros = curso.logros ?? curso.logro ?? [];
   const recursos = curso.recursos ?? [];
   const bibliografia = curso.bibliografia ?? [];
 
@@ -115,16 +144,16 @@ async function construirCursoTraducido(
     textos.push(p.recursos ?? '');
   }
   for (const e of estrategias) textos.push(e.texto ?? '');
-  for (const r of recursos) textos.push((r as any).descripcion ?? '');
-  for (const b of bibliografia) textos.push((b as any).texto ?? '');
+  for (const r of recursos) textos.push(r.descripcion ?? '');
+  for (const b of bibliografia) textos.push(b.texto ?? '');
 
   const traducidos = await traducirTextos(textos, targetLang);
   let i = 0;
   const next = () => traducidos[i++] ?? '';
 
   const sumillaTraducida = next();
-  const competenciasTraducidas = competencias.map((c: any) => ({ ...c, descripcion: next() }));
-  const logrosTraducidos = logros.map((l: any) => ({ ...l, descripcion: next() }));
+  const competenciasTraducidas = competencias.map((c) => ({ ...c, descripcion: next() }));
+  const logrosTraducidos = logros.map((l) => ({ ...l, descripcion: next() }));
   const capacidadesTraducidas = capacidades.map((c) => ({ ...c, descripcion: next() }));
   const programacionTraducida = programacion.map((p) => ({
     ...p,
@@ -133,14 +162,15 @@ async function construirCursoTraducido(
     recursos: next(),
   }));
   const estrategiasTraducidas = estrategias.map((e) => ({ ...e, texto: next() }));
-  const recursosTraducidos = recursos.map((r: any) => ({ ...r, descripcion: next() }));
-  const bibliografiaTraducida = bibliografia.map((b: any) => ({ ...b, texto: next() }));
+  const recursosTraducidos = recursos.map((r) => ({ ...r, descripcion: next() }));
+  const bibliografiaTraducida = bibliografia.map((b) => ({ ...b, texto: next() }));
 
   const cursoTraducido: Curso = {
     ...curso,
     sumilla: sumillaTraducida,
     competencias: competenciasTraducidas,
     logros: logrosTraducidos,
+    logro: logrosTraducidos,
     capacidad: capacidadesTraducidas,
     capacidades: capacidadesTraducidas,
     programacion: programacionTraducida,
@@ -150,7 +180,6 @@ async function construirCursoTraducido(
     recursos: recursosTraducidos,
     bibliografia: bibliografiaTraducida,
   };
-  (cursoTraducido as any).logro = logrosTraducidos;
 
   return {
     curso: cursoTraducido,
@@ -258,8 +287,8 @@ export function useSyllabusController() {
       // eslint-disable-next-line no-console
       console.log('loadCurso - estrategias detectadas:', estrategiasFromResponse.length, estrategiasFromResponse);
 
-    } catch (err: any) {
-      setError(err.message ?? 'Error desconocido');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Error desconocido');
       setCurso(null);
     } finally {
       setLoading(false);
@@ -288,8 +317,8 @@ export function useSyllabusController() {
           cursoParaPdf = traducido.curso;
           capacidades = traducido.capacidades;
           programacion = traducido.programacion;
-        } catch (err: any) {
-          if (err?.code === 'NOT_CONFIGURED') {
+        } catch (err: unknown) {
+          if (err instanceof TranslateNotConfiguredError) {
             alert('La traducción automática todavía no está configurada (falta la API key). Se generará el syllabus en español.');
           } else {
             console.error('Error traduciendo syllabus:', err);
@@ -306,7 +335,7 @@ export function useSyllabusController() {
       // eslint-disable-next-line no-console
       console.log('generarPDFController - competencias:', (cursoParaPdf.competencias ?? []).length);
       // eslint-disable-next-line no-console
-      console.log('generarPDFController - logros:', (cursoParaPdf.logros ?? (cursoParaPdf as any).logro ?? []).length);
+      console.log('generarPDFController - logros:', (cursoParaPdf.logros ?? cursoParaPdf.logro ?? []).length);
       // eslint-disable-next-line no-console
       console.log('generarPDFController - capacidades:', capacidades.length);
       // eslint-disable-next-line no-console
@@ -317,15 +346,15 @@ export function useSyllabusController() {
       return await generarPDF(
         cursoParaPdf,
         cursoParaPdf.competencias ?? [],
-        cursoParaPdf.logros ?? (cursoParaPdf as any).logro ?? [],
+        cursoParaPdf.logros ?? cursoParaPdf.logro ?? [],
         capacidades,
         programacion,
         langFinal,
         { uploadToServer: true },
       );
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error generando PDF:', err);
-      setError(err?.message ?? 'Error al generar PDF');
+      setError(err instanceof Error ? err.message : 'Error al generar PDF');
     } finally {
       setGenerating(false);
     }
