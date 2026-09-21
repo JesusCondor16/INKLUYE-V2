@@ -14,13 +14,13 @@ export const buscarSyllabusModel = {
     });
   },
 
-  // Buscar cursos por nombre o código
+   // Buscar cursos por nombre o código
   async search(query: string) {
     return prisma.course.findMany({
       where: {
         OR: [
-          { name: { contains: query, mode: 'insensitive' } },
-          { code: { contains: query, mode: 'insensitive' } },
+          { name: { contains: query } },
+          { code: { contains: query } },
         ],
       },
       include: {
