@@ -5,8 +5,18 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { SyllabusLang, t } from '@/lib/i18n/syllabusLabels';
 
+// El objeto curso llega de fuentes distintas (API generarSyllabus, o inyectado manualmente
+// más abajo) y su forma real varía entre ellas — por eso el código prueba nombres de campo
+// alternativos como curso.logro/curso.logros, curso.capacidad/curso.capacidades, etc. No se
+// tipa como interfaz porque habría que declarar variantes duplicadas sin ganar seguridad real.
 type Curso = any;
 type Row = string[];
+type Margins = { top: number; left: number; right: number; bottom: number };
+
+// jspdf-autotable inyecta esta propiedad en runtime; el paquete 'jspdf' no la declara.
+interface jsPDFWithAutoTable extends jsPDF {
+  lastAutoTable?: { finalY: number };
+}
 
 export async function generarPDF(
   curso: Curso | number,
@@ -64,7 +74,7 @@ export async function generarPDF(
   // Asegurar color de texto por si hubiera algún cambio de color previo
   doc.setTextColor(0, 0, 0);
 
-  const MARGINS = { top: 40, left: 25, right: 25, bottom: 0 };
+  const MARGINS: Margins = { top: 40, left: 25, right: 25, bottom: 0 };
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
 
@@ -166,7 +176,7 @@ function sanitizeFilename(name: string): string {
   return name.replace(/[^a-z0-9_\-\.]/gi, '_').slice(0, 200);
 }
 
-function sanitizeTextForPdf(s: any): string {
+function sanitizeTextForPdf(s: unknown): string {
   if (s === null || s === undefined) return '';
   try {
     const str = String(s);
@@ -186,7 +196,7 @@ function sanitizeTextForPdf(s: any): string {
    ENCABEZADO / TÍTULO
 ------------------------------ */
 
-async function renderEncabezado(doc: jsPDF, y: number, pageWidth: number, MARGINS: any, lang: SyllabusLang): Promise<number> {
+async function renderEncabezado(doc: jsPDF, y: number, pageWidth: number, MARGINS: Margins, lang: SyllabusLang): Promise<number> {
   try {
     const logo = await loadImageAsBase64('/images/logo-unmsm.png');
     const W = 30, H = 30;
@@ -214,7 +224,7 @@ async function renderEncabezado(doc: jsPDF, y: number, pageWidth: number, MARGIN
   return y;
 }
 
-function renderTitulo(doc: jsPDF, y: number, pageWidth: number, MARGINS: any, lang: SyllabusLang): number {
+function renderTitulo(doc: jsPDF, y: number, pageWidth: number, MARGINS: Margins, lang: SyllabusLang): number {
   doc.setFont('times', 'bold');
   doc.setFontSize(14);
   doc.text(t(lang, 'silabo'), pageWidth / 2, y, { align: 'center' });
@@ -229,7 +239,7 @@ function renderInformacionGeneral(
   doc: jsPDF,
   y: number,
   curso: Curso,
-  MARGINS: any,
+  MARGINS: Margins,
   pageHeight: number,
   lang: SyllabusLang
 ): number {
@@ -296,7 +306,7 @@ function renderInformacionGeneral(
    SECCIÓN 2 — SUMILLA
 ------------------------------ */
 
-function renderSumilla(doc: jsPDF, y: number, curso: Curso, MARGINS: any, lang: SyllabusLang): number {
+function renderSumilla(doc: jsPDF, y: number, curso: Curso, MARGINS: Margins, lang: SyllabusLang): number {
   doc.setFont('times', 'bold');
   doc.setFontSize(12);
   doc.text(t(lang, 's2Titulo'), MARGINS.left, y);
@@ -316,7 +326,7 @@ function renderSumilla(doc: jsPDF, y: number, curso: Curso, MARGINS: any, lang: 
    SECCIÓN 3 — COMPETENCIAS
 ------------------------------ */
 
-async function renderCompetencias(doc: jsPDF, y: number, curso: Curso, MARGINS: any, pageHeight: number, lang: SyllabusLang) {
+async function renderCompetencias(doc: jsPDF, y: number, curso: Curso, MARGINS: Margins, pageHeight: number, lang: SyllabusLang) {
   doc.setFont('times', 'bold');
   doc.setFontSize(12);
   doc.text(t(lang, 's3Titulo'), MARGINS.left, y);
@@ -345,7 +355,7 @@ async function renderCompetencias(doc: jsPDF, y: number, curso: Curso, MARGINS: 
     sanitizeTextForPdf(String(c.nivel ?? c.level ?? '')),
   ]);
 
-  autoTable(doc as any, {
+  autoTable(doc, {
     startY: y,
     head: [[t(lang, 's3ColCodigo'), t(lang, 's3ColDescripcion'), t(lang, 's3ColTipo'), t(lang, 's3ColNivel')]],
     body,
@@ -360,7 +370,7 @@ async function renderCompetencias(doc: jsPDF, y: number, curso: Curso, MARGINS: 
     },
   });
 
-  y = (doc as any).lastAutoTable.finalY + 8;
+  y = (doc as jsPDFWithAutoTable).lastAutoTable!.finalY + 8;
 
   if (y > pageHeight - MARGINS.bottom) {
     y = addFooterAndNewPage(doc, MARGINS);
@@ -377,7 +387,7 @@ async function renderLogros(
   doc: jsPDF,
   y: number,
   curso: Curso,
-  MARGINS: any,
+  MARGINS: Margins,
   pageHeight: number,
   lang: SyllabusLang
 ) {
@@ -452,8 +462,8 @@ async function renderLogros(
 async function renderCapacidades(
   doc: jsPDF,
   y: number,
-  curso: any,
-  MARGINS: any,
+  curso: Curso,
+  MARGINS: Margins,
   pageHeight: number,
   lang: SyllabusLang
 ) {
@@ -502,7 +512,7 @@ async function renderCapacidades(
     const nombreRaw = (c && (c.nombre ?? c.name)) ?? '';
     const descripcionRaw = (c && (c.descripcion ?? c.description)) ?? '';
 
-    const sanitize = (v: any) => {
+    const sanitize = (v: unknown) => {
       if (v === null || v === undefined) return '';
       try {
         const s = String(v);
@@ -556,8 +566,8 @@ async function renderCapacidades(
 async function renderProgramacion(
   doc: jsPDF,
   y: number,
-  curso: any,
-  MARGINS: any,
+  curso: Curso,
+  MARGINS: Margins,
   pageHeight: number,
   lang: SyllabusLang
 ) {
@@ -635,7 +645,7 @@ async function renderProgramacion(
   const pageWidth = doc.internal.pageSize.getWidth();
   const contentWidth = pageWidth - MARGINS.left - MARGINS.right;
 
-  autoTable(doc as any, {
+  autoTable(doc, {
     startY: y,
     head: [[t(lang, 's6ColSesion'), t(lang, 's6ColContenido'), t(lang, 's6ColActividades'), t(lang, 's6ColRecursos'), t(lang, 's6ColEstrategias')]],
     body,
@@ -649,12 +659,12 @@ async function renderProgramacion(
       3: { cellWidth: Math.max(30, Math.floor(contentWidth * 0.24)) },
       4: { cellWidth: Math.max(30, Math.floor(contentWidth * 0.23)) },
     },
-    didDrawPage: (_data: any) => {
+    didDrawPage: () => {
       // opcional
     },
   });
 
-  y = (doc as any).lastAutoTable.finalY + 8;
+  y = (doc as jsPDFWithAutoTable).lastAutoTable!.finalY + 8;
 
   if (y > pageHeight - MARGINS.bottom) {
     y = addFooterAndNewPage(doc, MARGINS);
@@ -670,8 +680,8 @@ async function renderProgramacion(
 async function renderEstrategiaDidactica(
   doc: jsPDF,
   y: number,
-  curso: any,
-  MARGINS: any,
+  curso: Curso,
+  MARGINS: Margins,
   pageHeight: number,
   lang: SyllabusLang
 ) {
@@ -700,7 +710,7 @@ async function renderEstrategiaDidactica(
   const contentWidth = pageWidth - MARGINS.left - MARGINS.right;
   const indent = 0;
 
-  const sanitize = (v: any) => {
+  const sanitize = (v: unknown) => {
     if (v === null || v === undefined) return '';
     try {
       const s = String(v);
@@ -777,8 +787,8 @@ async function renderEstrategiaDidactica(
 async function renderRecursos(
   doc: jsPDF,
   y: number,
-  curso: any,
-  MARGINS: any,
+  curso: Curso,
+  MARGINS: Margins,
   pageHeight: number,
   lang: SyllabusLang
 ) {
@@ -807,7 +817,7 @@ async function renderRecursos(
   const contentWidth = pageWidth - MARGINS.left - MARGINS.right;
   const indent = 0;
 
-  const sanitize = (v: any) => {
+  const sanitize = (v: unknown) => {
     if (v === null || v === undefined) return '';
     try {
       const s = String(v);
@@ -884,8 +894,8 @@ async function renderRecursos(
 async function renderMatrizEvaluacion(
   doc: jsPDF,
   y: number,
-  curso: any,
-  MARGINS: any,
+  curso: Curso,
+  MARGINS: Margins,
   pageHeight: number,
   lang: SyllabusLang
 ) {
@@ -912,7 +922,7 @@ async function renderMatrizEvaluacion(
   }
 
   const tableData = matriz.map((m: any) => {
-    const sanitize = (v: any) =>
+    const sanitize = (v: unknown) =>
       v === null || v === undefined ? '' : String(v).replace(/[\u0000-\u001F\u007F-\u009F]/g, '').trim();
 
     return [
@@ -964,7 +974,7 @@ async function renderMatrizEvaluacion(
     }
   });
 
-  y = (doc as any).lastAutoTable?.finalY ?? y;
+  y = (doc as jsPDFWithAutoTable).lastAutoTable?.finalY ?? y;
 
   return y;
 }
@@ -976,8 +986,8 @@ async function renderMatrizEvaluacion(
 async function renderBibliografia(
   doc: jsPDF,
   y: number,
-  curso: any,
-  MARGINS: any,
+  curso: Curso,
+  MARGINS: Margins,
   pageHeight: number,
   lang: SyllabusLang
 ) {
@@ -996,7 +1006,7 @@ async function renderBibliografia(
       ? curso.bibliografias
       : [];
 
-  const sanitize = (v: any) => {
+  const sanitize = (v: unknown) => {
     if (v === null || v === undefined) return '';
     try {
       const s = String(v);
@@ -1062,7 +1072,7 @@ async function renderBibliografia(
    UTILIDADES: footer + nueva página y carga de imagen
 ------------------------------ */
 
-function addFooterAndNewPage(doc: jsPDF, margins: any): number {
+function addFooterAndNewPage(doc: jsPDF, margins: Margins): number {
   const page = doc.getNumberOfPages();
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
