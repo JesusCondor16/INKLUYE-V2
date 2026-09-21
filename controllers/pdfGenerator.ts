@@ -166,7 +166,7 @@ function arrayBufferToBase64(buffer: ArrayBuffer): string {
   const chunk = 0x8000;
   for (let i = 0; i < bytes.length; i += chunk) {
     const slice = bytes.subarray(i, i + chunk);
-    binary += String.fromCharCode.apply(null, Array.from(slice) as any);
+    binary += String.fromCharCode.apply(null, Array.from(slice));
   }
   // btoa funciona en browser
   return btoa(binary);
