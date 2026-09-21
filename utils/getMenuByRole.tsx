@@ -34,7 +34,7 @@ export default function getMenuByRole(role: string | null): MenuItem[] {
       return [
         { label: "Inicio", path: "/director", icon: <Home size={18} /> },
         { label: "Gestión de docentes", path: "/director/docentes", icon: <Users size={18} /> },
-        { label: "Gestión de cursos", path: "/cursos", icon: <BookOpen size={18} /> },
+        { label: "Gestión de cursos", path: "/director/cursos", icon: <BookOpen size={18} /> },
         buscar,
         perfil,
         info,

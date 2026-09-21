@@ -177,7 +177,7 @@ export async function PUT(
     if (!usuario) {
       return NextResponse.json({ error: 'Usuario no autenticado' }, { status: 401 });
     }
-    if (!(await esCoordinadorDelCurso(usuario, id))) {
+    if (usuario.role !== 'director' && !(await esCoordinadorDelCurso(usuario, id))) {
       return NextResponse.json({ error: 'No autorizado' }, { status: 403 });
     }
 
