@@ -137,11 +137,7 @@ export async function GET(
 
     return NextResponse.json(
       {
-        error: 'Error al obtener el curso',
-        detalle:
-          error instanceof Error
-            ? error.message
-            : String(error)
+        error: 'Error al obtener el curso'
       },
       { status: 500 }
     );
@@ -262,7 +258,6 @@ export async function PUT(
   }
 
   catch (error: unknown) {
-
     console.error(
       '❌ PUT /api/cursos/[id] error:',
       error
@@ -270,15 +265,9 @@ export async function PUT(
 
     return NextResponse.json(
       {
-        error: 'Error al actualizar curso',
-        detalle:
-          error instanceof Error
-            ? error.message
-            : String(error)
+        error: 'Error al actualizar curso'
       },
       { status: 500 }
     );
-
   }
-
 }

@@ -56,7 +56,6 @@ export async function GET(req: NextRequest) {
       {
         success: false,
         error: "Error al obtener cursos",
-        details: err instanceof Error ? err.message : String(err),
       },
       { status: 500 }
     );

@@ -13,8 +13,6 @@ export async function GET() {
   } catch (error: unknown) {
     console.error('❌ Error GET /api/competencias:', error);
 
-    const message = error instanceof Error ? error.message : 'Error desconocido';
-
-    return NextResponse.json({ error: message }, { status: 500 });
+    return NextResponse.json({ error: 'Error al obtener competencias' }, { status: 500 });
   }
 }

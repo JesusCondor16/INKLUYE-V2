@@ -14,10 +14,8 @@ export async function GET() {
   } catch (err: unknown) {
     console.error("❌ GET /api/coordinadores error:", err);
 
-    const message = err instanceof Error ? err.message : "Error desconocido";
-
     return NextResponse.json(
-      { error: "Error al obtener coordinadores", detalle: message },
+      { error: "Error al obtener coordinadores" },
       { status: 500 }
     );
   }

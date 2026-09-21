@@ -62,7 +62,7 @@ export async function GET(_request: Request, context: { params: Promise<{ id: st
   } catch (error) {
     console.error("GET /api/cursos/[id]/competencias error:", error);
     return NextResponse.json(
-      { error: "Error al obtener competencias del curso", detalle: String(error) },
+      { error: "Error al obtener competencias del curso" },
       { status: 500 }
     );
   }
@@ -153,7 +153,7 @@ export async function POST(request: NextRequest, context: { params: Promise<{ id
   } catch (error) {
     console.error("POST /api/cursos/[id]/competencias error:", error);
     return NextResponse.json(
-      { error: "Error al guardar competencias del curso", detalle: String(error) },
+      { error: "Error al guardar competencias del curso" },
       { status: 500 }
     );
   }

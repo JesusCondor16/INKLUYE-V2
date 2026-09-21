@@ -18,8 +18,7 @@ export async function GET() {
     return NextResponse.json(
       {
         success: false,
-        error: 'Error al obtener cursos',
-        detalle: err instanceof Error ? err.message : String(err)
+        error: 'Error al obtener cursos'
       },
       { status: 500 }
     );

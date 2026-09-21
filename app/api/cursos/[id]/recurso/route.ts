@@ -59,8 +59,7 @@ export async function GET(_req: Request, context: { params: Promise<{ id: string
     });
   } catch (error: unknown) {
     console.error("Error GET curso:", error);
-    const msg = error instanceof Error ? error.message : String(error);
-    return NextResponse.json({ error: "Error al obtener los datos", detalle: msg }, { status: 500 });
+    return NextResponse.json({ error: "Error al obtener los datos" }, { status: 500 });
   }
 }
 
@@ -103,9 +102,8 @@ export async function PUT(req: NextRequest, context: { params: Promise<{ id: str
     }
 
     return NextResponse.json({ message: "Bibliografía actualizada correctamente" });
-  } catch (error: unknown) {
+   } catch (error: unknown) {
     console.error("Error PUT bibliografía:", error);
-    const msg = error instanceof Error ? error.message : String(error);
-    return NextResponse.json({ error: "Error al actualizar bibliografía", detalle: msg }, { status: 500 });
+    return NextResponse.json({ error: "Error al actualizar bibliografía" }, { status: 500 });
   }
 }

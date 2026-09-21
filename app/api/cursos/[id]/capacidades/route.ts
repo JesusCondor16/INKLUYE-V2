@@ -41,10 +41,9 @@ export async function GET(_req: Request, context: { params: Promise<{ id: string
     });
 
     return NextResponse.json({ cursoId, capacidades: capacidades.map(mapCapacidad) }, { status: 200 });
-  } catch (error: unknown) {
+   } catch (error: unknown) {
     console.error("❌ GET /api/cursos/:id/capacidades error:", error);
-    const message = error instanceof Error ? error.message : "Error desconocido";
-    return NextResponse.json({ error: "Error al obtener capacidades", detalle: message }, { status: 500 });
+    return NextResponse.json({ error: "Error al obtener capacidades" }, { status: 500 });
   }
 }
 
@@ -145,7 +144,6 @@ export async function POST(req: NextRequest, context: { params: Promise<{ id: st
     );
   } catch (error: unknown) {
     console.error("❌ POST /api/cursos/:id/capacidades error:", error);
-    const message = error instanceof Error ? error.message : "Error desconocido";
-    return NextResponse.json({ error: "Error al guardar capacidades", detalle: message }, { status: 500 });
+    return NextResponse.json({ error: "Error al guardar capacidades" }, { status: 500 });
   }
 }
