@@ -1,167 +1,380 @@
-/* ==========================
-   Modal Overlay
-========================== */
-.overlay {
-  background-color: rgba(0, 0, 0, 0.8); /* Más contraste con fondo */
-  z-index: 1050;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+/* =====================================================
+   VARIABLES DE DISEÑO (Accesibilidad AAA)
+===================================================== */
+
+:global(:root) {
+  --overlay-bg: rgba(0,0,0,0.75);
+
+  --color-primary: #003366;
+  --color-primary-strong: #002147;
+
+  --color-surface: #ffffff;
+  --color-surface-soft: #f8fafc;
+
+  --color-border: #cbd5e1;
+
+  --color-text: #0b0b0b;
+  --color-text-muted: #374151;
+
+  --color-focus: #2563eb;
+
+  --color-table-header: #0f172a;
+
+  --radius-md: 8px;
 }
 
-/* ==========================
-   Modal Header
-========================== */
-.header {
-  background-color: #0f172a; /* Azul oscuro/gris profundo para alto contraste */
-  color: #ffffff;
-  font-weight: 700;
-  padding: 1rem 1.5rem;
-  border-bottom: 3px solid #ffffff; /* Contraste alto */
+/* =====================================================
+   OVERLAY DEL MODAL
+===================================================== */
+
+.overlay{
+  background: var(--overlay-bg);
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  padding:24px;
+
+  z-index:1050;
 }
 
-.modal-title {
-  font-size: 1.5rem;
-  line-height: 1.5;
+/* =====================================================
+   HEADER DEL MODAL
+===================================================== */
+
+.header{
+
+  background: var(--color-primary);
+
+  color:#ffffff;
+
+  padding:1.2rem 1.5rem;
+
+  border-bottom:3px solid #ffffff;
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
 }
 
-/* ==========================
-   Modal Body
-========================== */
-.modal-body {
-  max-height: 75vh;
-  overflow-y: auto;
-  padding: 1.5rem;
-  background-color: #ffffff; /* Fondo blanco para máximo contraste */
-  color: #0f172a; /* Texto oscuro legible */
-  font-size: 1rem;
-  line-height: 1.6;
+.modal-title{
+  font-size:1.35rem;
+  font-weight:700;
+  line-height:1.5;
 }
 
-.modal-body section {
-  margin-bottom: 1.5rem;
+/* =====================================================
+   BODY DEL MODAL
+===================================================== */
+
+.modal-body{
+
+  max-height:75vh;
+  overflow-y:auto;
+
+  padding:1.75rem;
+
+  background:var(--color-surface);
+
+  color:var(--color-text);
+
+  font-size:1rem;
+
+  line-height:1.65;
+
 }
 
-.modal-body h5,
-.modal-body h6 {
-  color: #0f172a;
-  font-weight: 700;
-  margin-bottom: 0.75rem;
+/* Secciones */
+
+.modal-body section{
+  margin-bottom:2rem;
 }
 
-/* ==========================
-   Inputs y Textareas
-========================== */
-.modal-body input.form-control,
-.modal-body textarea.form-control {
-  background-color: #ffffff;
-  border: 2px solid #0f172a; /* Contraste alto */
-  border-radius: 0.375rem;
-  padding: 0.5rem;
-  font-size: 0.95rem;
-  color: #0f172a;
+.modal-body h2{
+  font-size:1.15rem;
+  font-weight:700;
+
+  color:var(--color-primary);
+
+  margin-bottom:0.75rem;
+
+  border-left:4px solid var(--color-primary);
+
+  padding-left:10px;
 }
 
-.modal-body input:disabled,
-.modal-body textarea:disabled {
-  background-color: #f1f5f9; /* Gris claro pero contraste > 7:1 */
-  color: #0f172a;
+/* =====================================================
+   INPUTS Y TEXTAREAS
+===================================================== */
+
+.modal-body textarea.form-control,
+.modal-body input.form-control{
+
+  background:#ffffff;
+
+  border:2px solid var(--color-border);
+
+  border-radius:var(--radius-md);
+
+  padding:10px 12px;
+
+  font-size:0.95rem;
+
+  color:var(--color-text);
+
+  transition:border .15s ease;
+
 }
 
-/* Foco accesible teclado */
-.modal-body input:focus,
-.modal-body textarea:focus {
-  outline: 3px solid #2563eb;
-  outline-offset: 2px;
+/* Estados deshabilitados */
+
+.modal-body textarea:disabled,
+.modal-body input:disabled{
+
+  background:var(--color-surface-soft);
+
+  color:var(--color-text);
+
+  border-color:#d1d5db;
+
 }
 
-/* ==========================
-   Tablas
-========================== */
-.modal-body table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 0.5rem;
-  font-size: 0.95rem;
+/* FOCUS ACCESIBLE (teclado) */
+
+.modal-body textarea:focus,
+.modal-body input:focus{
+
+  outline:3px solid var(--color-focus);
+  outline-offset:2px;
+
+  border-color:var(--color-focus);
+
 }
 
-/* Encabezados de tabla con alto contraste */
-.modal-body th,
-.modal-body td {
-  padding: 0.5rem;
-  text-align: center;
-  vertical-align: middle;
-  border: 2px solid #0f172a;
-  color: #0f172a;
-  background-color: #ffffff;
+/* =====================================================
+   TABLA DE EVALUACIÓN
+===================================================== */
+
+.modal-body table{
+
+  width:100%;
+
+  border-collapse:collapse;
+
+  margin-top:0.5rem;
+
+  font-size:0.95rem;
+
 }
 
-/* Tabla de evaluación específica */
-.table-evaluacion th {
-  background-color: #0f172a;
-  color: #ffffff;
-  font-weight: 700;
-  font-size: 1rem;
+/* Encabezados */
+
+.modal-body th{
+
+  background:var(--color-table-header);
+
+  color:#ffffff;
+
+  font-weight:700;
+
+  padding:10px;
+
+  border:2px solid var(--color-table-header);
+
+  text-align:center;
+
 }
 
-/* Filas alternadas para mejorar lectura */
-.table-evaluacion tbody tr:nth-child(even) {
-  background-color: #f1f5f9;
+/* Celdas */
+
+.modal-body td{
+
+  padding:10px;
+
+  border:2px solid var(--color-border);
+
+  text-align:center;
+
+  vertical-align:middle;
+
+  color:var(--color-text);
+
 }
 
-/* Inputs dentro de tabla */
-.table-evaluacion input.form-control {
-  width: 100%;
-  padding: 0.25rem;
-  font-size: 0.9rem;
-  border-radius: 0.25rem;
-  border: 1px solid #0f172a;
-  background-color: #ffffff;
-  color: #0f172a;
+/* Alternancia de filas */
+
+.table-evaluacion tbody tr:nth-child(even){
+
+  background:var(--color-surface-soft);
+
 }
 
-/* Foco accesible inputs tabla */
-.table-evaluacion input:focus {
-  outline: 3px solid #2563eb;
-  outline-offset: 2px;
+/* =====================================================
+   TABLA INPUTS
+===================================================== */
+
+.table-evaluacion input.form-control{
+
+  width:100%;
+
+  padding:6px;
+
+  font-size:0.9rem;
+
+  border-radius:6px;
+
+  border:1px solid var(--color-border);
+
 }
 
-/* ==========================
-   Footer
-========================== */
-.modal-footer {
-  padding: 1rem 1.5rem;
-  background-color: #e2e8f0;
-  border-top: 2px solid #0f172a;
-  display: flex;
-  justify-content: flex-end;
+/* =====================================================
+   BOTONES
+===================================================== */
+
+.btn{
+
+  font-size:0.95rem;
+
+  border-radius:8px;
+
 }
 
-/* Botón cerrar */
-.btn-close {
-  background: transparent;
-  border: none;
-  font-size: 1.5rem;
-  color: #ffffff;
-  cursor: pointer;
+/* Hover accesible */
+
+.btn-primary:hover{
+  background:#0047a3;
 }
 
-/* Scrollbar legible */
-.modal-body::-webkit-scrollbar {
-  width: 12px;
+.btn-success:hover{
+  background:#047857;
 }
 
-.modal-body::-webkit-scrollbar-track {
-  background: #f1f5f9;
+.btn-danger:hover{
+  background:#b91c1c;
 }
 
-.modal-body::-webkit-scrollbar-thumb {
-  background-color: #0f172a;
-  border-radius: 6px;
-  border: 3px solid #f1f5f9;
+/* Focus accesible */
+
+.btn:focus{
+
+  outline:3px solid var(--color-focus);
+  outline-offset:2px;
+
 }
 
-/* Espaciado de inputs en sección notas/bibliografía */
-.modal-body .mb-2 {
-  margin-bottom: 0.5rem;
+/* =====================================================
+   FOOTER DEL MODAL
+===================================================== */
+
+.modal-footer{
+
+  padding:1.1rem 1.5rem;
+
+  background:#f1f5f9;
+
+  border-top:2px solid var(--color-border);
+
+  display:flex;
+
+  justify-content:flex-end;
+
+  gap:10px;
+
+}
+
+/* =====================================================
+   BOTÓN CERRAR
+===================================================== */
+
+.btn-close{
+
+  font-size:1.4rem;
+
+  color:#ffffff;
+
+  background:transparent;
+
+  border:none;
+
+  cursor:pointer;
+
+}
+
+.btn-close:hover{
+  opacity:0.8;
+}
+
+.btn-close:focus{
+
+  outline:3px solid var(--color-focus);
+  outline-offset:2px;
+
+}
+
+/* =====================================================
+   SCROLL ACCESIBLE
+===================================================== */
+
+.modal-body::-webkit-scrollbar{
+  width:12px;
+}
+
+.modal-body::-webkit-scrollbar-track{
+  background:#f1f5f9;
+}
+
+.modal-body::-webkit-scrollbar-thumb{
+
+  background:#475569;
+
+  border-radius:8px;
+
+  border:3px solid #f1f5f9;
+
+}
+
+/* =====================================================
+   ACCESIBILIDAD PARA LABELS OCULTOS
+===================================================== */
+
+.visuallyHidden{
+
+  position:absolute;
+
+  width:1px;
+  height:1px;
+
+  padding:0;
+  margin:-1px;
+
+  overflow:hidden;
+
+  clip:rect(0,0,0,0);
+
+  white-space:nowrap;
+
+  border:0;
+
+}
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media (max-width:768px){
+
+.modal-body{
+  padding:1.25rem;
+}
+
+.modal-title{
+  font-size:1.1rem;
+}
+
+.modal-body table{
+  font-size:0.9rem;
+}
+
 }

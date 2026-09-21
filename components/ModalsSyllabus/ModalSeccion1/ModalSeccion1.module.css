@@ -1,117 +1,475 @@
-.modalOverlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.75);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
+/* ModalSeccion1.module.css
+   Sistema Inkluye
+   Modal accesible WCAG 2.1 AAA
+   Compatible con Next.js CSS Modules
+*/
+
+/* =========================
+   VARIABLES
+========================= */
+
+:global(:root){
+
+  --modal-primary:#0a2540;
+  --modal-primary-strong:#071833;
+
+  --modal-accent:#ffbf47;
+
+  --modal-bg:#ffffff;
+  --modal-surface:#f6f9fc;
+
+  --modal-text:#0b1f3a;
+  --modal-muted:#5a6a7a;
+
+  --modal-border:#dbe3ec;
+
+  --modal-radius:12px;
+
+  --focus-ring:4px solid var(--modal-accent);
+
+  --touch:44px;
+
 }
 
-.modalContainer {
-  background-color: #ffffff;
-  color: #000;
-  border-radius: 1rem;
-  width: 90%;
-  max-width: 800px;
-  max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: 0 0 30px rgba(0, 0, 0, 0.4);
-  padding: 1.5rem;
+/* =========================
+   OVERLAY
+========================= */
+
+.modalOverlay{
+
+  position:fixed;
+
+  inset:0;
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:center;
+
+  padding:1.5rem;
+
+  background:rgba(10,25,47,0.78);
+
+  backdrop-filter:blur(3px);
+
+  z-index:9999;
+
 }
 
-.modalHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #003366;
-  color: #fff;
-  padding: 1rem;
-  border-radius: 0.5rem 0.5rem 0 0;
+/* =========================
+   CONTAINER
+========================= */
+
+.modalContainer{
+
+  background:var(--modal-bg);
+
+  color:var(--modal-text);
+
+  width:100%;
+
+  max-width:820px;
+
+  max-height:90vh;
+
+  overflow-y:auto;
+
+  border-radius:var(--modal-radius);
+
+  box-shadow:
+    0 10px 35px rgba(0,0,0,0.25);
+
+  display:flex;
+
+  flex-direction:column;
+
 }
 
-.closeButton {
-  background: none;
-  border: none;
-  color: #fff;
-  font-size: 1.25rem;
-  cursor: pointer;
-}
-.closeButton:focus {
-  outline: 3px solid #f6c744;
+/* =========================
+   HEADER
+========================= */
+
+.modalHeader{
+
+  display:flex;
+
+  justify-content:space-between;
+
+  align-items:center;
+
+  gap:1rem;
+
+  background:var(--modal-primary);
+
+  color:#fff;
+
+  padding:1rem 1.3rem;
+
+  border-radius:var(--modal-radius) var(--modal-radius) 0 0;
+
 }
 
-.modalBody {
-  padding: 1rem;
+.modalHeader h2{
+
+  font-size:1.2rem;
+
+  font-weight:700;
+
+  margin:0;
+
 }
 
-.datalist {
-  display: grid;
-  grid-template-columns: 1fr 2fr;
-  row-gap: 0.5rem;
-  column-gap: 1rem;
+/* =========================
+   CLOSE BUTTON
+========================= */
+
+.closeButton{
+
+  display:inline-flex;
+
+  align-items:center;
+
+  justify-content:center;
+
+  min-width:var(--touch);
+
+  min-height:var(--touch);
+
+  border:none;
+
+  background:transparent;
+
+  color:#ffffff;
+
+  font-size:1.3rem;
+
+  cursor:pointer;
+
+  border-radius:8px;
+
 }
 
-.separator {
-  margin: 1.5rem 0;
+.closeButton:hover{
+
+  background:rgba(255,255,255,0.15);
+
 }
 
-.textarea {
-  width: 100%;
-  min-height: 120px;
-  resize: vertical;
-  border: 1px solid #ccc;
-  border-radius: 0.5rem;
-  padding: 0.75rem;
-  font-size: 1rem;
-}
-.textarea:focus {
-  outline: 3px solid #003366;
+.closeButton:focus-visible{
+
+  outline:var(--focus-ring);
+
+  outline-offset:3px;
+
 }
 
-.charCount {
-  text-align: right;
-  font-size: 0.85rem;
-  color: #555;
-  margin-top: 0.25rem;
+/* =========================
+   BODY
+========================= */
+
+.modalBody{
+
+  padding:1.5rem;
+
 }
 
-.buttonContainer {
-  display: flex;
-  justify-content: flex-end;
-  gap: 1rem;
-  margin-top: 1.5rem;
+/* =========================
+   DATA LIST
+========================= */
+
+.datalist{
+
+  display:grid;
+
+  grid-template-columns: 220px 1fr;
+
+  row-gap:0.55rem;
+
+  column-gap:1rem;
+
+  font-size:0.95rem;
+
 }
 
-.buttonPrimary {
-  background-color: #003366;
-  color: #fff;
-  border: none;
-  border-radius: 0.5rem;
-  padding: 0.6rem 1.2rem;
-  cursor: pointer;
-}
-.buttonPrimary:focus {
-  outline: 3px solid #f6c744;
+.datalist dt{
+
+  font-weight:700;
+
+  color:var(--modal-primary);
+
 }
 
-.buttonSecondary {
-  background-color: #ccc;
-  color: #000;
-  border: none;
-  border-radius: 0.5rem;
-  padding: 0.6rem 1.2rem;
-  cursor: pointer;
-}
-.buttonSecondary:focus {
-  outline: 3px solid #f6c744;
+.datalist dd{
+
+  margin:0;
+
+  color:var(--modal-text);
+
 }
 
-.loadingText {
-  text-align: center;
-  font-weight: bold;
-  color: #003366;
+/* =========================
+   SELECT
+========================= */
+
+.select{
+
+  width:100%;
+
+  padding:0.45rem 0.6rem;
+
+  border-radius:8px;
+
+  border:1px solid var(--modal-border);
+
+  font-size:0.95rem;
+
+  background:#fff;
+
+  color:var(--modal-text);
+
+  min-height:var(--touch);
+
+}
+
+.select:focus-visible{
+
+  outline:var(--focus-ring);
+
+  outline-offset:2px;
+
+}
+
+/* =========================
+   SEPARATOR
+========================= */
+
+.separator{
+
+  margin:1.6rem 0;
+
+  border:none;
+
+  height:1px;
+
+  background:var(--modal-border);
+
+}
+
+/* =========================
+   SUBTITLE
+========================= */
+
+.modalBody h3{
+
+  font-size:1.1rem;
+
+  font-weight:700;
+
+  margin-bottom:0.6rem;
+
+  color:var(--modal-primary);
+
+}
+
+/* =========================
+   TEXTAREA
+========================= */
+
+.textarea{
+
+  width:100%;
+
+  min-height:140px;
+
+  resize:vertical;
+
+  padding:0.75rem;
+
+  font-size:0.95rem;
+
+  border-radius:10px;
+
+  border:1px solid var(--modal-border);
+
+  background:#fff;
+
+  color:var(--modal-text);
+
+}
+
+.textarea:focus-visible{
+
+  outline:var(--focus-ring);
+
+  outline-offset:3px;
+
+}
+
+/* =========================
+   CHARACTER COUNT
+========================= */
+
+.charCount{
+
+  margin-top:0.35rem;
+
+  font-size:0.85rem;
+
+  text-align:right;
+
+  color:var(--modal-muted);
+
+}
+
+/* =========================
+   BUTTON CONTAINER
+========================= */
+
+.buttonContainer{
+
+  display:flex;
+
+  justify-content:flex-end;
+
+  gap:0.8rem;
+
+  margin-top:1.5rem;
+
+}
+
+/* =========================
+   BUTTONS
+========================= */
+
+.buttonPrimary{
+
+  display:inline-flex;
+
+  align-items:center;
+
+  justify-content:center;
+
+  min-height:var(--touch);
+
+  padding:0.55rem 1rem;
+
+  border-radius:8px;
+
+  font-weight:700;
+
+  border:none;
+
+  cursor:pointer;
+
+  background:var(--modal-primary);
+
+  color:#fff;
+
+}
+
+.buttonPrimary:hover{
+
+  background:var(--modal-primary-strong);
+
+}
+
+.buttonPrimary:focus-visible{
+
+  outline:var(--focus-ring);
+
+  outline-offset:3px;
+
+}
+
+.buttonSecondary{
+
+  display:inline-flex;
+
+  align-items:center;
+
+  justify-content:center;
+
+  min-height:var(--touch);
+
+  padding:0.55rem 1rem;
+
+  border-radius:8px;
+
+  font-weight:700;
+
+  border:2px solid var(--modal-primary);
+
+  background:#ffffff;
+
+  color:var(--modal-primary);
+
+  cursor:pointer;
+
+}
+
+.buttonSecondary:hover{
+
+  background:#eef4ff;
+
+}
+
+.buttonSecondary:focus-visible{
+
+  outline:var(--focus-ring);
+
+  outline-offset:3px;
+
+}
+
+/* =========================
+   LOADING
+========================= */
+
+.loadingText{
+
+  padding:2rem;
+
+  text-align:center;
+
+  font-weight:700;
+
+  color:var(--modal-primary);
+
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width:720px){
+
+  .datalist{
+
+    grid-template-columns:1fr;
+
+  }
+
+  .modalBody{
+
+    padding:1.2rem;
+
+  }
+
+}
+
+/* =========================
+   REDUCED MOTION
+========================= */
+
+@media (prefers-reduced-motion:reduce){
+
+  .modalOverlay *{
+
+    animation:none !important;
+
+    transition:none !important;
+
+  }
+
 }

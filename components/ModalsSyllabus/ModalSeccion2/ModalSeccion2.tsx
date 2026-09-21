@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import styles from './ModalSeccion2.module.css';
 import { useModalSeccion2Controller } from './ModalSeccion2.controller';
 import { Competencia, Logro } from './ModalSeccion2.model';
 
@@ -10,33 +11,62 @@ interface ModalSeccion2Props {
 }
 
 export default function ModalSeccion2({ cursoId, onClose }: ModalSeccion2Props) {
+
   const { competenciasCurso, logros, loading } = useModalSeccion2Controller(cursoId);
 
-  if (loading) return <p>Cargando datos...</p>;
+  if (loading) {
+    return (
+      <div className={styles.modalOverlay}>
+        <div className={styles.modalContainer}>
+          <p className={styles.loadingText}>Cargando datos...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="modal show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.6)' }}>
-      <div className="modal-dialog modal-xl">
-        <div className="modal-content">
-          <div className="modal-header">
-            <h2 className="modal-title">3. Competencias del perfil de egreso</h2>
-            <button className="btn-close"
-              onClick={onClose}
-              aria-label="Cerrar modal"
-            ></button>
-          </div>
+    <div
+      className={styles.modalOverlay}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modalTitle"
+    >
+      <div className={styles.modalContainer}>
 
-          <div className="modal-body">
-            {/* Competencias */}
-            <table className="table table-bordered text-center align-middle">
-              <thead className="table-primary">
+        {/* HEADER */}
+        <div className={styles.modalHeader}>
+
+          <h2 id="modalTitle" className={styles.modalTitle}>
+            3. Competencias del perfil de egreso
+          </h2>
+
+          <button
+            className={styles.closeButton}
+            onClick={onClose}
+            aria-label="Cerrar modal"
+          >
+            ✕
+          </button>
+
+        </div>
+
+        {/* BODY */}
+        <div className={styles.modalBody}>
+
+          {/* TABLA COMPETENCIAS */}
+          <div className={styles.tableWrapper}>
+
+            <table className={styles.table}>
+
+              <thead className={styles.tableHeaderPrimary}>
                 <tr>
-                  <th>Código</th>
-                  <th>Descripción</th>
-                  <th>Tipo</th>
-                  <th>Nivel</th>
+                  <th scope="col">Código</th>
+                  <th scope="col">Descripción</th>
+                  <th scope="col">Tipo</th>
+                  <th scope="col">Nivel</th>
                 </tr>
               </thead>
+
               <tbody>
                 {competenciasCurso.length > 0 ? (
                   competenciasCurso.map((c: Competencia, i) => (
@@ -49,21 +79,38 @@ export default function ModalSeccion2({ cursoId, onClose }: ModalSeccion2Props) 
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={4}>No hay competencias registradas</td>
+                    <td colSpan={4} className={styles.emptyRow}>
+                      No hay competencias registradas
+                    </td>
                   </tr>
                 )}
               </tbody>
+
             </table>
 
-            {/* Logros de aprendizaje */}
-            <h2 className="mt-4 mb-3">4. Logros de aprendizaje</h2>
-            <table className="table table-bordered text-center align-middle">
-              <thead className="table-success">
+          </div>
+
+          {/* LOGROS */}
+          <h3 className={styles.sectionTitle}>
+            4. Logros de aprendizaje
+          </h3>
+
+          <div className={styles.tableWrapper}>
+
+            <table className={styles.table}>
+
+              <thead className={styles.tableHeaderSuccess}>
                 <tr>
-                  <th style={{ width: '20%' }}>Código</th>
-                  <th style={{ width: '80%' }}>Descripción</th>
+                  <th scope="col" style={{ width: '20%' }}>
+                    Código
+                  </th>
+
+                  <th scope="col" style={{ width: '80%' }}>
+                    Descripción
+                  </th>
                 </tr>
               </thead>
+
               <tbody>
                 {logros.length > 0 ? (
                   logros.map((logro: Logro, i) => (
@@ -74,19 +121,31 @@ export default function ModalSeccion2({ cursoId, onClose }: ModalSeccion2Props) 
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={2}>No hay logros registrados</td>
+                    <td colSpan={2} className={styles.emptyRow}>
+                      No hay logros registrados
+                    </td>
                   </tr>
                 )}
               </tbody>
+
             </table>
+
           </div>
 
-          <div className="modal-footer">
-            <button className="btn btn-secondary" onClick={onClose}>
-              Cerrar
-            </button>
-          </div>
         </div>
+
+        {/* FOOTER */}
+        <div className={styles.modalFooter}>
+
+          <button
+            className={styles.buttonSecondary}
+            onClick={onClose}
+          >
+            Cerrar
+          </button>
+
+        </div>
+
       </div>
     </div>
   );
