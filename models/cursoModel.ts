@@ -1,20 +1,8 @@
 // src/models/cursoModel.ts
 import prisma from "@/lib/prisma";
 
-/**
- * cursoModel
- * Métodos robustos para obtener cursos y sus relaciones relevantes
- * (coordinador, docentes, syllabus, logros, capacidades, programación, etc.)
- *
- * Este archivo asume que tu schema Prisma usa los modelos con nombres en minúscula
- * (ej. course, cursodocente, syllabus, logro, capacidad, programacioncontenido, etc.)
- */
-
 export const cursoModel = {
-  /**
-   * Obtener todos los cursos con coordinador, docentes y syllabus (lista principal)
-   * Esto es usado por /api/cursos/buscar — importante que incluya `syllabus`.
-   */
+
   async findAll() {
     try {
       return await prisma.course.findMany({
@@ -31,10 +19,6 @@ export const cursoModel = {
     }
   },
 
-  /**
-   * Obtener curso por ID con coordinador, docentes, logros, syllabus y otras relaciones útiles
-   * (para generar el PDF o mostrar detalles de curso)
-   */
   async findById(id: number) {
     if (!id || typeof id !== "number") return null;
     try {
@@ -66,7 +50,7 @@ export const cursoModel = {
 
     try {
       const byCoordinadorId = await prisma.course.findMany({
-        where: { coordinadorId },
+        where: { coordinadorId: coordinatorId },
         include: {
           user: { select: { id: true, name: true } },
           cursodocente: { include: { user: { select: { id: true, name: true } } } },
