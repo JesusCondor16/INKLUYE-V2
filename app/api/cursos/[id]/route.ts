@@ -29,10 +29,16 @@ function mapCursoResponse(c: any) {
         }
       }));
 
-  const docentesSimple =
+   const docentesSimple =
     (c.cursodocente ?? [])
       .map((cd: any) => cd.user)
-      .filter(Boolean);
+      .filter(Boolean)
+      .map((u: any) => ({
+        id: u.id,
+        name: u.name,
+        email: u.email,
+        role: u.role
+      }));
 
   return {
 
