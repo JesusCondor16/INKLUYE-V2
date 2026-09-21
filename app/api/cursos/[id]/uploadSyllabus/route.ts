@@ -78,7 +78,6 @@ export async function POST(req: NextRequest, context: { params: Params | Promise
     return NextResponse.json({ success: true, url: pdfUrl, saved }, { status: 200 });
   } catch (error: unknown) {
     console.error("uploadSyllabus error:", error);
-    const detalle = error instanceof Error ? error.message : String(error);
-    return NextResponse.json({ success: false, error: "Error del servidor", detalle }, { status: 500 });
+    return NextResponse.json({ success: false, error: "Error del servidor" }, { status: 500 });
   }
 }

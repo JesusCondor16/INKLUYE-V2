@@ -20,11 +20,8 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ success: true, data: cursos });
   } catch (error: unknown) {
     console.error('❌ GET /api/coordinador/cursos error:', error);
-
-    const message = error instanceof Error ? error.message : String(error);
-
     return NextResponse.json(
-      { success: false, error: 'Error al obtener cursos', details: message },
+      { success: false, error: 'Error al obtener cursos' },
       { status: 500 }
     );
   }

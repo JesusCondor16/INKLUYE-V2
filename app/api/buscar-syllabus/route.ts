@@ -21,11 +21,8 @@ export async function GET(req: NextRequest) {
   } catch (err: unknown) {
     console.error("❌ Error GET /api/buscar-syllabus:", err);
 
-    // Validamos si err es un Error real
-    const message = err instanceof Error ? err.message : "Error desconocido";
-
     return NextResponse.json(
-      { success: false, error: "Error al obtener cursos", details: message },
+      { success: false, error: "Error al obtener cursos" },
       { status: 500 }
     );
   }

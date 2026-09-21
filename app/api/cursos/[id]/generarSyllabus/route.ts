@@ -131,7 +131,6 @@ export async function GET(_req: Request, context: { params: Params | Promise<Par
     );
   } catch (err: unknown) {
     console.error('Error en generarSyllabus route:', err);
-    const msg = err instanceof Error ? err.message : String(err);
-    return NextResponse.json({ error: 'Error servidor', detalle: msg }, { status: 500 });
+    return NextResponse.json({ error: 'Error servidor' }, { status: 500 });
   }
 }

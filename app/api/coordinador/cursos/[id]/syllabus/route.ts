@@ -38,10 +38,8 @@ export async function GET(
   } catch (error: unknown) {
     console.error("❌ Error GET /api/coordinador/cursos/[id]/syllabus:", error);
 
-    const message = error instanceof Error ? error.message : "Error desconocido";
-
     return NextResponse.json(
-      { success: false, error: "Error al obtener el curso", details: message },
+      { success: false, error: "Error al obtener el curso" },
       { status: 500 }
     );
   }
