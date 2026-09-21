@@ -20,7 +20,7 @@ type DecodedToken = {
   role?: string;
   exp?: number;
   iat?: number;
-  [k: string]: any;
+  [k: string]: unknown;
 };
 
 function mapRoleToRoute(role?: string): string | undefined {
@@ -75,7 +75,7 @@ export const authController = {
       console.info(`[authController] login success - email=${normalizedEmail} role=${role ?? 'unknown'}`);
 
       return { token, user: user as LoginResult['user'], to };
-    } catch (err: any) {
+    } catch (err: unknown) {
       if (err instanceof AuthError) {
         console.warn('[authController] authentication failed:', err);
         throw err;
