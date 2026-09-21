@@ -44,8 +44,8 @@ export async function getAllDocentesView() {
 
     const data = await res.json().catch(() => null);
     return { ok: true, data };
-  } catch (err: any) {
-    return { ok: false, message: err?.message || 'Error de red' };
+   } catch (err) {
+    return { ok: false, message: err instanceof Error ? err.message : 'Error de red' };
   }
 }
 
@@ -69,8 +69,8 @@ export async function getDocenteByIdView(id: number) {
 
     const data = await res.json().catch(() => null);
     return { ok: true, data };
-  } catch (err: any) {
-    return { ok: false, message: err?.message || 'Error de red' };
+   } catch (err) {
+    return { ok: false, message: err instanceof Error ? err.message : 'Error de red' };
   }
 }
 
@@ -94,8 +94,8 @@ export async function createDocenteView(payload: DocentePayload) {
 
     const data = await res.json().catch(() => null);
     return { ok: true, data };
-  } catch (err: any) {
-    return { ok: false, message: err?.message || 'Error de red' };
+   } catch (err) {
+    return { ok: false, message: err instanceof Error ? err.message : 'Error de red' };
   }
 }
 
@@ -122,8 +122,8 @@ export async function updateDocenteView(id: number, payload: DocentePayload) {
 
     const data = await res.json().catch(() => null);
     return { ok: true, data };
-  } catch (err: any) {
-    return { ok: false, message: err?.message || 'Error de red' };
+   } catch (err) {
+    return { ok: false, message: err instanceof Error ? err.message : 'Error de red' };
   }
 }
 
@@ -147,7 +147,7 @@ export async function removeDocenteView(id: number) {
 
     const data = await res.json().catch(() => null);
     return { ok: true, data };
-  } catch (err: any) {
-    return { ok: false, message: err?.message || 'Error de red' };
+   } catch (err) {
+    return { ok: false, message: err instanceof Error ? err.message : 'Error de red' };
   }
 }
