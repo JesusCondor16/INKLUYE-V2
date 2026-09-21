@@ -2,6 +2,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { userModel } from '@/models/userModel';
 import { obtenerUsuarioDesdeTokenServer, esCoordinadorDelCurso } from '@/lib/authServer';
 
 function mapCursoResponse(c: any) {
@@ -181,6 +182,16 @@ export async function PUT(
       coordinadorId,
       docentes
     } = body;
+
+    if (coordinadorId != null) {
+      const nuevoCoordinador = await userModel.findById(coordinadorId);
+      if (!nuevoCoordinador || nuevoCoordinador.role !== 'coordinador') {
+        return NextResponse.json(
+          { error: 'coordinadorId inválido: el usuario no existe o no tiene rol coordinador' },
+          { status: 400 }
+        );
+      }
+    }
 
     // actualizar curso
     await prisma.course.update({
