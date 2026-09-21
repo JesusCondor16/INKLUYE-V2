@@ -74,7 +74,7 @@ export async function generarPDF(
   // Asegurar color de texto por si hubiera algún cambio de color previo
   doc.setTextColor(0, 0, 0);
 
-  const MARGINS: Margins = { top: 40, left: 25, right: 25, bottom: 0 };
+  const MARGINS: Margins = { top: 15, left: 25, right: 25, bottom: 15 };
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
 
@@ -205,7 +205,7 @@ async function renderEncabezado(doc: jsPDF, y: number, pageWidth: number, MARGIN
     // no hacemos nada si falla la carga de imagen
   }
 
-  doc.setFont('times', 'normal');
+  doc.setFont('helvetica', 'normal');
   doc.setFontSize(12);
   doc.text(t(lang, 'universidad'), pageWidth / 2, y + 6, { align: 'center' });
   y += 8;
@@ -225,7 +225,7 @@ async function renderEncabezado(doc: jsPDF, y: number, pageWidth: number, MARGIN
 }
 
 function renderTitulo(doc: jsPDF, y: number, pageWidth: number, MARGINS: Margins, lang: SyllabusLang): number {
-  doc.setFont('times', 'bold');
+  doc.setFont('helvetica', 'bold');
   doc.setFontSize(14);
   doc.text(t(lang, 'silabo'), pageWidth / 2, y, { align: 'center' });
   return y + 12;
@@ -243,7 +243,7 @@ function renderInformacionGeneral(
   pageHeight: number,
   lang: SyllabusLang
 ): number {
-  doc.setFont('times', 'bold');
+  doc.setFont('helvetica', 'bold');
   doc.setFontSize(12);
   doc.text(t(lang, 's1Titulo'), MARGINS.left, y);
   y += 9;
@@ -251,7 +251,7 @@ function renderInformacionGeneral(
   const INDENT = MARGINS.left + 10;
   const VALUE_X = INDENT + 55;
 
-  doc.setFont('times', 'normal');
+  doc.setFont('helvetica', 'bold');
   doc.setFontSize(10);
 
   const horasSem =
@@ -307,12 +307,12 @@ function renderInformacionGeneral(
 ------------------------------ */
 
 function renderSumilla(doc: jsPDF, y: number, curso: Curso, MARGINS: Margins, lang: SyllabusLang): number {
-  doc.setFont('times', 'bold');
+  doc.setFont('helvetica', 'bold');
   doc.setFontSize(12);
   doc.text(t(lang, 's2Titulo'), MARGINS.left, y);
   y += 8;
 
-  doc.setFont('times', 'normal');
+  doc.setFont('helvetica', 'normal');
   doc.setFontSize(10);
 
   const text = sanitizeTextForPdf(curso?.sumilla ?? '-');
@@ -327,7 +327,7 @@ function renderSumilla(doc: jsPDF, y: number, curso: Curso, MARGINS: Margins, la
 ------------------------------ */
 
 async function renderCompetencias(doc: jsPDF, y: number, curso: Curso, MARGINS: Margins, pageHeight: number, lang: SyllabusLang) {
-  doc.setFont('times', 'bold');
+  doc.setFont('helvetica', 'bold');
   doc.setFontSize(12);
   doc.text(t(lang, 's3Titulo'), MARGINS.left, y);
   y += 8;
@@ -360,7 +360,7 @@ async function renderCompetencias(doc: jsPDF, y: number, curso: Curso, MARGINS: 
     head: [[t(lang, 's3ColCodigo'), t(lang, 's3ColDescripcion'), t(lang, 's3ColTipo'), t(lang, 's3ColNivel')]],
     body,
     margin: { left: MARGINS.left, right: MARGINS.right },
-    styles: { font: 'times', fontSize: 10, cellPadding: 3 },
+    styles: { font: 'helvetica', fontSize: 10, cellPadding: 3 },
     headStyles: { fillColor: [230, 230, 230], textColor: 20, fontStyle: 'bold' },
     columnStyles: {
       0: { cellWidth: 30 },
@@ -391,12 +391,12 @@ async function renderLogros(
   pageHeight: number,
   lang: SyllabusLang
 ) {
-  doc.setFont('times', 'bold');
+  doc.setFont('helvetica', 'bold');
   doc.setFontSize(12);
   doc.text(t(lang, 's4Titulo'), MARGINS.left, y);
   y += 8;
 
-  doc.setFont('times', 'normal');
+  doc.setFont('helvetica', 'normal');
   doc.setFontSize(10);
 
   const frase = t(lang, 's4Frase');
@@ -467,12 +467,12 @@ async function renderCapacidades(
   pageHeight: number,
   lang: SyllabusLang
 ) {
-  doc.setFont('times', 'bold');
+  doc.setFont('helvetica', 'bold');
   doc.setFontSize(12);
   doc.text(t(lang, 's5Titulo'), MARGINS.left, y);
   y += 8;
 
-  doc.setFont('times', 'normal');
+  doc.setFont('helvetica', 'normal');
   doc.setFontSize(10);
 
   const capacidades = Array.isArray(curso?.capacidad) && curso.capacidad.length
@@ -546,7 +546,7 @@ async function renderCapacidades(
       y = addFooterAndNewPage(doc, MARGINS);
     }
 
-    doc.setFont('times', 'normal');
+    doc.setFont('helvetica', 'normal');
     doc.setFontSize(10);
     doc.text(wrapped, MARGINS.left + indent, y);
     y += wrapped.length * lineHeight + 4;
@@ -571,12 +571,12 @@ async function renderProgramacion(
   pageHeight: number,
   lang: SyllabusLang
 ) {
-  doc.setFont('times', 'bold');
+  doc.setFont('helvetica', 'bold');
   doc.setFontSize(12);
   doc.text(t(lang, 's6Titulo'), MARGINS.left, y);
   y += 8;
 
-  doc.setFont('times', 'normal');
+  doc.setFont('helvetica', 'normal');
   doc.setFontSize(10);
 
   let rowsSource: any[] = [];
@@ -650,7 +650,7 @@ async function renderProgramacion(
     head: [[t(lang, 's6ColSesion'), t(lang, 's6ColContenido'), t(lang, 's6ColActividades'), t(lang, 's6ColRecursos'), t(lang, 's6ColEstrategias')]],
     body,
     margin: { left: MARGINS.left, right: MARGINS.right },
-    styles: { font: 'times', fontSize: 9, cellPadding: 3 },
+    styles: { font: 'helvetica', fontSize: 9, cellPadding: 3 },
     headStyles: { fillColor: [230, 230, 230], textColor: 20, fontStyle: 'bold' },
     columnStyles: {
       0: { cellWidth: 16 },
@@ -685,12 +685,12 @@ async function renderEstrategiaDidactica(
   pageHeight: number,
   lang: SyllabusLang
 ) {
-  doc.setFont('times', 'bold');
+  doc.setFont('helvetica', 'bold');
   doc.setFontSize(12);
   doc.text(t(lang, 's7Titulo'), MARGINS.left, y);
   y += 8;
 
-  doc.setFont('times', 'normal');
+  doc.setFont('helvetica', 'normal');
   doc.setFontSize(10);
 
   const estrategias =
@@ -764,7 +764,7 @@ async function renderEstrategiaDidactica(
         y = addFooterAndNewPage(doc, MARGINS);
       }
 
-      doc.setFont('times', 'normal');
+      doc.setFont('helvetica', 'normal');
       doc.setFontSize(10);
       doc.text(wrapped, MARGINS.left + indent, y);
       y += wrapped.length * lineHeight + paragraphSpacing;
@@ -792,12 +792,12 @@ async function renderRecursos(
   pageHeight: number,
   lang: SyllabusLang
 ) {
-  doc.setFont('times', 'bold');
+  doc.setFont('helvetica', 'bold');
   doc.setFontSize(12);
   doc.text(t(lang, 's8Titulo'), MARGINS.left, y);
   y += 4;
 
-  doc.setFont('times', 'normal');
+  doc.setFont('helvetica', 'normal');
   doc.setFontSize(10);
 
   const recursos =
@@ -871,7 +871,7 @@ async function renderRecursos(
         y = addFooterAndNewPage(doc, MARGINS);
       }
 
-      doc.setFont('times', 'normal');
+      doc.setFont('helvetica', 'normal');
       doc.setFontSize(10);
       doc.text(wrapped, MARGINS.left + indent, y);
       y += wrapped.length * lineHeight + paragraphSpacing;
@@ -899,7 +899,7 @@ async function renderMatrizEvaluacion(
   pageHeight: number,
   lang: SyllabusLang
 ) {
-  doc.setFont('times', 'bold');
+  doc.setFont('helvetica', 'bold');
   doc.setFontSize(12);
   doc.text(t(lang, 's9Titulo'), MARGINS.left, y);
   y += 6;
@@ -914,7 +914,7 @@ async function renderMatrizEvaluacion(
   if (!matriz.length) {
     const noData = t(lang, 's9Vacio');
     const wrapped = doc.splitTextToSize(noData, doc.internal.pageSize.getWidth() - MARGINS.left - MARGINS.right);
-    doc.setFont('times', 'normal');
+    doc.setFont('helvetica', 'normal');
     doc.setFontSize(10);
     doc.text(wrapped, MARGINS.left, y);
     y += wrapped.length * 6 + 4;
@@ -956,7 +956,7 @@ async function renderMatrizEvaluacion(
       valign: 'middle',
     },
     bodyStyles: {
-      font: 'times',
+      font: 'helvetica',
       fontSize: 10,
       valign: 'top',
     },
@@ -991,12 +991,12 @@ async function renderBibliografia(
   pageHeight: number,
   lang: SyllabusLang
 ) {
-  doc.setFont('times', 'bold');
+  doc.setFont('helvetica', 'bold');
   doc.setFontSize(12);
   doc.text(t(lang, 's10Titulo'), MARGINS.left, y + 15);
   y += 20;
 
-  doc.setFont('times', 'normal');
+  doc.setFont('helvetica', 'normal');
   doc.setFontSize(10);
 
   const bibliografias =
@@ -1052,7 +1052,7 @@ async function renderBibliografia(
         y = addFooterAndNewPage(doc, MARGINS);
       }
 
-      doc.setFont('times', 'normal');
+      doc.setFont('helvetica', 'normal');
       doc.setFontSize(10);
       doc.text(wrapped, MARGINS.left, y);
       y += wrapped.length * 6 + 2;
@@ -1080,7 +1080,7 @@ function addFooterAndNewPage(doc: jsPDF, margins: Margins): number {
   doc.setLineWidth(0.3);
   doc.line(margins.left, pageHeight - margins.bottom + 6, pageWidth - margins.right, pageHeight - margins.bottom + 6);
 
-  doc.setFont('times', 'normal');
+  doc.setFont('helvetica', 'normal');
   doc.setFontSize(9);
 
   const pageNumberText = String(page);
