@@ -7,15 +7,31 @@ export const userService = {
   async getAll(roles?: string[]) {
     try {
       if (roles && roles.length > 0) {
-        const lowerRoles = roles.map(r => r.toLowerCase());
+        const normalizedRoles = roles.map((r) => r.trim().toLowerCase());
+
         return await prisma.user.findMany({
-          where: { role: { in: lowerRoles } },
-          select: { id: true, name: true, email: true, role: true },
+          where: {
+            role: {
+              in: normalizedRoles, // 🔹 filtro directo
+            },
+          },
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            role: true,
+          },
           orderBy: { name: 'asc' },
         });
       }
+
       return await prisma.user.findMany({
-        select: { id: true, name: true, email: true, role: true },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          role: true,
+        },
         orderBy: { name: 'asc' },
       });
     } catch (error: any) {
@@ -27,15 +43,29 @@ export const userService = {
   /** Crear usuario */
   async create(data: { name: string; email: string; password: string; role: string }) {
     try {
-      const existingUser = await prisma.user.findUnique({ where: { email: data.email } });
-      if (existingUser) throw new Error('El correo ya está registrado');
+      const existingUser = await prisma.user.findUnique({
+        where: { email: data.email },
+      });
+
+      if (existingUser) {
+        throw new Error('El correo ya está registrado');
+      }
 
       const hashedPassword = await bcrypt.hash(data.password, 10);
-      const normalizedRole = data.role.toLowerCase();
+      const normalizedRole = data.role.toLowerCase().trim();
 
       return await prisma.user.create({
-        data: { ...data, password: hashedPassword, role: normalizedRole },
-        select: { id: true, name: true, email: true, role: true },
+        data: {
+          ...data,
+          password: hashedPassword,
+          role: normalizedRole,
+        },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          role: true,
+        },
       });
     } catch (error: any) {
       console.error('❌ Error en userService.create:', error);
@@ -49,25 +79,36 @@ export const userService = {
     data: Partial<{ name: string; email: string; password: string; role: string }>
   ) {
     try {
-      // Si cambian el email, validar unicidad
       if (data.email) {
         const exists = await prisma.user.findFirst({
-          where: { email: data.email, NOT: { id } as any },
+          where: {
+            email: data.email,
+            NOT: { id } as any,
+          },
         });
-        if (exists) throw new Error('El correo ya está registrado por otro usuario');
+
+        if (exists) {
+          throw new Error('El correo ya está registrado por otro usuario');
+        }
       }
 
       if (data.password) {
         data.password = await bcrypt.hash(data.password, 10);
       }
+
       if (data.role) {
-        data.role = data.role.toLowerCase();
+        data.role = data.role.toLowerCase().trim();
       }
 
       const updated = await prisma.user.update({
         where: { id },
         data,
-        select: { id: true, name: true, email: true, role: true },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          role: true,
+        },
       });
 
       return updated;
@@ -78,39 +119,54 @@ export const userService = {
   },
 
   /** Eliminar usuario (transaccional) */
-    async remove(id: number) {
-      try {
-        const result = await prisma.$transaction(async (tx) => {
-          // 1) Eliminar relaciones dependientes
-          await tx.cursodocente.deleteMany({ where: { userId: id } });
-
-          // 2) Eliminar historial del usuario (si no quieres conservarlo)
-          await tx.userhistory.deleteMany({ where: { userId: id } });
-
-          // 3) Finalmente eliminar al usuario
-          const deleted = await tx.user.delete({
-            where: { id },
-            select: { id: true, name: true, email: true, role: true },
-          });
-
-          return deleted;
+  async remove(id: number) {
+    try {
+      const result = await prisma.$transaction(async (tx) => {
+        await tx.cursodocente.deleteMany({
+          where: { userId: id },
         });
 
-        return result;
-      } catch (error: any) {
-        console.error('❌ Error en userService.remove:', error);
-        throw new Error(error.message || 'Error al eliminar usuario');
-      }
-    },
+        await tx.userhistory.deleteMany({
+          where: { userId: id },
+        });
+
+        const deleted = await tx.user.delete({
+          where: { id },
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            role: true,
+          },
+        });
+
+        return deleted;
+      });
+
+      return result;
+    } catch (error: any) {
+      console.error('❌ Error en userService.remove:', error);
+      throw new Error(error.message || 'Error al eliminar usuario');
+    }
+  },
 
   /** Obtener usuario por ID */
   async getById(id: number) {
     try {
       const user = await prisma.user.findUnique({
         where: { id },
-        select: { id: true, name: true, email: true, role: true },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          role: true,
+        },
       });
-      if (!user) throw new Error('Usuario no encontrado');
+
+      if (!user) {
+        throw new Error('Usuario no encontrado');
+      }
+
       return user;
     } catch (error: any) {
       console.error('❌ Error en userService.getById:', error);
