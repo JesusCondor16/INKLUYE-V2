@@ -24,7 +24,7 @@ export function useModalSeccion4Controller(cursoId: number) {
           estrategiaDidactica?: { texto: string }[];
           recursos?: { descripcion: string }[];
           bibliografia?: { id: number; texto: string }[];
-          matrizevaluacion?: { nota_sum?: string; nota_peso?: number | null }[];
+          matrizevaluacion?: EvaluacionFila[];
         };
 
         setEstrategia(

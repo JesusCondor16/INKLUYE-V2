@@ -67,8 +67,8 @@ export default function BuscarSyllabusPage() {
             const r = await fetch(`/api/cursos/${course.id}`);
             if (!r.ok) return course;
             const j: { curso?: Curso; syllabusUrl?: string } = await r.json();
-            const payload = j.curso ?? j ?? {};
-            const pdfUrl = (payload as Curso & { syllabus?: { pdfUrl?: string } }).syllabus?.pdfUrl ?? payload.syllabusUrl ?? null;
+            const payload = (j.curso ?? j ?? {}) as Curso & { syllabus?: { pdfUrl?: string }; syllabusUrl?: string };
+            const pdfUrl = payload.syllabus?.pdfUrl ?? payload.syllabusUrl ?? null;
             return { ...course, pdfUrl };
           } catch (err) {
             console.warn(`No se pudo obtener syllabus para courseId=${course.id}`, err);

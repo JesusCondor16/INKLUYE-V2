@@ -1063,7 +1063,7 @@ async function renderBibliografia(
 ------------------------------ */
 
 function addFooterAndNewPage(doc: jsPDF, margins: any): number {
-  const page = doc.internal.getNumberOfPages();
+  const page = doc.getNumberOfPages();
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
 
