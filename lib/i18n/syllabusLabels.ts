@@ -13,7 +13,7 @@ type LabelKey =
   | 's7Titulo' | 's7Vacio'
   | 's8Titulo' | 's8Vacio'
   | 's9Titulo' | 's9Vacio' | 's9ColUnidad' | 's9ColCriterios' | 's9ColProducto' | 's9ColInstrumento' | 's9ColPeso' | 's9ColSum'| 's9NotaTitulo' | 's9Nota1' | 's9Nota2' | 's9Nota3'| 's9ColNota' | 's9Total' | 's9FormulaPrefix'
-  | 's10Titulo' | 's10Vacio'
+  | 's10Titulo' | 's10Vacio'| 's10CatSobreLaTesis' | 's10CatRevistas' | 's10CatLibros' | 's10CatBanco' | 's10CatOtras'
   | 'filenamePrefix';
 
 export const syllabusLabels: Record<LabelKey, Record<SyllabusLang, string>> = {
@@ -100,6 +100,11 @@ export const syllabusLabels: Record<LabelKey, Record<SyllabusLang, string>> = {
   },
   s10Titulo: { es: '10. BIBLIOGRAFÍA', en: '10. BIBLIOGRAPHY', zh: '10. 参考文献' },
   s10Vacio: { es: 'No hay bibliografía registrada para este curso.', en: 'No bibliography has been registered for this course.', zh: '本课程尚未登记参考文献。' },
+  s10CatSobreLaTesis: { es: 'Sobre la tesis', en: 'On the thesis', zh: '关于论文' },
+  s10CatRevistas: { es: 'Revistas científicas indexadas', en: 'Indexed scientific journals', zh: '被索引的学术期刊' },
+  s10CatLibros: { es: 'Libros digitales', en: 'Digital books', zh: '电子图书' },
+  s10CatBanco: { es: 'Banco de tesis', en: 'Thesis repositories', zh: '论文数据库' },
+  s10CatOtras: { es: 'Otras fuentes', en: 'Other sources', zh: '其他资料来源' },
 
   filenamePrefix: { es: 'Sílabo', en: 'Syllabus', zh: '教学大纲' },
 };

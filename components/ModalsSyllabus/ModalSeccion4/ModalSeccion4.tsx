@@ -1,6 +1,7 @@
 'use client';
 
-import { useModalSeccion4Controller } from './ModalSeccion4.controller';
+import type { BibliografiaCategoria } from '@prisma/client';
+import { useModalSeccion4Controller, CATEGORIAS_BIBLIOGRAFIA } from './ModalSeccion4.controller';
 import styles from './ModalSeccion4.module.css';
 
 interface ModalSeccion4Props {
@@ -18,6 +19,7 @@ export default function ModalSeccion4({ cursoId, onClose }: ModalSeccion4Props) 
     loading,
     maxLength,
     handleChangeBibliografia,
+    handleChangeBibliografiaCategoria,
     handleAddBibliografia,
     handleRemoveBibliografia,
     handleGuardarBibliografia,
@@ -180,43 +182,71 @@ export default function ModalSeccion4({ cursoId, onClose }: ModalSeccion4Props) 
               {bibliografia.map((item, index) => {
 
                 const textareaId = `bibliografia-${index}`;
+                const selectId = `bibliografia-categoria-${index}`;
 
                 return (
 
                   <div
                     key={index}
-                    className="mb-2 d-flex gap-2 align-items-start"
+                    className="mb-2"
                   >
 
                     <label
-                      htmlFor={textareaId}
+                      htmlFor={selectId}
                       className={styles.visuallyHidden}
                     >
-                      Bibliografía {index + 1}
+                      Categoría de la bibliografía {index + 1}
                     </label>
 
-                    <textarea
-                      id={textareaId}
-                      className="form-control"
-                      rows={3}
-                      value={item.texto}
-                      maxLength={maxLength}
-                      placeholder={`Bibliografía ${index + 1}`}
-                      aria-label={`Bibliografía ${index + 1}`}
+                    <select
+                      id={selectId}
+                      className="form-select form-select-sm mb-1"
+                      value={item.categoria}
+                      aria-label={`Categoría de la bibliografía ${index + 1}`}
                       onChange={(e) =>
-                        handleChangeBibliografia(index, e.target.value)
+                        handleChangeBibliografiaCategoria(index, e.target.value as BibliografiaCategoria)
                       }
-                    />
-
-                    <button
-                      type="button"
-                      className="btn btn-danger btn-sm"
-                      onClick={() => handleRemoveBibliografia(index)}
-                      aria-label={`Eliminar bibliografía ${index + 1}`}
-                      title={`Eliminar bibliografía ${index + 1}`}
                     >
-                      🗑
-                    </button>
+                      {CATEGORIAS_BIBLIOGRAFIA.map((cat) => (
+                        <option key={cat.value} value={cat.value}>
+                          {cat.label}
+                        </option>
+                      ))}
+                    </select>
+
+                    <div className="d-flex gap-2 align-items-start">
+
+                      <label
+                        htmlFor={textareaId}
+                        className={styles.visuallyHidden}
+                      >
+                        Bibliografía {index + 1}
+                      </label>
+
+                      <textarea
+                        id={textareaId}
+                        className="form-control"
+                        rows={3}
+                        value={item.texto}
+                        maxLength={maxLength}
+                        placeholder={`Bibliografía ${index + 1}`}
+                        aria-label={`Bibliografía ${index + 1}`}
+                        onChange={(e) =>
+                          handleChangeBibliografia(index, e.target.value)
+                        }
+                      />
+
+                      <button
+                        type="button"
+                        className="btn btn-danger btn-sm"
+                        onClick={() => handleRemoveBibliografia(index)}
+                        aria-label={`Eliminar bibliografía ${index + 1}`}
+                        title={`Eliminar bibliografía ${index + 1}`}
+                      >
+                        🗑
+                      </button>
+
+                    </div>
 
                   </div>
 

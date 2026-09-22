@@ -61,7 +61,7 @@ export async function GET(_req: Request, context: { params: Params | Promise<Par
     const bibliografia = await prisma.bibliografia.findMany({
       where: { courseId: cursoId },
       orderBy: { id: 'asc' },
-      select: { id: true, texto: true },
+      select: { id: true, texto: true, categoria: true },
     });
 
     const estrategia = await prisma.estrategiadidactica.findMany({

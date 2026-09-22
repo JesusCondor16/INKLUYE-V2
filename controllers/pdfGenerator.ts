@@ -1125,6 +1125,9 @@ async function renderBibliografia(
       ? curso.bibliografias
       : [];
 
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const contentWidth = pageWidth - MARGINS.left - MARGINS.right;
+
   const sanitize = (v: unknown) => {
     if (v === null || v === undefined) return '';
     try {
@@ -1144,7 +1147,7 @@ async function renderBibliografia(
 
   if (!bibliografias.length) {
     const noData = t(lang, 's10Vacio');
-    const wrapped = doc.splitTextToSize(noData, doc.internal.pageSize.getWidth() - MARGINS.left - MARGINS.right);
+    const wrapped = doc.splitTextToSize(noData, contentWidth);
     if (y + wrapped.length * 6 > pageHeight - MARGINS.bottom) {
       y = addFooterAndNewPage(doc, MARGINS);
     }
@@ -1153,31 +1156,62 @@ async function renderBibliografia(
     return y;
   }
 
-  for (let i = 0; i < bibliografias.length; i++) {
-    const b = bibliografias[i];
-    const textoRaw = (b && (b.texto ?? b.text ?? '')) ?? '';
-    const texto = sanitize(textoRaw);
+  const renderEntradas = (entradas: any[]) => {
+    for (let i = 0; i < entradas.length; i++) {
+      const b = entradas[i];
+      const textoRaw = (b && (b.texto ?? b.text ?? '')) ?? '';
+      const texto = sanitize(textoRaw);
+      if (!texto) continue;
 
-    if (!texto) continue;
+      const paragraphs = texto.split(/\n{2,}/).map(p => p.split('\n').join(' ').trim()).filter(Boolean);
 
-    const paragraphs = texto.split(/\n{2,}/).map(p => p.split('\n').join(' ').trim()).filter(Boolean);
+      for (let pIndex = 0; pIndex < paragraphs.length; pIndex++) {
+        const paragraph = paragraphs[pIndex];
+        const wrapped = doc.splitTextToSize(paragraph, contentWidth);
+        const estimatedHeight = wrapped.length * 6 + 10;
 
-    for (let pIndex = 0; pIndex < paragraphs.length; pIndex++) {
-      const paragraph = paragraphs[pIndex];
-      const wrapped = doc.splitTextToSize(paragraph, doc.internal.pageSize.getWidth() - MARGINS.left - MARGINS.right);
-      const estimatedHeight = wrapped.length * 6 + 10;
+        if (y + estimatedHeight > pageHeight - MARGINS.bottom) {
+          y = addFooterAndNewPage(doc, MARGINS);
+        }
 
-      if (y + estimatedHeight > pageHeight - MARGINS.bottom) {
-        y = addFooterAndNewPage(doc, MARGINS);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(10);
+        doc.text(wrapped, MARGINS.left, y);
+        y += wrapped.length * 6 + 2;
       }
 
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(10);
-      doc.text(wrapped, MARGINS.left, y);
-      y += wrapped.length * 6 + 2;
+      y += 2;
+    }
+  };
+
+  const CATEGORIAS_ORDEN = [
+    { key: 'SOBRE_LA_TESIS', label: 's10CatSobreLaTesis' },
+    { key: 'REVISTAS_INDEXADAS', label: 's10CatRevistas' },
+    { key: 'LIBROS_DIGITALES', label: 's10CatLibros' },
+    { key: 'BANCO_DE_TESIS', label: 's10CatBanco' },
+    { key: 'OTRAS_FUENTES', label: 's10CatOtras' },
+  ] as const;
+
+  const sinCategoria = bibliografias.filter((b: any) => !CATEGORIAS_ORDEN.some(c => c.key === b?.categoria));
+
+  for (const cat of CATEGORIAS_ORDEN) {
+    const entradas = bibliografias.filter((b: any) => b?.categoria === cat.key);
+    if (!entradas.length) continue;
+
+    if (y + 10 > pageHeight - MARGINS.bottom) {
+      y = addFooterAndNewPage(doc, MARGINS);
     }
 
-    y += 2;
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(10);
+    doc.text(t(lang, cat.label), MARGINS.left, y);
+    y += 6;
+
+    renderEntradas(entradas);
+  }
+
+  if (sinCategoria.length) {
+    renderEntradas(sinCategoria);
   }
 
   if (y > pageHeight - MARGINS.bottom) {

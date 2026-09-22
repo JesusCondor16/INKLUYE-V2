@@ -2,8 +2,19 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { obtenerUsuarioDesdeTokenServer, esCoordinadorDelCurso } from "@/lib/authServer";
 
+import type { BibliografiaCategoria } from "@prisma/client";
+
+const CATEGORIAS_VALIDAS: BibliografiaCategoria[] = [
+  "SOBRE_LA_TESIS",
+  "REVISTAS_INDEXADAS",
+  "LIBROS_DIGITALES",
+  "BANCO_DE_TESIS",
+  "OTRAS_FUENTES",
+];
+
 interface BibliografiaInput {
   texto: string;
+  categoria: BibliografiaCategoria;
 }
 
 // GET: obtener estrategia didáctica, recursos, bibliografía y matriz de evaluación
@@ -28,7 +39,7 @@ export async function GET(_req: Request, context: { params: Promise<{ id: string
     const bibliografia = await prisma.bibliografia.findMany({
       where: { courseId: cursoId },
       orderBy: { id: "asc" },
-      select: { id: true, texto: true },
+      select: { id: true, texto: true, categoria: true },
     });
 
     const matrizevaluacion = await prisma.matrizevaluacion.findMany({
@@ -92,12 +103,18 @@ export async function PUT(req: NextRequest, context: { params: Promise<{ id: str
           { status: 400 }
         );
       }
+      if (!CATEGORIAS_VALIDAS.includes(b.categoria)) {
+        return NextResponse.json(
+          { error: "categoria invalida" },
+          { status: 400 }
+        );
+      }
     }
 
     await prisma.bibliografia.deleteMany({ where: { courseId } });
 
     if (body.bibliografia.length > 0) {
-      const data = body.bibliografia.map((b) => ({ courseId, texto: b.texto }));
+      const data = body.bibliografia.map((b) => ({ courseId, texto: b.texto, categoria: b.categoria }));
       await prisma.bibliografia.createMany({ data });
     }
 

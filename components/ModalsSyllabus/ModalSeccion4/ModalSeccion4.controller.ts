@@ -1,7 +1,16 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import type { BibliografiaCategoria } from '@prisma/client';
 import type { BibliografiaItem, EvaluacionFila } from './ModalSeccion4.model';
+
+export const CATEGORIAS_BIBLIOGRAFIA: { value: BibliografiaCategoria; label: string }[] = [
+  { value: 'SOBRE_LA_TESIS', label: 'Sobre la tesis' },
+  { value: 'REVISTAS_INDEXADAS', label: 'Revistas científicas indexadas' },
+  { value: 'LIBROS_DIGITALES', label: 'Libros digitales' },
+  { value: 'BANCO_DE_TESIS', label: 'Banco de tesis' },
+  { value: 'OTRAS_FUENTES', label: 'Otras fuentes' },
+];
 
 export function useModalSeccion4Controller(cursoId: number) {
   const [estrategia, setEstrategia] = useState('');
@@ -23,7 +32,7 @@ export function useModalSeccion4Controller(cursoId: number) {
         const data = (await res.json()) as {
           estrategiaDidactica?: { texto: string }[];
           recursos?: { descripcion: string }[];
-          bibliografia?: { id: number; texto: string }[];
+          bibliografia?: { id: number; texto: string; categoria?: BibliografiaCategoria }[];
           matrizevaluacion?: EvaluacionFila[];
         };
 
@@ -36,7 +45,7 @@ export function useModalSeccion4Controller(cursoId: number) {
         );
 
         setBibliografia(
-          data.bibliografia?.map((b) => ({ id: b.id, texto: b.texto })) ?? []
+          data.bibliografia?.map((b) => ({ id: b.id, texto: b.texto, categoria: b.categoria ?? 'OTRAS_FUENTES' })) ?? []
         );
 
         const matrizEval: EvaluacionFila[] = data.matrizevaluacion ?? [];
@@ -65,7 +74,15 @@ export function useModalSeccion4Controller(cursoId: number) {
   };
 
   const handleAddBibliografia = () => {
-    setBibliografia(prev => [...prev, { texto: '' }]);
+    setBibliografia(prev => [...prev, { texto: '', categoria: 'OTRAS_FUENTES' }]);
+  };
+
+  const handleChangeBibliografiaCategoria = (index: number, value: BibliografiaCategoria) => {
+    setBibliografia(prev => {
+      const newData = [...prev];
+      newData[index].categoria = value;
+      return newData;
+    });
   };
 
   const handleRemoveBibliografia = (index: number) => {
@@ -102,6 +119,7 @@ export function useModalSeccion4Controller(cursoId: number) {
     loading,
     maxLength,
     handleChangeBibliografia,
+    handleChangeBibliografiaCategoria,
     handleAddBibliografia,
     handleRemoveBibliografia,
     handleGuardarBibliografia,

@@ -7,11 +7,20 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum BibliografiaCategoria {
+  SOBRE_LA_TESIS
+  REVISTAS_INDEXADAS
+  LIBROS_DIGITALES
+  BANCO_DE_TESIS
+  OTRAS_FUENTES
+}
+
 model bibliografia {
-  id       Int    @id @default(autoincrement())
-  texto    String @db.VarChar(1000)
-  courseId Int
-  course   course @relation(fields: [courseId], references: [id], map: "Bibliografia_courseId_fkey")
+  id        Int                    @id @default(autoincrement())
+  texto     String                 @db.VarChar(1000)
+  categoria BibliografiaCategoria  @default(OTRAS_FUENTES)
+  courseId  Int
+  course    course                 @relation(fields: [courseId], references: [id], map: "Bibliografia_courseId_fkey")
 
   @@index([courseId], map: "Bibliografia_courseId_fkey")
 }
