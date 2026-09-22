@@ -7,11 +7,7 @@ import styles from './DocentePage.module.css';
 export default function BienvenidaDocentePage() {
   return (
     <div className={styles.wrapper}>
-      {/* Skip link para saltar al contenido principal */}
-      <a href="#main-content" className={styles.skipLink}>
-        Saltar al contenido principal
-      </a>
-
+      
       <nav aria-label="Navegación principal">
         <Sidebar />
       </nav>

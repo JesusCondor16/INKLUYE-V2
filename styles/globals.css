@@ -1,6 +1,6 @@
 /* ==========================================================
    🌐 GLOBAL STYLESHEET — Sistema de Gestión de Syllabus
-   Cumple con WCAG 2.0 AAA — Enfoque en accesibilidad, legibilidad y contraste.
+   Cumple con WCAG 2.1 AAA — Enfoque en accesibilidad, legibilidad y contraste.
    ========================================================== */
 
 /* =========================
@@ -16,7 +16,7 @@
 :root {
   /* 🎨 Colores principales */
   --color-primario: #003366; /* Azul oscuro con buen contraste */
-  --color-secundario: #007bff; /* Azul accesible */
+  --color-secundario: #004085; /* Azul mas oscuro, 9.61:1 vs #007bff que daba 3.78:1 */
   --color-acento: #17a2b8; /* Celeste */
   --color-exito: #28a745;
   --color-error: #dc3545;
@@ -96,6 +96,32 @@ a:focus {
 }
 
 /* =========================
+   Skip link (WCAG 2.4.1)
+   ========================= */
+.skip-link {
+  position: absolute;
+  left: 1rem;
+  top: 0.75rem;
+  background: var(--color-primario);
+  color: #fff;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  z-index: 9999;
+  transform: translateY(-140%);
+  transition: transform 120ms ease;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.skip-link:focus,
+.skip-link:active {
+  transform: translateY(0);
+  color: #fff;
+  outline: 3px solid var(--color-primario);
+  outline-offset: 2px;
+}
+
+/* =========================
    7️⃣ Utilitarios personalizados
    ========================= */
 .border-accent {
@@ -111,6 +137,7 @@ a:focus {
   background-color: var(--color-secundario) !important;
   color: #fff !important;
 }
+
 
 /* =========================
    8️⃣ Ajustes responsivos

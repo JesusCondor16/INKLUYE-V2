@@ -55,9 +55,6 @@ export default function HomePage() {
 
   return (
     <>
-      {/* Skip link para saltar al contenido. Debe estar visible con teclado en CSS. */}
-      <a className={styles.skipLink} href="#mainContent">Saltar al contenido</a>
-
       {/* Región de anuncio para lectores de pantalla (aria-live) */}
       <div
         ref={liveRegionRef}

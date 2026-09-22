@@ -7,11 +7,7 @@ import styles from './AlumnoPage.module.css';
 export default function BienvenidaEstudiantePage() {
   return (
     <div className={styles.wrapper}>
-      {/* Skip link para navegación por teclado */}
-      <a href="#main-content" className={styles.skipLink}>
-        Saltar al contenido principal
-      </a>
-
+      
       {/* Sidebar dentro de landmark nav */}
       <nav aria-label="Navegación principal">
         <Sidebar />

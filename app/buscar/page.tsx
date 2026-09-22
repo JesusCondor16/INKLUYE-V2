@@ -149,7 +149,6 @@ export default function BuscarSyllabusPage() {
 
   return (
     <div className={styles.wrapper}>
-      <a href="#main-content" className={styles.skipLink}>Saltar al contenido</a>
       <Sidebar />
 
       <main id="main-content" className={styles.main} role="main" aria-labelledby="page-title">

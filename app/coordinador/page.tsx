@@ -6,10 +6,6 @@ import styles from '@/styles/coordinador.module.css';
 export default function BienvenidaCoordinadorPage() {
   return (
     <div className={styles.wrapper}>
-      {/* Skip link para navegación por teclado (visible al recibir foco) */}
-      <a href="#main-content" className={styles.skipLink}>
-        Saltar al contenido principal
-      </a>
 
       {/* Si Sidebar es un nav por sí mismo, esto no rompe nada.
           Lo envolvemos en <nav> para garantizar el landmark si Sidebar no lo define. */}

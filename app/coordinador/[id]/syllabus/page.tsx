@@ -76,9 +76,7 @@ export default function SyllabusCursoPage() {
 
   return (
     <div className={styles.wrapper}>
-      <a href="#main-content" className={styles.skipLink}>
-        Saltar al contenido
-      </a>
+
       <Sidebar />
 
       <main

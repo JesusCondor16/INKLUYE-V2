@@ -4,23 +4,10 @@ import React from 'react';
 import Sidebar from '@/components/Sidebar';
 import styles from '@/styles/Informacion.module.css';
 
-/**
- * Página de Información — estructura y ARIA pensada para WCAG 2.1 AAA
- * - Skip link al inicio para saltar el nav/Sidebar
- * - Sidebar envuelto en <aside> con aria-label
- * - main con id="maincontent" y aria-labelledby
- * - encabezados semánticos h1 -> h2 correctos
- * - emojis marcados como aria-hidden y texto accesible adicional
- * - clases .srOnly usadas para contenido solo lector de pantalla
- */
 export default function InformacionPage() {
   return (
     <>
-      {/* Skip link: primer elemento focoable para usuarios teclado / lectores */}
-      <a href="#maincontent" className={styles.skipLink}>
-        Saltar al contenido
-      </a>
-
+      
       <div className={styles.container}>
         {/* Sidebar accesible como aside */}
         <aside className={styles.sidebarWrapper} aria-label="Navegación lateral">

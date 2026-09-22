@@ -230,7 +230,7 @@
 }
 
 /* =====================================================
-   BOTONES
+   BOTONES (AAA: contraste 7:1 y area minima 44x44)
 ===================================================== */
 
 .btn{
@@ -239,20 +239,39 @@
 
   border-radius:8px;
 
+  min-height:44px;
+
 }
 
-/* Hover accesible */
-
-.btn-primary:hover{
-  background:#0047a3;
+.btnSuccessAAA{
+  --bs-btn-bg:#0f5132;
+  --bs-btn-border-color:#0f5132;
+  --bs-btn-hover-bg:#0a3622;
+  --bs-btn-hover-border-color:#0a3622;
+  --bs-btn-active-bg:#0a3622;
+  --bs-btn-active-border-color:#0a3622;
+  min-height:44px;
 }
 
-.btn-success:hover{
-  background:#047857;
+.btnDangerAAA{
+  --bs-btn-bg:#842029;
+  --bs-btn-border-color:#842029;
+  --bs-btn-hover-bg:#6a1a21;
+  --bs-btn-hover-border-color:#6a1a21;
+  --bs-btn-active-bg:#6a1a21;
+  --bs-btn-active-border-color:#6a1a21;
+  min-width:44px;
+  min-height:44px;
 }
 
-.btn-danger:hover{
-  background:#b91c1c;
+.btnSecondaryAAA{
+  --bs-btn-bg:#41464b;
+  --bs-btn-border-color:#41464b;
+  --bs-btn-hover-bg:#33373b;
+  --bs-btn-hover-border-color:#33373b;
+  --bs-btn-active-bg:#33373b;
+  --bs-btn-active-border-color:#33373b;
+  min-height:44px;
 }
 
 /* Focus accesible */
@@ -285,28 +304,26 @@
 }
 
 /* =====================================================
-   BOTÓN CERRAR
+   BOTÓN CERRAR (AAA: area minima 44x44, sin tocar el
+   icono de fondo que ya trae Bootstrap)
 ===================================================== */
 
-.btn-close{
+.btnCloseAAA{
 
-  font-size:1.4rem;
+  box-sizing:border-box;
 
-  color:#ffffff;
+  width:44px;
+  height:44px;
 
-  background:transparent;
-
-  border:none;
-
-  cursor:pointer;
+  flex-shrink:0;
 
 }
 
-.btn-close:hover{
+.btnCloseAAA:hover{
   opacity:0.8;
 }
 
-.btn-close:focus{
+.btnCloseAAA:focus{
 
   outline:3px solid var(--color-focus);
   outline-offset:2px;

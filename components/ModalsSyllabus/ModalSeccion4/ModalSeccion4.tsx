@@ -40,13 +40,16 @@ export default function ModalSeccion4({ cursoId, onClose }: ModalSeccion4Props) 
           {/* HEADER */}
           <header className={`modal-header ${styles.header}`}>
 
-            <h1 className="modal-title" id="modalTitle">
-              7. Estrategia didáctica, 8. Recursos, 9. Evaluación y 10. Bibliografía
-            </h1>
+          <h2
+            id="modal-seccion3-title"
+            className={styles.modalTitle}
+          >
+            Sección de Capacidades y Programación de Contenidos
+          </h2>
 
             <button
               type="button"
-              className="btn-close"
+              className={`btn-close ${styles.btnCloseAAA}`}
               onClick={onClose}
               aria-label="Cerrar ventana de edición de estrategia, recursos y bibliografía"
             />
@@ -238,7 +241,7 @@ export default function ModalSeccion4({ cursoId, onClose }: ModalSeccion4Props) 
 
                       <button
                         type="button"
-                        className="btn btn-danger btn-sm"
+                        className={`btn btn-danger btn-sm ${styles.btnDangerAAA}`}
                         onClick={() => handleRemoveBibliografia(index)}
                         aria-label={`Eliminar bibliografía ${index + 1}`}
                         title={`Eliminar bibliografía ${index + 1}`}
@@ -272,7 +275,7 @@ export default function ModalSeccion4({ cursoId, onClose }: ModalSeccion4Props) 
           <footer className="modal-footer">
 
             <button
-              className="btn btn-secondary"
+              className={`btn btn-secondary ${styles.btnSecondaryAAA}`}
               onClick={onClose}
               disabled={loading}
             >
@@ -280,7 +283,7 @@ export default function ModalSeccion4({ cursoId, onClose }: ModalSeccion4Props) 
             </button>
 
             <button
-              className="btn btn-success"
+              className={`btn btn-success ${styles.btnSuccessAAA}`}
               onClick={handleGuardarBibliografia}
               disabled={loading}
               aria-label="Guardar cambios de bibliografía"

@@ -30,12 +30,12 @@ export default function ModalSeccion3({ cursoId, onClose }: ModalSeccion3Props) 
 
         {/* HEADER */}
         <header className={styles.modalHeader}>
-          <h1
+           <h2
             id="modal-seccion3-title"
             className={styles.modalTitle}
           >
             Sección de Capacidades y Programación de Contenidos
-          </h1>
+          </h2>
 
           <button
             type="button"

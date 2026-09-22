@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     title: "Inkluye - Sistema de Gestión de Syllabus",
     description:
       "Plataforma inclusiva para la gestión de syllabus con accesibilidad WCAG 2.1 AAA.",
-    images: ["/favicon.png"], // 🧠 Imagen para compartir en redes
+    images: ["/favicon.png"],
   },
 };
 
@@ -34,7 +34,10 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body className={`${geistSans.variable} ${geistMono.variable} bg-light`}>
-        <main className="container-fluid p-0">{children}</main>
+        <a href="#site-main" className="skip-link">
+          Saltar al contenido
+        </a>
+        <main id="site-main" className="container-fluid p-0">{children}</main>
       </body>
     </html>
   );
