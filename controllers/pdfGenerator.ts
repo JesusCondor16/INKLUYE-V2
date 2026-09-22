@@ -92,6 +92,7 @@ export async function generarPDF(
   y = await renderEstrategiaDidactica(doc, y, curso, MARGINS, pageHeight, lang); // SECCIÓN 7
   y = await renderRecursos(doc, y, curso, MARGINS, pageHeight, lang); // SECCIÓN 8
   y = await renderMatrizEvaluacion(doc, y, curso, MARGINS, pageHeight, lang); // SECCIÓN 9
+  y = renderNotaEvaluacion(doc, y, MARGINS, pageHeight, lang); // SECCIÓN 9 — NOTA
   y = await renderBibliografia(doc, y, curso, MARGINS, pageHeight, lang); // SECCIÓN 10
 
   // Nombre por defecto
@@ -921,39 +922,51 @@ async function renderMatrizEvaluacion(
     return y;
   }
 
-  const tableData = matriz.map((m: any) => {
-    const sanitize = (v: unknown) =>
-      v === null || v === undefined ? '' : String(v).replace(/[\u0000-\u001F\u007F-\u009F]/g, '').trim();
+  const sanitize = (v: unknown) =>
+    v === null || v === undefined ? '' : String(v).replace(/[\u0000-\u001F\u007F-\u009F]/g, '').trim();
 
-    return [
-      sanitize(m.unidad),
-      sanitize(m.criterio),
-      sanitize(m.producto),
-      sanitize(m.instrumento),
-      sanitize(m.nota_peso ?? ''),
-      sanitize(m.nota_sum ?? ''),
-    ];
-  });
+  const tableData = matriz.map((m: any) => [
+    sanitize(m.unidad),
+    sanitize(m.criterio),
+    sanitize(m.producto),
+    sanitize(m.instrumento),
+    sanitize(m.nota_peso ?? ''),
+    sanitize(m.nota_sum ?? ''),
+  ]);
 
-  const head = [[
-    t(lang, 's9ColUnidad'),
-    t(lang, 's9ColCriterios'),
-    t(lang, 's9ColProducto'),
-    t(lang, 's9ColInstrumento'),
-    t(lang, 's9ColPeso'),
-    t(lang, 's9ColSum'),
-  ]];
+  const totalPeso = matriz.reduce((acc: number, m: any) => acc + (Number(m.nota_peso) || 0), 0);
 
   autoTable(doc, {
     startY: y,
-    head: head,
+    head: [
+      [
+        { content: t(lang, 's9ColUnidad'), rowSpan: 2 },
+        { content: t(lang, 's9ColCriterios'), rowSpan: 2 },
+        { content: t(lang, 's9ColProducto'), rowSpan: 2 },
+        { content: t(lang, 's9ColInstrumento'), rowSpan: 2 },
+        { content: t(lang, 's9ColNota'), colSpan: 2, styles: { halign: 'center' } },
+      ],
+      [
+        { content: t(lang, 's9ColPeso') },
+        { content: t(lang, 's9ColSum') },
+      ],
+    ],
     body: tableData,
+    foot: [[
+      { content: t(lang, 's9Total'), colSpan: 4, styles: { fontStyle: 'bold', halign: 'right' } },
+      { content: `${totalPeso}%`, styles: { fontStyle: 'bold', halign: 'center' } },
+      { content: '' },
+    ]],
     theme: 'grid',
     headStyles: {
       fillColor: [200, 200, 200],
       fontStyle: 'bold',
       halign: 'center',
       valign: 'middle',
+    },
+    footStyles: {
+      fillColor: [230, 230, 230],
+      textColor: 0,
     },
     bodyStyles: {
       font: 'helvetica',
@@ -975,8 +988,54 @@ async function renderMatrizEvaluacion(
   });
 
   y = (doc as jsPDFWithAutoTable).lastAutoTable?.finalY ?? y;
+  y += 6;
+
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const contentWidth = pageWidth - MARGINS.left - MARGINS.right;
+  const formula = t(lang, 's9FormulaPrefix') + matriz
+    .map((m: any) => `${sanitize(m.nota_sum)}*${((Number(m.nota_peso) || 0) / 100).toFixed(2)}`)
+    .join(' + ');
+
+  if (y > pageHeight - MARGINS.bottom - 10) {
+    y = addFooterAndNewPage(doc, MARGINS);
+  }
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(10);
+  const wrappedFormula = doc.splitTextToSize(formula, contentWidth);
+  doc.text(wrappedFormula, MARGINS.left, y);
+  y += wrappedFormula.length * 6 + 4;
 
   return y;
+}
+
+function renderNotaEvaluacion(doc: jsPDF, y: number, MARGINS: Margins, pageHeight: number, lang: SyllabusLang): number {
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const contentWidth = pageWidth - MARGINS.left - MARGINS.right;
+
+  if (y > pageHeight - MARGINS.bottom - 20) {
+    y = addFooterAndNewPage(doc, MARGINS);
+  }
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(10);
+  doc.text(t(lang, 's9NotaTitulo'), MARGINS.left, y);
+  y += 6;
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(10);
+
+  const notas = [t(lang, 's9Nota1'), t(lang, 's9Nota2'), t(lang, 's9Nota3')];
+  for (const nota of notas) {
+    const wrapped = doc.splitTextToSize(nota, contentWidth);
+    if (y + wrapped.length * 6 > pageHeight - MARGINS.bottom) {
+      y = addFooterAndNewPage(doc, MARGINS);
+    }
+    doc.text(wrapped, MARGINS.left, y);
+    y += wrapped.length * 6 + 3;
+  }
+
+  return y + 4;
 }
 
 /* ------------------------------

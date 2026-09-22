@@ -12,7 +12,7 @@ type LabelKey =
   | 's6Titulo' | 's6Vacio' | 's6ColSesion' | 's6ColContenido' | 's6ColActividades' | 's6ColRecursos' | 's6ColEstrategias'
   | 's7Titulo' | 's7Vacio'
   | 's8Titulo' | 's8Vacio'
-  | 's9Titulo' | 's9Vacio' | 's9ColUnidad' | 's9ColCriterios' | 's9ColProducto' | 's9ColInstrumento' | 's9ColPeso' | 's9ColSum'
+  | 's9Titulo' | 's9Vacio' | 's9ColUnidad' | 's9ColCriterios' | 's9ColProducto' | 's9ColInstrumento' | 's9ColPeso' | 's9ColSum'| 's9NotaTitulo' | 's9Nota1' | 's9Nota2' | 's9Nota3'| 's9ColNota' | 's9Total' | 's9FormulaPrefix'
   | 's10Titulo' | 's10Vacio'
   | 'filenamePrefix';
 
@@ -77,7 +77,25 @@ export const syllabusLabels: Record<LabelKey, Record<SyllabusLang, string>> = {
   s9ColInstrumento: { es: 'Instrumento de Evaluación', en: 'Assessment Instrument', zh: '评估工具' },
   s9ColPeso: { es: 'Peso (%)', en: 'Weight (%)', zh: '权重 (%)' },
   s9ColSum: { es: 'SUM', en: 'SUM', zh: 'SUM' },
-
+  s9ColNota: { es: 'Nota', en: 'Grade', zh: '成绩' },
+  s9Total: { es: 'TOTAL', en: 'TOTAL', zh: '总计' },
+  s9FormulaPrefix: { es: 'Evaluación Continua = ', en: 'Continuous Assessment = ', zh: '持续评估 = ' },
+  s9NotaTitulo: { es: 'NOTA:', en: 'NOTE:', zh: '备注：' },
+  s9Nota1: {
+    es: 'El factor asistencia para la orientación es importante: solo serán evaluados los alumnos con más del 70% de asistencia.',
+    en: 'Attendance is an important factor for guidance sessions: only students with more than 70% attendance will be evaluated.',
+    zh: '出勤率对指导环节很重要：只有出勤率超过70%的学生才会被评估。',
+  },
+  s9Nota2: {
+    es: 'Para aprobar el curso, se debe haber culminado todos los capítulos de la tesis y un artículo científico relacionado con la tesis.',
+    en: 'To pass the course, all thesis chapters and a scientific article related to the thesis must be completed.',
+    zh: '要通过本课程，必须完成论文的所有章节以及一篇与论文相关的科学文章。',
+  },
+  s9Nota3: {
+    es: 'La similitud debe ser menor al porcentaje establecido por la UNMSM. No se permite el uso de inteligencia artificial (IA).',
+    en: 'Similarity must be below the threshold set by UNMSM. Use of artificial intelligence (AI) is not allowed.',
+    zh: '查重相似度必须低于UNMSM规定的阈值。禁止使用人工智能（AI）。',
+  },
   s10Titulo: { es: '10. BIBLIOGRAFÍA', en: '10. BIBLIOGRAPHY', zh: '10. 参考文献' },
   s10Vacio: { es: 'No hay bibliografía registrada para este curso.', en: 'No bibliography has been registered for this course.', zh: '本课程尚未登记参考文献。' },
 
