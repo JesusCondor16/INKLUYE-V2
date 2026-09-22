@@ -587,9 +587,12 @@ async function renderProgramacion(
   else if (Array.isArray(curso?.programacionContenidoList) && curso.programacionContenidoList.length) rowsSource = curso.programacionContenidoList;
   else rowsSource = [];
 
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const contentWidth = pageWidth - MARGINS.left - MARGINS.right;
+
   if (!rowsSource.length) {
     const noData = t(lang, 's6Vacio');
-    const wrapped = doc.splitTextToSize(noData, doc.internal.pageSize.getWidth() - MARGINS.left - MARGINS.right - 10);
+    const wrapped = doc.splitTextToSize(noData, contentWidth - 10);
     if (y + wrapped.length * 6 > pageHeight - MARGINS.bottom) {
       y = addFooterAndNewPage(doc, MARGINS);
     }
@@ -597,6 +600,12 @@ async function renderProgramacion(
     y += wrapped.length * 6 + 6;
     return y;
   }
+
+  const capacidades = Array.isArray(curso?.capacidad) && curso.capacidad.length
+    ? curso.capacidad
+    : Array.isArray(curso?.capacidades) && curso.capacidades.length
+    ? curso.capacidades
+    : [];
 
   const extractSessionNumber = (p: any): number | null => {
     const raw = (p?.sesion ?? p?.sesionText ?? p?.semana ?? p?.logroUnidad ?? p?.unidad ?? '').toString().trim();
@@ -618,57 +627,108 @@ async function renderProgramacion(
     return null;
   };
 
-  const rowsSorted = [...rowsSource].sort((a: any, b: any) => {
-    const na = extractSessionNumber(a);
-    const nb = extractSessionNumber(b);
-
-    if (na !== null && nb !== null) return na - nb;
-    if (na !== null) return -1;
-    if (nb !== null) return 1;
-
-    const ta = (a?.semana ?? a?.logroUnidad ?? a?.unidad ?? '').toString();
-    const tb = (b?.semana ?? b?.logroUnidad ?? b?.unidad ?? '').toString();
-    return ta.localeCompare(tb, undefined, { numeric: true, sensitivity: 'base' });
-  });
-
-  const body: Row[] = rowsSorted.map((p: any, idx: number) => {
-    const sesionRaw = p.semana ?? p.sesion ?? p.logroUnidad ?? p.unidad ?? String(idx + 1);
+  const buildRow = (p: any): Row => {
+    const sesionRaw = p.semana ?? p.sesion ?? p.logroUnidad ?? p.unidad ?? '';
     const sesion = sanitizeTextForPdf(sesionRaw);
-
     const contenido = sanitizeTextForPdf(p.contenido ?? p.tema ?? p.descripcion ?? p.contenidoTema ?? '');
     const actividades = sanitizeTextForPdf(p.actividades ?? p.actividad ?? '');
     const recursos = sanitizeTextForPdf(p.recursos ?? p.recurso ?? p.recursosList ?? '');
     const estrategias = sanitizeTextForPdf(p.estrategias ?? p.estrategia ?? p.estrategiasDidacticas ?? '');
-
     return [sesion, contenido, actividades, recursos, estrategias];
-  });
+  };
 
-  const pageWidth = doc.internal.pageSize.getWidth();
-  const contentWidth = pageWidth - MARGINS.left - MARGINS.right;
+  const renderTablaSesiones = (rows: any[]) => {
+    const sorted = [...rows].sort((a: any, b: any) => {
+      const na = extractSessionNumber(a);
+      const nb = extractSessionNumber(b);
+      if (na !== null && nb !== null) return na - nb;
+      if (na !== null) return -1;
+      if (nb !== null) return 1;
+      const ta = (a?.semana ?? a?.logroUnidad ?? a?.unidad ?? '').toString();
+      const tb = (b?.semana ?? b?.logroUnidad ?? b?.unidad ?? '').toString();
+      return ta.localeCompare(tb, undefined, { numeric: true, sensitivity: 'base' });
+    });
 
-  autoTable(doc, {
-    startY: y,
-    head: [[t(lang, 's6ColSesion'), t(lang, 's6ColContenido'), t(lang, 's6ColActividades'), t(lang, 's6ColRecursos'), t(lang, 's6ColEstrategias')]],
-    body,
-    margin: { left: MARGINS.left, right: MARGINS.right },
-    styles: { font: 'helvetica', fontSize: 9, cellPadding: 3 },
-    headStyles: { fillColor: [230, 230, 230], textColor: 20, fontStyle: 'bold' },
-    columnStyles: {
-      0: { cellWidth: 16 },
-      1: { cellWidth: Math.max(30, Math.floor(contentWidth * 0.25)) },
-      2: { cellWidth: Math.max(30, Math.floor(contentWidth * 0.24)) },
-      3: { cellWidth: Math.max(30, Math.floor(contentWidth * 0.24)) },
-      4: { cellWidth: Math.max(30, Math.floor(contentWidth * 0.23)) },
-    },
-    didDrawPage: () => {
-      // opcional
-    },
-  });
+    const body: Row[] = sorted.map(buildRow);
 
-  y = (doc as jsPDFWithAutoTable).lastAutoTable!.finalY + 8;
+    autoTable(doc, {
+      startY: y,
+      head: [[t(lang, 's6ColSesion'), t(lang, 's6ColContenido'), t(lang, 's6ColActividades'), t(lang, 's6ColRecursos'), t(lang, 's6ColEstrategias')]],
+      body,
+      margin: { left: MARGINS.left, right: MARGINS.right },
+      styles: { font: 'helvetica', fontSize: 9, cellPadding: 3 },
+      headStyles: { fillColor: [230, 230, 230], textColor: 20, fontStyle: 'bold' },
+      columnStyles: {
+        0: { cellWidth: 16 },
+        1: { cellWidth: Math.max(30, Math.floor(contentWidth * 0.25)) },
+        2: { cellWidth: Math.max(30, Math.floor(contentWidth * 0.24)) },
+        3: { cellWidth: Math.max(30, Math.floor(contentWidth * 0.24)) },
+        4: { cellWidth: Math.max(30, Math.floor(contentWidth * 0.23)) },
+      },
+    });
 
-  if (y > pageHeight - MARGINS.bottom) {
-    y = addFooterAndNewPage(doc, MARGINS);
+    y = (doc as jsPDFWithAutoTable).lastAutoTable!.finalY + 8;
+    if (y > pageHeight - MARGINS.bottom) {
+      y = addFooterAndNewPage(doc, MARGINS);
+    }
+  };
+
+  const gruposPorCapacidad = new Map<number, any[]>();
+  const sinUnidad: any[] = [];
+  for (const p of rowsSource) {
+    const capId = p?.capacidadId;
+    if (typeof capId === 'number' && capacidades.some((c: any) => c.id === capId)) {
+      if (!gruposPorCapacidad.has(capId)) gruposPorCapacidad.set(capId, []);
+      gruposPorCapacidad.get(capId)!.push(p);
+    } else {
+      sinUnidad.push(p);
+    }
+  }
+
+  const capacidadesConDatos = capacidades.filter((c: any) => gruposPorCapacidad.has(c.id));
+
+  if (!capacidadesConDatos.length) {
+    renderTablaSesiones(rowsSource);
+    return y;
+  }
+
+  for (const capacidad of capacidadesConDatos) {
+    const nombreUnidad = sanitizeTextForPdf(capacidad?.nombre ?? '');
+    const logroUnidad = sanitizeTextForPdf(capacidad?.descripcion ?? '');
+
+    if (y + 14 > pageHeight - MARGINS.bottom) {
+      y = addFooterAndNewPage(doc, MARGINS);
+    }
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(11);
+    doc.text(nombreUnidad, MARGINS.left, y);
+    y += 6;
+
+    if (logroUnidad) {
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(10);
+      const logroLine = `${t(lang, 's6LogroUnidad')}${logroUnidad}`;
+      const wrapped = doc.splitTextToSize(logroLine, contentWidth);
+      if (y + wrapped.length * 6 > pageHeight - MARGINS.bottom) {
+        y = addFooterAndNewPage(doc, MARGINS);
+      }
+      doc.text(wrapped, MARGINS.left, y);
+      y += wrapped.length * 6 + 3;
+    }
+
+    renderTablaSesiones(gruposPorCapacidad.get(capacidad.id)!);
+  }
+
+  if (sinUnidad.length) {
+    if (y + 8 > pageHeight - MARGINS.bottom) {
+      y = addFooterAndNewPage(doc, MARGINS);
+    }
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(11);
+    doc.text(t(lang, 's6SinUnidad'), MARGINS.left, y);
+    y += 6;
+    renderTablaSesiones(sinUnidad);
   }
 
   return y;

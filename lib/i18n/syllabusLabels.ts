@@ -9,7 +9,7 @@ type LabelKey =
   | 's3Titulo' | 's3Vacio' | 's3ColCodigo' | 's3ColDescripcion' | 's3ColTipo' | 's3ColNivel'
   | 's4Titulo' | 's4Frase' | 's4Vacio'
   | 's5Titulo' | 's5Vacio'
-  | 's6Titulo' | 's6Vacio' | 's6ColSesion' | 's6ColContenido' | 's6ColActividades' | 's6ColRecursos' | 's6ColEstrategias'
+  | 's6Titulo' | 's6Vacio' | 's6ColSesion' | 's6ColContenido' | 's6ColActividades' | 's6ColRecursos' | 's6ColEstrategias'| 's6LogroUnidad' | 's6SinUnidad'
   | 's7Titulo' | 's7Vacio'
   | 's8Titulo' | 's8Vacio'
   | 's9Titulo' | 's9Vacio' | 's9ColUnidad' | 's9ColCriterios' | 's9ColProducto' | 's9ColInstrumento' | 's9ColPeso' | 's9ColSum'| 's9NotaTitulo' | 's9Nota1' | 's9Nota2' | 's9Nota3'| 's9ColNota' | 's9Total' | 's9FormulaPrefix'
@@ -62,6 +62,8 @@ export const syllabusLabels: Record<LabelKey, Record<SyllabusLang, string>> = {
   s6ColActividades: { es: 'Actividades', en: 'Activities', zh: '活动' },
   s6ColRecursos: { es: 'Recursos', en: 'Resources', zh: '资源' },
   s6ColEstrategias: { es: 'Estrategias', en: 'Strategies', zh: '策略' },
+  s6LogroUnidad: { es: 'Logro de la unidad: ', en: 'Unit learning outcome: ', zh: '单元学习成果：' },
+  s6SinUnidad: { es: 'Sesiones sin unidad asignada', en: 'Sessions without an assigned unit', zh: '未分配单元的课次' },
 
   s7Titulo: { es: '7. ESTRATEGIA DIDÁCTICA', en: '7. TEACHING STRATEGY', zh: '7. 教学策略' },
   s7Vacio: { es: 'No hay estrategias didácticas registradas para este curso.', en: 'No teaching strategies have been registered for this course.', zh: '本课程尚未登记教学策略。' },
