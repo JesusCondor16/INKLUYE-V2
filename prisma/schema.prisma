@@ -15,12 +15,25 @@ enum BibliografiaCategoria {
   OTRAS_FUENTES
 }
 
+enum EstadoSyllabus {
+  BORRADOR
+  ENVIADO_DOCENTE
+  PUBLICADO
+}
+
+enum AccionSyllabus {
+  GENERADO
+  ENVIADO
+  DEVUELTO
+  PUBLICADO
+}
+
 model bibliografia {
-  id        Int                    @id @default(autoincrement())
-  texto     String                 @db.VarChar(1000)
-  categoria BibliografiaCategoria  @default(OTRAS_FUENTES)
+  id        Int                   @id @default(autoincrement())
+  texto     String                @db.VarChar(1000)
+  categoria BibliografiaCategoria @default(OTRAS_FUENTES)
   courseId  Int
-  course    course                 @relation(fields: [courseId], references: [id], map: "Bibliografia_courseId_fkey")
+  course    course                @relation(fields: [courseId], references: [id], map: "Bibliografia_courseId_fkey")
 
   @@index([courseId], map: "Bibliografia_courseId_fkey")
 }
@@ -160,23 +173,53 @@ model programacioncontenido {
 }
 
 model syllabus {
-  id        Int      @id @default(autoincrement())
-  courseId  Int      @unique(map: "Syllabus_courseId_key")
-  createdAt DateTime @default(now())
+  id        Int                 @id @default(autoincrement())
+  courseId  Int                 @unique(map: "Syllabus_courseId_key")
+  createdAt DateTime            @default(now())
   pdfUrl    String
-  updatedAt DateTime @default(now())
-  course    course   @relation(fields: [courseId], references: [id], map: "Syllabus_courseId_fkey")
+  updatedAt DateTime            @default(now())
+  estado    EstadoSyllabus      @default(BORRADOR)
+  course    course              @relation(fields: [courseId], references: [id], map: "Syllabus_courseId_fkey")
+  historial syllabushistorial[]
+}
+
+model syllabushistorial {
+  id          Int            @id @default(autoincrement())
+  syllabusId  Int
+  accion      AccionSyllabus
+  usuarioId   Int
+  observacion String?        @db.Text
+  fecha       DateTime       @default(now())
+  syllabus    syllabus       @relation(fields: [syllabusId], references: [id])
+  usuario     user           @relation(fields: [usuarioId], references: [id])
+
+  @@index([syllabusId])
+  @@index([usuarioId])
+}
+
+model notificacion {
+  id        Int      @id @default(autoincrement())
+  usuarioId Int
+  mensaje   String   @db.VarChar(500)
+  enlace    String?  @db.VarChar(255)
+  leida     Boolean  @default(false)
+  createdAt DateTime @default(now())
+  usuario   user     @relation(fields: [usuarioId], references: [id])
+
+  @@index([usuarioId, leida])
 }
 
 model user {
-  id           Int            @id @default(autoincrement())
-  name         String
-  email        String         @unique(map: "User_email_key")
-  password     String
-  role         String
-  course       course[]
-  cursodocente cursodocente[]
-  userhistory  userhistory[]
+  id                Int                 @id @default(autoincrement())
+  name              String
+  email             String              @unique(map: "User_email_key")
+  password          String
+  role              String
+  course            course[]
+  cursodocente      cursodocente[]
+  userhistory       userhistory[]
+  syllabushistorial syllabushistorial[]
+  notificacion      notificacion[]
 }
 
 model userhistory {
