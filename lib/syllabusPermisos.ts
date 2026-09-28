@@ -20,9 +20,9 @@ export function puedeVerSyllabus(ctx: ContextoAccesoSyllabus): boolean {
   // Publicado: visible para cualquier usuario autenticado
   if (ctx.estado === 'PUBLICADO') return true;
 
-  // Enviado a revision: solo los docentes asignados al curso
+  // Enviado a revision: solo los asignados al curso en cursodocente (docentes o coordinadores que lo dictan)
   if (ctx.estado === 'ENVIADO_DOCENTE') {
-    return ctx.rol === 'docente' && ctx.esDocenteDelCurso;
+    return ctx.esDocenteDelCurso;
   }
 
   // Borrador: nadie mas
