@@ -1,9 +1,9 @@
 // app/api/cursos/[id]/uploadSyllabus/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
+import fs from "fs/promises";
 import prisma from "@/lib/prisma";
 import { obtenerUsuarioDesdeTokenServer, esCoordinadorDelCurso } from "@/lib/authServer";
+import { CARPETA_SYLLABUS, idiomaDesdeNombreArchivo, rutaArchivoSyllabus, urlSyllabus } from "@/lib/syllabusArchivos";
 
 type Params = { id?: string };
 
@@ -45,6 +45,12 @@ export async function POST(req: NextRequest, context: { params: Params | Promise
       return NextResponse.json({ success: false, error: "Campo 'filename' y 'data' (base64) son requeridos" }, { status: 400 });
     }
 
+    // El nombre debe ser exactamente "<courseId>-<es|en|zh>.pdf" (evita path traversal y nombres arbitrarios)
+    const lang = idiomaDesdeNombreArchivo(courseId, filename);
+    if (!lang) {
+      return NextResponse.json({ success: false, error: "Nombre de archivo inválido" }, { status: 400 });
+    }
+
     // Validación básica del base64
     if (typeof data !== "string" || !/^([A-Za-z0-9+/=]+\s*)+$/.test(data.trim())) {
       return NextResponse.json({ success: false, error: "Campo 'data' no parece ser base64 válido" }, { status: 400 });
@@ -53,26 +59,24 @@ export async function POST(req: NextRequest, context: { params: Params | Promise
     // Decodificar base64
     const buffer = Buffer.from(data, "base64");
 
-    // Carpeta pública destino
-    const dir = path.join(process.cwd(), "public", "syllabus");
-    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    // Carpeta privada (fuera de public/): solo se descarga via /api/cursos/[id]/syllabus-pdf
+    await fs.mkdir(CARPETA_SYLLABUS, { recursive: true });
+    await fs.writeFile(rutaArchivoSyllabus(courseId, lang), buffer);
 
-    // Evitar path traversal en filename
-    const safeFilename = path.basename(filename);
-    const filePath = path.join(dir, safeFilename);
+    const pdfUrl = urlSyllabus(courseId, lang);
 
-    // Escribir archivo (sobrescribe si ya existe)
-    fs.writeFileSync(filePath, buffer);
-
-    // Construir URL pública (relativa)
-    const pdfUrl = `/syllabus/${safeFilename}`;
-
-    // Upsert en la tabla syllabus (guardar pdfUrl y timestamps)
+    // Regenerar siempre devuelve el syllabus a BORRADOR y queda registrado en el historial
     const now = new Date();
-    const saved = await prisma.syllabus.upsert({
-      where: { courseId },
-      update: { pdfUrl, updatedAt: now },
-      create: { courseId, pdfUrl, createdAt: now, updatedAt: now },
+    const saved = await prisma.$transaction(async (tx) => {
+      const syllabus = await tx.syllabus.upsert({
+        where: { courseId },
+        update: { pdfUrl, estado: "BORRADOR", updatedAt: now },
+        create: { courseId, pdfUrl, estado: "BORRADOR", createdAt: now, updatedAt: now },
+      });
+      await tx.syllabushistorial.create({
+        data: { syllabusId: syllabus.id, accion: "GENERADO", usuarioId: usuario.id },
+      });
+      return syllabus;
     });
 
     return NextResponse.json({ success: true, url: pdfUrl, saved }, { status: 200 });
