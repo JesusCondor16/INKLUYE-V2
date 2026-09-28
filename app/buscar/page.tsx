@@ -45,7 +45,8 @@ export default function BuscarSyllabusPage() {
           return;
         }
 
-        const mapped: Curso[] = (data.data || []).map((c: Curso & { syllabus?: { pdfUrl?: string } }) => ({
+        // El servidor solo envia syllabusUrl si este usuario puede ver el PDF (segun el estado del syllabus)
+        const mapped: Curso[] = (data.data || []).map((c: Curso & { syllabusUrl?: string | null }) => ({
           id: c.id,
           code: c.code,
           name: c.name,
@@ -54,33 +55,12 @@ export default function BuscarSyllabusPage() {
           credits: c.credits,
           user: c.user ?? null,
           cursodocente: c.cursodocente ?? [],
-          pdfUrl: c.syllabus?.pdfUrl ?? c.pdfUrl ?? null, // aún puede venir de syllabus
+          pdfUrl: c.syllabusUrl ?? null,
         }));
 
         if (!mounted) return;
         setCursos(mapped);
         setError(null);
-
-        const fetchPdfForCourse = async (course: Curso) => {
-          if (course.pdfUrl) return course;
-          try {
-            const r = await fetch(`/api/cursos/${course.id}`);
-            if (!r.ok) return course;
-            const j: { curso?: Curso; syllabusUrl?: string } = await r.json();
-            const payload = (j.curso ?? j ?? {}) as Curso & { syllabus?: { pdfUrl?: string }; syllabusUrl?: string };
-            const pdfUrl = payload.syllabus?.pdfUrl ?? payload.syllabusUrl ?? null;
-            return { ...course, pdfUrl };
-          } catch (err) {
-            console.warn(`No se pudo obtener syllabus para courseId=${course.id}`, err);
-            return course;
-          }
-        };
-
-        const promises = mapped.map(fetchPdfForCourse);
-        const withPdf = await Promise.all(promises);
-
-        if (!mounted) return;
-        setCursos(withPdf);
       } catch (err: unknown) {
         if (!mounted) return;
         setError(err instanceof Error ? err.message : "Error desconocido");
@@ -92,52 +72,8 @@ export default function BuscarSyllabusPage() {
 
     fetchCursos();
 
-    // BroadcastChannel + localStorage listener
-    let bc: BroadcastChannel | null = null;
-    const onStorage = (ev: StorageEvent) => {
-      if (ev.key === "syllabus_updated" && ev.newValue) {
-        try {
-          const payload: { courseId: number; pdfUrl?: string } = JSON.parse(ev.newValue);
-          if (payload?.courseId) {
-            setCursos(prev =>
-              prev.map(c =>
-                c.id === payload.courseId ? { ...c, pdfUrl: payload.pdfUrl ?? c.pdfUrl ?? `/syllabus/${c.id}.pdf` } : c
-              )
-            );
-          }
-        } catch (e: unknown) {
-          console.warn("Error parseando syllabus_updated desde storage", e);
-        }
-      }
-    };
-
-    try {
-      if (typeof window !== "undefined" && "BroadcastChannel" in window) {
-        bc = new BroadcastChannel("syllabus_channel");
-        bc.onmessage = (ev: MessageEvent<{ type: string; courseId?: number; pdfUrl?: string }>) => {
-          const msg = ev.data;
-          if (msg?.type === "updated" && msg.courseId) {
-            setCursos(prev =>
-              prev.map(c =>
-                c.id === msg.courseId ? { ...c, pdfUrl: msg.pdfUrl ?? c.pdfUrl ?? `/syllabus/${c.id}.pdf` } : c
-              )
-            );
-          }
-        };
-      }
-    } catch (err: unknown) {
-      console.warn("BroadcastChannel no disponible", err);
-      bc = null;
-    }
-
-    window.addEventListener("storage", onStorage);
-
     return () => {
       mounted = false;
-      if (bc) {
-        try { bc.close(); } catch (_) { /* ignorado */ }
-      }
-      window.removeEventListener("storage", onStorage);
     };
   }, []);
 
@@ -197,7 +133,7 @@ export default function BuscarSyllabusPage() {
                         📄
                       </a>
                     ) : (
-                      <span className={styles.noIcon}>—</span>
+                      <span className={styles.noIcon}>No disponible</span>
                     )}
                   </td>
                 </tr>

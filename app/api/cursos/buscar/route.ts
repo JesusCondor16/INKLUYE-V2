@@ -1,6 +1,9 @@
 // app/api/cursos/buscar/route.ts
 import { NextRequest, NextResponse } from "next/server";
+import type { EstadoSyllabus } from "@prisma/client";
 import { cursoModel } from "@/models/cursoModel";
+import { obtenerUsuarioDesdeTokenServer } from "@/lib/authServer";
+import { puedeVerSyllabus } from "@/lib/syllabusPermisos";
 
 // Tipado de la estructura que devuelve cursoModel
 type CursoRaw = {
@@ -10,13 +13,19 @@ type CursoRaw = {
   type?: string | null;
   cycle?: string | null;
   credits?: number | null;
+  coordinadorId?: number | null;
   user?: { id: number; name: string } | null;
   cursodocente?: { user?: { id: number; name: string } }[];
-  syllabus?: { pdfUrl?: string | null } | null;
+  syllabus?: { pdfUrl?: string | null; estado: EstadoSyllabus } | null;
 };
 
 export async function GET(req: NextRequest) {
   try {
+    const usuario = obtenerUsuarioDesdeTokenServer(req);
+    if (!usuario) {
+      return NextResponse.json({ success: false, error: "Usuario no autenticado" }, { status: 401 });
+    }
+
     const { searchParams } = req.nextUrl;
     const q = searchParams.get("q")?.trim() || "";
 
@@ -33,8 +42,17 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    // 🟢 Mapeo garantizando que syllabusUrl venga correctamente del BD
+    // 🟢 El enlace al PDF solo se entrega si este usuario puede verlo segun el estado del syllabus
     const mapped = cursos.map((c) => {
+      const visible =
+        !!c.syllabus &&
+        puedeVerSyllabus({
+          rol: usuario.role,
+          estado: c.syllabus.estado,
+          esCoordinadorDelCurso: c.coordinadorId === usuario.id,
+          esDocenteDelCurso: (c.cursodocente ?? []).some((cd) => cd.user?.id === usuario.id),
+        });
+
       return {
         id: c.id,
         code: c.code,
@@ -44,7 +62,7 @@ export async function GET(req: NextRequest) {
         credits: c.credits,
         user: c.user ?? null,
         cursodocente: c.cursodocente ?? [],
-        syllabusUrl: c.syllabus?.pdfUrl || null,
+        syllabusUrl: visible ? c.syllabus?.pdfUrl ?? null : null,
       };
     });
 
