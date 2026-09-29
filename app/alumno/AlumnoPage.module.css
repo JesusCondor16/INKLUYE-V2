@@ -1,97 +1,53 @@
-/* ===========================================================
-   Estilos accesibles — Página Bienvenida Estudiante (AAA)
-   =========================================================== */
+/* app/alumno/AlumnoPage.module.css
+   Bienvenida del estudiante — WCAG 2.1 AAA, usa solo tokens --ink-* */
 
-/* Variables globales */
-:global(:root) {
-  --primary-color: #003366;
-  --primary-color-dark: #00264d;
-  --text-color: #212529;
-  --heading-color: #0b2c4d;
-  --surface-color: #f8fafc;
-  --focus-ring: #ffbf47;
-  --muted: #6c757d;
-  --bg-color: #ffffff;
-}
-
-/* Layout general */
 .wrapper {
   display: flex;
   min-height: 100vh;
-  background: var(--bg-color);
-  color: var(--text-color);
-  font-family: "Inter", system-ui, -apple-system, "Segoe UI";
+  background: var(--ink-bg);
+  color: var(--ink-text);
 }
 
-/* Contenido principal */
 .main {
   flex: 1;
-  padding: 2rem;
-  margin-left: 1rem;
   max-width: 1200px;
+  padding: 2rem;
+  box-sizing: border-box;
 }
 
-/* Skip link accesible */
-.skipLink {
-  position: absolute;
-  left: -9999px;
-  top: auto;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  white-space: nowrap;
-  background: #fff;
-  color: #000;
-}
-
-.skipLink:focus {
-  left: 1rem;
-  top: 1rem;
-  padding: 0.6rem 1rem;
-  background: var(--primary-color);
-  color: #fff;
-  border-radius: 6px;
-  outline: 3px solid var(--focus-ring);
-}
-
-/* Títulos */
 .title {
-  font-size: 1.6rem;
-  font-weight: 700;
-  color: var(--heading-color);
   margin-bottom: 0.5rem;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--ink-primary);
 }
 
-/* Subtítulo */
 .subtitle {
-  font-size: 1.05rem;
-  color: var(--muted);
   margin-bottom: 1.5rem;
+  font-size: 1.05rem;
+  color: var(--ink-text-muted);
 }
 
-/* Panel informativo */
 .infoPanel {
-  background: #eaf3ff;
-  border: 1px solid var(--surface-color);
-  padding: 1rem;
-  border-radius: 8px;
   margin-top: 1rem;
+  padding: 1.25rem 1rem;
+  border-left: 6px solid var(--ink-info);
+  border-radius: var(--ink-radius-sm);
+  background: var(--ink-info-bg);
 }
 
-/* Texto dentro del panel */
 .lead {
-  color: var(--text-color);
   font-size: 1rem;
-  line-height: 1.6;
+  line-height: var(--ink-line-height);
+  color: var(--ink-text);
 }
 
-/* Responsivo */
 @media (max-width: 700px) {
   .main {
     padding: 1.2rem;
   }
-  
+
   .title {
-    font-size: 1.3rem;
+    font-size: 1.4rem;
   }
 }

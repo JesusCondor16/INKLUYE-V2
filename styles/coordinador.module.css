@@ -1,479 +1,152 @@
-/* coordinador.module.css
-   Sistema Inkluye
-   Accesibilidad: WCAG 2.1 AAA
-   Compatible: Next.js + CSS Modules
-*/
+/* styles/coordinador.module.css
+   Paginas del coordinador (inicio, mis cursos, syllabus del curso)
+   WCAG 2.1 AAA — usa solo tokens --ink-* de styles/globals.css */
 
-/* ===============================
-   VARIABLES DE SISTEMA
-================================ */
-
-:global(:root){
-
-  --primary:#0a2540;
-  --primary-strong:#071833;
-
-  --accent:#ffbf47;
-
-  --success:#0f6b3c;
-  --danger:#8a0b0b;
-
-  --bg:#ffffff;
-  --surface:#f6f9fc;
-
-  --text:#0b1f3a;
-  --text-soft:#46525d;
-
-  --table-header:#eef2f6;
-  --table-hover:#f4f7fb;
-
-  --border:#dbe3ec;
-
-  --radius:10px;
-
-  --focus:4px solid var(--accent);
-
-  --touch:44px;
-
-  --font-ui:
-    "Inter",
-    "Segoe UI",
-    system-ui,
-    -apple-system,
-    sans-serif;
-
+.wrapper {
+  display: flex;
+  min-height: 100vh;
+  background: var(--ink-bg);
+  color: var(--ink-text);
 }
 
-/* ===============================
-   GLOBALS CONTROLADOS
-================================ */
-
-:global(html){
-
-  box-sizing:border-box;
-
-  font-family:var(--font-ui);
-
-  line-height:1.6;
-
-  -webkit-text-size-adjust:100%;
-
+.main {
+  flex: 1;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2.4rem;
+  box-sizing: border-box;
 }
 
-:global(*),
-:global(*::before),
-:global(*::after){
-
-  box-sizing:inherit;
-
+.title {
+  margin-bottom: 0.4rem;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--ink-primary);
 }
 
-/* ===============================
-   REDUCED MOTION
-================================ */
-
-@media (prefers-reduced-motion: reduce){
-
-  :global(*){
-
-    animation:none !important;
-    transition:none !important;
-
-  }
-
+.lead {
+  margin-bottom: 1.4rem;
+  font-size: 1.05rem;
+  color: var(--ink-text-muted);
 }
 
-/* ===============================
-   LAYOUT
-================================ */
-
-.wrapper{
-
-  display:flex;
-
-  min-height:100vh;
-
-  background:var(--bg);
-
-  color:var(--text);
-
-}
-
-/* ===============================
-   MAIN CONTENT
-================================ */
-
-.main{
-
-  flex:1;
-
-  padding:2.4rem;
-
-  max-width:1200px;
-
-  margin:0 auto;
-
-  width:100%;
-
-}
-
-/* ===============================
-   SKIP LINK
-================================ */
-
-.skipLink{
-
-  position:absolute;
-
-  left:-9999px;
-
-  width:1px;
-  height:1px;
-
-  overflow:hidden;
-
-  background:#fff;
-
-  color:#000;
-
-}
-
-.skipLink:focus{
-
-  left:1rem;
-
-  top:1rem;
-
-  width:auto;
-  height:auto;
-
-  padding:0.65rem 1rem;
-
-  background:var(--primary);
-
-  color:#fff;
-
-  border-radius:8px;
-
-  font-weight:700;
-
-  outline:var(--focus);
-
-}
-
-/* ===============================
-   TITLES
-================================ */
-
-.title{
-
-  font-size:1.7rem;
-
-  font-weight:800;
-
-  letter-spacing:-0.3px;
-
-  margin-bottom:0.4rem;
-
-  color:var(--primary);
-
-}
-
-.lead{
-
-  font-size:1.05rem;
-
-  color:var(--text-soft);
-
-  margin-bottom:1.4rem;
-
-}
-
-/* ===============================
-   STATUS / ERROR BOX
-================================ */
-
+/* ===== Mensajes de estado ===== */
 .statusBox,
-.errorBox{
-
-  padding:1rem;
-
-  border-radius:8px;
-
-  margin-bottom:1rem;
-
+.errorBox {
+  margin-bottom: 1rem;
+  padding: 1rem;
+  border-radius: var(--ink-radius-sm);
 }
 
-.statusBox{
-
-  background:#eaf3ff;
-
-  color:#0a2540;
-
-  border:1px solid #cfe0ff;
-
+.statusBox {
+  background: var(--ink-info-bg);
+  color: var(--ink-info);
+  border: 1px solid var(--ink-info);
 }
 
-.errorBox{
-
-  background:#fdecea;
-
-  color:var(--danger);
-
-  border:1px solid #f3c2c2;
-
+.errorBox {
+  background: var(--ink-danger-bg);
+  color: var(--ink-danger);
+  border: 1px solid var(--ink-danger);
 }
 
-/* ===============================
-   TABLA CONTENEDOR
-================================ */
-
-.tableWrapper{
-
-  width:100%;
-
-  overflow:auto;
-
-  border-radius:var(--radius);
-
-  border:1px solid var(--border);
-
-  background:#fff;
-
+/* ===== Tabla ===== */
+.tableWrapper {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--ink-border);
+  border-radius: var(--ink-radius);
+  background: var(--ink-bg);
 }
 
-/* ===============================
-   TABLA
-================================ */
-
-.table{
-
-  width:100%;
-
-  border-collapse:collapse;
-
-  font-size:0.95rem;
-
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 1rem;
 }
 
-/* caption oculto accesible */
-
-.caption{
-
-  position:absolute;
-
-  width:1px;
-  height:1px;
-
-  overflow:hidden;
-
+.table thead th {
+  padding: 0.9rem 1rem;
+  text-align: left;
+  font-weight: 700;
+  background: var(--ink-surface-alt);
+  color: var(--ink-primary);
+  border-bottom: 2px solid var(--ink-border);
 }
 
-/* header */
-
-.table thead th{
-
-  text-align:left;
-
-  padding:0.9rem 1rem;
-
-  font-weight:700;
-
-  background:var(--table-header);
-
-  color:var(--primary);
-
-  border-bottom:2px solid var(--border);
-
+.table tbody td {
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid var(--ink-border);
+  vertical-align: middle;
 }
 
-/* body */
-
-.table tbody td{
-
-  padding:0.85rem 1rem;
-
-  border-bottom:1px solid var(--border);
-
-  vertical-align:middle;
-
+.table tbody tr:nth-child(even) {
+  background: var(--ink-surface);
 }
 
-/* zebra */
-
-.table tbody tr:nth-child(even){
-
-  background:#fafbfd;
-
+.table tbody tr:hover {
+  background: var(--ink-hover-bg);
 }
 
-/* hover */
-
-.table tbody tr:hover{
-
-  background:var(--table-hover);
-
+/* ===== Botones ===== */
+.btn,
+.generateButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-height: var(--ink-touch);
+  min-width: var(--ink-touch);
+  padding: 0.55rem 0.9rem;
+  border: 2px solid transparent;
+  border-radius: var(--ink-radius-sm);
+  background: var(--ink-primary);
+  color: var(--ink-on-primary);
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color var(--ink-transition);
 }
 
-/* ===============================
-   BOTONES
-================================ */
-
-.btn{
-
-  display:inline-flex;
-
-  align-items:center;
-
-  justify-content:center;
-
-  gap:0.4rem;
-
-  padding:0.55rem 0.8rem;
-
-  min-height:var(--touch);
-
-  border-radius:8px;
-
-  font-weight:700;
-
-  font-size:0.92rem;
-
-  border:2px solid transparent;
-
-  cursor:pointer;
-
-  background:var(--primary);
-
-  color:#fff;
-
+.btn:hover,
+.generateButton:hover {
+  background: var(--ink-primary-hover);
 }
 
-.btn:hover{
-
-  background:var(--primary-strong);
-
+.btn:disabled,
+.generateButton:disabled {
+  cursor: wait;
+  opacity: 0.85;
 }
 
-.btn:focus-visible{
-
-  outline:var(--focus);
-
-  outline-offset:3px;
-
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
-/* ===============================
-   BOTONES GENERAR
-================================ */
-
-.generateRow{
-
-  display:flex;
-
-  gap:0.8rem;
-
-  margin-top:1.2rem;
-
-  flex-wrap:wrap;
-
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .main {
+    padding: 1.2rem;
+  }
 }
 
-.btnES{
-
-  background:var(--success);
-
-}
-
-.btnES:hover{
-
-  background:#0b4e2b;
-
-}
-
-.btnEN{
-
-  background:#ffffff;
-
-  border:2px solid var(--primary);
-
-  color:var(--primary);
-
-}
-
-.btnEN:hover{
-
-  background:#eef4ff;
-
-}
-
-/* ===============================
-   ACCESSIBILITY UTIL
-================================ */
-
-.visuallyHidden{
-
-  position:absolute;
-
-  width:1px;
-  height:1px;
-
-  overflow:hidden;
-
-  clip:rect(1px,1px,1px,1px);
-
-}
-
-/* ===============================
-   MOBILE
-================================ */
-
-@media (max-width:768px){
-
-  .main{
-
-    padding:1.2rem;
-
+/* ===== Preferencia de mas contraste ===== */
+@media (prefers-contrast: more) {
+  .table thead th {
+    border-bottom: 3px solid var(--ink-text);
   }
 
-  .table{
-
-    font-size:0.9rem;
-
+  .btn,
+  .generateButton {
+    border: 3px solid var(--ink-text);
   }
-
-}
-
-/* ===============================
-   LARGE SCREENS
-================================ */
-
-@media (min-width:1400px){
-
-  .main{
-
-    max-width:1300px;
-
-  }
-
-}
-
-/* ===============================
-   HIGH CONTRAST MODE
-================================ */
-
-@media (prefers-contrast: more){
-
-  .table thead th{
-
-    border-bottom:3px solid #000;
-
-  }
-
-  .btn{
-
-    border:3px solid #000;
-
-  }
-
 }
