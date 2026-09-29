@@ -1,457 +1,186 @@
-/* =====================================================
-   SISTEMA INKLUYE
-   Gestión de Docentes
-   Enterprise UI – WCAG 2.1 AAA
-   Compatible con Next.js CSS Modules
-   ===================================================== */
-
-
-/* =====================================================
-   CONTENEDOR PRINCIPAL
-   ===================================================== */
+/* styles/GestionDocentes.module.css
+   Director — Gestión de docentes
+   WCAG 2.1 AAA — usa solo tokens --ink-* de styles/globals.css */
 
 .container {
-
   max-width: 1240px;
-
   margin: 2.5rem auto;
-
   padding: 0 2rem;
-
-  font-family:
-    "Inter",
-    "Segoe UI",
-    system-ui,
-    -apple-system,
-    sans-serif;
-
-  color: #0f172a;
-
+  color: var(--ink-text);
 }
-
-
-/* =====================================================
-   HEADER
-   ===================================================== */
 
 .header {
-
   display: flex;
-
-  align-items: center;
-
-  justify-content: space-between;
-
   flex-wrap: wrap;
-
+  align-items: center;
+  justify-content: space-between;
   gap: 1rem;
-
   margin-bottom: 2rem;
-
 }
-
-
-/* =====================================================
-   TITLE
-   ===================================================== */
 
 .title {
-
-  font-size: 2rem;
-
-  font-weight: 800;
-
-  color: #0a3a8a;
-
-  letter-spacing: -0.3px;
-
   margin: 0;
-
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--ink-primary);
 }
 
-
-/* =====================================================
-   PRIMARY ACTION BUTTON
-   ===================================================== */
-
 .btnPrimary {
-
   display: inline-flex;
-
   align-items: center;
-
   justify-content: center;
-
-  min-height: 44px;
-
+  gap: 0.4rem;
+  min-height: var(--ink-touch);
   padding: 0.65rem 1.4rem;
-
-  border-radius: 10px;
-
-  font-size: 0.95rem;
-
+  border: 2px solid transparent;
+  border-radius: var(--ink-radius);
+  background: var(--ink-primary);
+  color: var(--ink-on-primary);
+  font-size: 1rem;
   font-weight: 700;
-
-  border: none;
-
-  background: #0a3a8a;
-
-  color: #ffffff;
-
   cursor: pointer;
-
-  transition:
-    background 0.18s ease,
-    transform 0.05s ease;
-
+  transition: background-color var(--ink-transition);
 }
 
 .btnPrimary:hover {
-
-  background: #072c67;
-
+  background: var(--ink-primary-hover);
 }
-
-.btnPrimary:active {
-
-  transform: translateY(1px);
-
-}
-
-.btnPrimary:focus-visible {
-
-  outline: 4px solid #ffbf47;
-
-  outline-offset: 2px;
-
-}
-
-
-/* =====================================================
-   ALERTA DE SISTEMA
-   ===================================================== */
 
 .alert {
-
-  padding: 1rem 1.25rem;
-
-  border-radius: 10px;
-
-  background: #eef4ff;
-
-  color: #0a3a8a;
-
-  font-weight: 600;
-
   margin-bottom: 1.5rem;
-
-  border-left: 5px solid #0a3a8a;
-
+  padding: 1rem 1.25rem;
+  border-left: 5px solid var(--ink-info);
+  border-radius: var(--ink-radius);
+  background: var(--ink-info-bg);
+  color: var(--ink-info);
+  font-weight: 700;
 }
 
-
-/* =====================================================
-   CARD SURFACE
-   ===================================================== */
-
+/* ===== Tabla ===== */
 .tableContainer {
-
-  border-radius: 12px;
-
-  border: 1px solid #e5eaf2;
-
-  box-shadow: 0 8px 26px rgba(0,0,0,0.06);
-
   overflow-x: auto;
-
-  background: #ffffff;
-
+  border: 1px solid var(--ink-border);
+  border-radius: var(--ink-radius-lg);
+  background: var(--ink-bg);
+  box-shadow: var(--ink-shadow);
 }
-
-
-/* =====================================================
-   TABLE
-   ===================================================== */
 
 .table {
-
   width: 100%;
-
   border-collapse: collapse;
-
-  font-size: 0.95rem;
-
+  font-size: 1rem;
 }
-
-
-/* =====================================================
-   CAPTION (ACCESIBLE)
-   ===================================================== */
 
 .table caption {
-
-  text-align: left;
-
   padding: 1rem;
-
-  font-size: 0.85rem;
-
-  color: #475569;
-
-}
-
-
-/* =====================================================
-   TABLE HEADER
-   ===================================================== */
-
-.table thead {
-
-  background: #f6f8fc;
-
+  text-align: left;
+  font-size: 0.95rem;
+  color: var(--ink-text-muted);
 }
 
 .table th {
-
-  text-align: left;
-
   padding: 0.95rem 1.1rem;
-
+  text-align: left;
   font-weight: 700;
-
-  color: #1e293b;
-
-  border-bottom: 2px solid #e5eaf2;
-
   white-space: nowrap;
-
+  background: var(--ink-surface-alt);
+  color: var(--ink-primary);
+  border-bottom: 2px solid var(--ink-border);
 }
-
-
-/* =====================================================
-   TABLE BODY
-   ===================================================== */
 
 .table td {
-
   padding: 0.9rem 1.1rem;
-
-  border-bottom: 1px solid #edf1f7;
-
-  color: #0f172a;
-
+  border-bottom: 1px solid var(--ink-border);
+  color: var(--ink-text);
+  vertical-align: middle;
 }
 
-
-/* =====================================================
-   ROW STATES
-   ===================================================== */
-
 .table tbody tr:nth-child(even) {
-
-  background: #fafcff;
-
+  background: var(--ink-surface);
 }
 
 .table tbody tr:hover {
-
-  background: #f2f6ff;
-
+  background: var(--ink-hover-bg);
 }
-
-.table tbody tr:focus-within {
-
-  outline: 3px solid #ffbf47;
-
-  outline-offset: -2px;
-
-}
-
-
-/* =====================================================
-   NO DATA STATE
-   ===================================================== */
 
 .noData {
-
-  text-align: center;
-
   padding: 1.8rem;
-
+  text-align: center;
   font-style: italic;
-
-  color: #64748b;
-
+  color: var(--ink-text-muted);
 }
 
-
-/* =====================================================
-   ACTION GROUP
-   ===================================================== */
-
+/* ===== Acciones por fila (antes 34px y 13px: ahora 44px y 16px) ===== */
 .actionGroup {
-
   display: flex;
-
-  gap: 0.4rem;
-
   flex-wrap: wrap;
-
+  gap: 0.5rem;
 }
-
-
-/* =====================================================
-   ACTION BUTTON BASE
-   ===================================================== */
 
 .btnEdit,
 .btnDelete,
 .btnHistorial {
-
   display: inline-flex;
-
   align-items: center;
-
-  gap: 0.3rem;
-
-  min-height: 34px;
-
-  padding: 0.35rem 0.75rem;
-
-  border-radius: 8px;
-
-  font-size: 0.82rem;
-
-  font-weight: 600;
-
+  gap: 0.35rem;
+  min-height: var(--ink-touch);
+  padding: 0.45rem 0.85rem;
+  border: 2px solid currentColor;
+  border-radius: var(--ink-radius-sm);
+  background: var(--ink-bg);
+  font-size: 1rem;
+  font-weight: 700;
   cursor: pointer;
-
-  border: 1px solid transparent;
-
-  background: #ffffff;
-
-  transition:
-    background 0.15s ease,
-    color 0.15s ease,
-    border 0.15s ease;
-
+  transition: background-color var(--ink-transition), color var(--ink-transition);
 }
 
-
-/* =====================================================
-   EDIT
-   ===================================================== */
-
 .btnEdit {
+  color: var(--ink-primary);
+}
 
-  color: #0a3a8a;
+.btnDelete {
+  color: var(--ink-danger);
+}
 
-  border-color: #0a3a8a;
-
+.btnHistorial {
+  color: var(--ink-success);
 }
 
 .btnEdit:hover {
-
-  background: #0a3a8a;
-
-  color: #ffffff;
-
-}
-
-.btnEdit:focus-visible {
-
-  outline: 3px solid #ffbf47;
-
-}
-
-
-/* =====================================================
-   DELETE
-   ===================================================== */
-
-.btnDelete {
-
-  color: #a61b2b;
-
-  border-color: #a61b2b;
-
+  background: var(--ink-primary);
+  border-color: var(--ink-primary);
+  color: var(--ink-on-primary);
 }
 
 .btnDelete:hover {
-
-  background: #a61b2b;
-
-  color: #ffffff;
-
-}
-
-.btnDelete:focus-visible {
-
-  outline: 3px solid #ffbf47;
-
-}
-
-
-/* =====================================================
-   HISTORIAL
-   ===================================================== */
-
-.btnHistorial {
-
-  color: #1f7a4d;
-
-  border-color: #1f7a4d;
-
+  background: var(--ink-danger);
+  border-color: var(--ink-danger);
+  color: var(--ink-on-primary);
 }
 
 .btnHistorial:hover {
-
-  background: #1f7a4d;
-
-  color: #ffffff;
-
+  background: var(--ink-success);
+  border-color: var(--ink-success);
+  color: var(--ink-on-primary);
 }
-
-.btnHistorial:focus-visible {
-
-  outline: 3px solid #ffbf47;
-
-}
-
-
-/* =====================================================
-   ICON
-   ===================================================== */
 
 .icon {
-
   display: inline-flex;
-
-  width: 16px;
-
-  height: 16px;
-
+  width: 18px;
+  height: 18px;
 }
 
-
-/* =====================================================
-   RESPONSIVE
-   ===================================================== */
-
 @media (max-width: 768px) {
+  .container {
+    padding: 0 1rem;
+  }
 
   .header {
-
     flex-direction: column;
-
     align-items: flex-start;
-
   }
 
   .title {
-
     font-size: 1.6rem;
-
   }
-
 }

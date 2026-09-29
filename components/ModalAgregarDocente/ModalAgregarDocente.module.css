@@ -1,69 +1,59 @@
+/* ModalAgregarDocente.module.css
+   Hereda la base comun de modales (WCAG 2.1 AAA, tokens --ink-*).
+   Antes: botones #0d6efd / #6c757d (solo AA) sin altura minima */
+
 .modalBackdrop {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1050;
+  composes: overlay from "../ModalsSyllabus/ModalBase.module.css";
 }
 
 .modalContent {
-  background-color: #ffffff;
-  border-radius: 0.25rem;
-  max-width: 500px;
-  width: 100%;
-  box-shadow: 0 0.5rem 1rem rgba(0,0,0,.5);
+  composes: dialog from "../ModalsSyllabus/ModalBase.module.css";
+  max-width: 520px;
 }
 
 .modalHeader {
-  background-color: #003366;
-  color: #ffffff;
-  padding: 1rem;
-  display: flex;
-  justify-content: space-between;
+  composes: header from "../ModalsSyllabus/ModalBase.module.css";
+}
+
+/* El JSX no pone clase al titulo ni al boton cerrar: se estilan desde la cabecera */
+.modalHeader h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--ink-on-primary);
+}
+
+.modalHeader button {
+  display: inline-flex;
+  flex-shrink: 0;
   align-items: center;
-  border-top-left-radius: 0.25rem;
-  border-top-right-radius: 0.25rem;
+  justify-content: center;
+  width: var(--ink-touch);
+  height: var(--ink-touch);
+  border: 2px solid transparent;
+  border-radius: var(--ink-radius-sm);
+  background: transparent;
+  color: var(--ink-on-primary);
+  font-size: 1.3rem;
+  cursor: pointer;
+}
+
+.modalHeader button:hover {
+  border-color: var(--ink-on-primary);
 }
 
 .modalBody {
-  padding: 1rem;
+  composes: body from "../ModalsSyllabus/ModalBase.module.css";
 }
 
 .modalFooter {
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.5rem;
-  padding: 1rem;
-  border-top: 1px solid #dee2e6;
+  composes: footer from "../ModalsSyllabus/ModalBase.module.css";
 }
 
 .btnPrimary {
-  background-color: #0d6efd;
-  color: #ffffff;
-  border: none;
-  padding: 0.5rem 1rem;
-  cursor: pointer;
-  border-radius: 0.25rem;
-}
-
-.btnPrimary:hover {
-  background-color: #084298;
+  composes: buttonPrimary from "../ModalsSyllabus/ModalBase.module.css";
 }
 
 .btnSecondary {
-  background-color: #6c757d;
-  color: #ffffff;
-  border: none;
-  padding: 0.5rem 1rem;
-  cursor: pointer;
-  border-radius: 0.25rem;
-}
-
-.btnSecondary:hover {
-  background-color: #565e64;
+  composes: buttonSecondary from "../ModalsSyllabus/ModalBase.module.css";
 }

@@ -1,129 +1,58 @@
+/* ModalHistorialDocente.module.css
+   Hereda la base comun de modales (WCAG 2.1 AAA, tokens --ink-*).
+   Antes: boton cerrar sin tamano minimo y foco #ffd54d (1.4:1 sobre blanco) */
+
 .modalBackdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.72);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 2000;
+  composes: overlay from "../ModalsSyllabus/ModalBase.module.css";
 }
 
 .modalContent {
-  background: #ffffff;
-  width: 92%;
+  composes: dialog from "../ModalsSyllabus/ModalBase.module.css";
   max-width: 960px;
-  border-radius: 12px;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.35);
-  display: flex;
-  flex-direction: column;
-  outline: none;
 }
 
 .modalHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1.4rem 1.6rem;
-  background: #002f5b;
-  color: #ffffff;
+  composes: header from "../ModalsSyllabus/ModalBase.module.css";
 }
 
 .modalTitle {
-  font-size: 1.25rem;
-  font-weight: 700;
-  margin: 0;
+  composes: title from "../ModalsSyllabus/ModalBase.module.css";
 }
 
 .closeButton {
-  border: none;
-  background: transparent;
-  color: #ffffff;
-  font-size: 1.4rem;
-  cursor: pointer;
-}
-
-.closeButton:focus {
-  outline: 3px solid #ffd54d;
-  outline-offset: 2px;
+  composes: closeButton from "../ModalsSyllabus/ModalBase.module.css";
 }
 
 .modalBody {
-  padding: 1.6rem;
+  composes: body from "../ModalsSyllabus/ModalBase.module.css";
   max-height: 60vh;
-  overflow-y: auto;
 }
 
 .tableContainer {
-  overflow-x: auto;
+  composes: tableWrapper from "../ModalsSyllabus/ModalBase.module.css";
 }
 
 .historyTable {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.95rem;
-}
-
-.historyTable th {
-  background: #f1f5f9;
-  color: #0f172a;
-  font-weight: 700;
-  text-align: left;
-  padding: 0.8rem;
-  border-bottom: 2px solid #cbd5e1;
-}
-
-.historyTable td {
-  padding: 0.8rem;
-  border-bottom: 1px solid #e2e8f0;
-}
-
-.historyTable tr:hover {
-  background: #f8fafc;
-}
-
-.modalFooter {
-  display: flex;
-  justify-content: flex-end;
-  padding: 1.2rem 1.6rem;
-  border-top: 1px solid #e2e8f0;
-}
-
-.primaryButton {
-  background: #003366;
-  color: white;
-  border: none;
-  padding: 0.65rem 1.4rem;
-  border-radius: 6px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.primaryButton:hover {
-  background: #004c99;
-}
-
-.primaryButton:focus {
-  outline: 3px solid #ffd54d;
-  outline-offset: 2px;
+  composes: table from "../ModalsSyllabus/ModalBase.module.css";
 }
 
 .statusText {
-  color: #1e293b;
-  font-size: 0.95rem;
+  color: var(--ink-text);
 }
 
 .errorText {
-  color: #b91c1c;
-  font-weight: 600;
+  font-weight: 700;
+  color: var(--ink-danger);
+}
+
+.modalFooter {
+  composes: footer from "../ModalsSyllabus/ModalBase.module.css";
+}
+
+.primaryButton {
+  composes: buttonPrimary from "../ModalsSyllabus/ModalBase.module.css";
 }
 
 .srOnly {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  border: 0;
-  clip: rect(0,0,0,0);
+  composes: visuallyHidden from "../ModalsSyllabus/ModalBase.module.css";
 }

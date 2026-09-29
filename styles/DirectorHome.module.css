@@ -1,93 +1,90 @@
-:root {
-  --color-primary: #0055aa; /* Azul corporativo */
-  --color-primary-text: #ffffff;
-  --color-outline: #003366;
-  --color-error: #b00020;
-  --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
+/* styles/DirectorHome.module.css
+   Director — Inicio. WCAG 2.1 AAA, usa solo tokens --ink-*
+   (antes redefinia :root global con otro azul y otra fuente) */
 
 .main {
-  padding: 3rem;
-  font-family: var(--font-main);
-  background-color: #f9f9f9;
   min-height: 100vh;
+  padding: 3rem;
+  background: var(--ink-surface);
 }
 
 .section {
   max-width: 900px;
   margin: 0 auto;
   padding: 2rem;
-  background-color: #ffffff;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  border: 1px solid var(--ink-border);
+  border-radius: var(--ink-radius);
+  background: var(--ink-bg);
+  box-shadow: var(--ink-shadow);
 }
 
 .title {
-  font-size: 2.2rem;
-  font-weight: 700;
-  color: var(--color-primary);
   margin-bottom: 1rem;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--ink-primary);
 }
 
 .text {
-  font-size: 1.1rem;
-  color: #111111;
   margin-bottom: 2rem;
+  font-size: 1.1rem;
+  color: var(--ink-text);
 }
 
 .buttons {
   display: flex;
-  gap: 1rem;
   flex-wrap: wrap;
+  gap: 1rem;
 }
 
-/* Botón primario */
-.btnPrimary {
-  background-color: var(--color-primary);
-  color: var(--color-primary-text);
+/* Se combinan con .btn de Bootstrap en el JSX: estos valores lo reemplazan */
+.btnPrimary,
+.btnOutline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--ink-touch);
   padding: 0.75rem 1.5rem;
-  border-radius: 0.5rem;
-  font-weight: 600;
+  border: 2px solid var(--ink-primary);
+  border-radius: var(--ink-radius-sm);
+  font-weight: 700;
   text-decoration: none;
-  transition: all 0.2s ease-in-out;
+  transition: background-color var(--ink-transition), color var(--ink-transition);
+}
+
+.btnPrimary {
+  background-color: var(--ink-primary);
+  color: var(--ink-on-primary);
 }
 
 .btnPrimary:hover {
-  background-color: #004488;
+  background-color: var(--ink-primary-hover);
+  border-color: var(--ink-primary-hover);
+  color: var(--ink-on-primary);
 }
 
-.btnPrimary:focus-visible {
-  outline: 3px solid #ffbf47;
-  outline-offset: 3px;
-}
-
-/* Botón secundario */
 .btnOutline {
-  background-color: transparent;
-  color: var(--color-primary);
-  border: 2px solid var(--color-outline);
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.5rem;
-  font-weight: 600;
-  text-decoration: none;
-  transition: all 0.2s ease-in-out;
+  background-color: var(--ink-bg);
+  color: var(--ink-primary);
 }
 
 .btnOutline:hover {
-  background-color: rgba(0,85,170,0.1);
+  background-color: var(--ink-hover-bg);
+  color: var(--ink-primary);
 }
 
-.btnOutline:focus-visible {
-  outline: 3px solid #ffbf47;
-  outline-offset: 3px;
-}
-
-/* Mensaje de error */
 .error {
-  color: var(--color-error);
-  font-weight: 600;
   margin-top: 1rem;
-  background-color: #ffe6e6;
   padding: 0.75rem 1rem;
-  border-radius: 5px;
+  border: 1px solid var(--ink-danger);
+  border-radius: var(--ink-radius-sm);
+  background: var(--ink-danger-bg);
+  color: var(--ink-danger);
+  font-weight: 700;
+}
+
+@media (max-width: 768px) {
+  .main {
+    padding: 1.25rem;
+  }
 }

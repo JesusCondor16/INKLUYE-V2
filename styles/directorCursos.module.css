@@ -1,243 +1,122 @@
-/* ======================================================
-   VARIABLES DE DISEÑO (SISTEMA CORPORATIVO)
-====================================================== */
+/* styles/directorCursos.module.css
+   Director — Gestión de cursos. WCAG 2.1 AAA, usa solo tokens --ink-*
+   (antes redefinia :root global y el foco amarillo #facc15 daba 1.5:1) */
 
-:root{
-
-  --color-bg: #ffffff;
-  --color-surface: #f7f9fc;
-
-  --color-primary: #0033a0;
-  --color-primary-hover: #002a86;
-
-  --color-text: #111827;
-  --color-text-soft: #374151;
-
-  --color-border: #d1d5db;
-
-  --color-focus: #facc15;
-
-  --radius-sm: 6px;
-  --radius-md: 8px;
-
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--ink-bg);
 }
 
-
-/* ======================================================
-   LAYOUT GENERAL
-====================================================== */
-
-.wrapper{
-  display:flex;
-  flex-direction:column;
-  min-height:100vh;
-  background:var(--color-bg);
+.mainContent {
+  flex: 1;
+  padding: 3rem 4rem;
+  background: var(--ink-surface);
 }
 
-
-.mainContent{
-  flex:1;
-  padding:48px 64px;
-  background:var(--color-surface);
+.containerCursos {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2.5rem;
+  border: 1px solid var(--ink-border);
+  border-radius: var(--ink-radius);
+  background: var(--ink-bg);
+  box-shadow: var(--ink-shadow);
 }
 
-
-/* ======================================================
-   CONTENEDOR DE CONTENIDO
-====================================================== */
-
-.containerCursos{
-
-  max-width:1280px;
-  margin:0 auto;
-  background:white;
-  padding:40px;
-  border-radius:var(--radius-md);
-  border:1px solid var(--color-border);
-
-  box-shadow:
-  0 1px 2px rgba(0,0,0,0.04),
-  0 6px 16px rgba(0,0,0,0.04);
-
+.headerCursos {
+  margin-bottom: 1.8rem;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--ink-primary);
 }
 
-
-/* ======================================================
-   TITULO
-====================================================== */
-
-.headerCursos{
-
-  font-size:30px;
-  font-weight:700;
-  color:var(--color-text);
-  margin-bottom:30px;
-  letter-spacing:-0.3px;
+.alertMensaje {
+  margin-bottom: 1.4rem;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--ink-info);
+  border-radius: var(--ink-radius-sm);
+  background: var(--ink-info-bg);
+  color: var(--ink-info);
+  font-size: 1rem;
 }
 
-
-/* ======================================================
-   MENSAJES
-====================================================== */
-
-.alertMensaje{
-
-  padding:16px 18px;
-  background:#f3f4f6;
-  border:1px solid var(--color-border);
-  border-radius:var(--radius-sm);
-  color:var(--color-text-soft);
-  font-size:15px;
-  margin-bottom:22px;
+.tableResponsive {
+  width: 100%;
+  overflow-x: auto;
 }
 
-
-/* ======================================================
-   TABLA RESPONSIVE
-====================================================== */
-
-.tableResponsive{
-  width:100%;
-  overflow-x:auto;
+.tableCursos {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 1rem;
+  background: var(--ink-bg);
 }
 
-
-/* ======================================================
-   TABLA EMPRESARIAL
-====================================================== */
-
-.tableCursos{
-
-  width:100%;
-  border-collapse:collapse;
-  font-size:15px;
-  background:white;
+.tableCursos thead {
+  background: var(--ink-primary);
+  color: var(--ink-on-primary);
 }
 
-
-/* CABECERA */
-
-.tableCursos thead{
-  background:var(--color-primary);
-  color:white;
+.tableCursos th {
+  padding: 0.9rem;
+  text-align: left;
+  font-weight: 700;
+  border-bottom: 3px solid var(--ink-primary-hover);
 }
 
-
-.tableCursos th{
-
-  text-align:left;
-  padding:14px 14px;
-  font-weight:600;
-  font-size:14px;
-  letter-spacing:0.3px;
-  border-bottom:3px solid #001f6b;
+.tableCursos td {
+  padding: 0.9rem;
+  border-bottom: 1px solid var(--ink-border);
+  color: var(--ink-text);
 }
 
-
-/* FILAS */
-
-.tableCursos td{
-
-  padding:14px;
-  border-bottom:1px solid var(--color-border);
-  color:var(--color-text);
+.tableCursos tbody tr:hover {
+  background: var(--ink-hover-bg);
 }
 
-
-.tableCursos tbody tr{
-  transition:background 0.15s ease;
+.btnAccion {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--ink-touch);
+  min-height: var(--ink-touch);
+  padding: 0.5rem 1rem;
+  border: 2px solid transparent;
+  border-radius: var(--ink-radius-sm);
+  background: var(--ink-primary);
+  color: var(--ink-on-primary);
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color var(--ink-transition);
 }
 
-
-/* HOVER */
-
-.tableCursos tbody tr:hover{
-  background:#f9fafb;
+.btnAccion:hover {
+  background: var(--ink-primary-hover);
 }
 
-
-/* ======================================================
-   BOTON EMPRESARIAL
-====================================================== */
-
-.btnAccion{
-
-  background:var(--color-primary);
-  color:white;
-  border:none;
-  padding:8px 16px;
-  border-radius:var(--radius-sm);
-  font-size:14px;
-  font-weight:500;
-  cursor:pointer;
-  transition:
-  background 0.15s ease,
-  transform 0.05s ease;
-
-}
-
-
-/* HOVER */
-
-.btnAccion:hover{
-  background:var(--color-primary-hover);
-}
-
-
-/* CLICK */
-
-.btnAccion:active{
-  transform:scale(0.97);
-}
-
-
-/* FOCUS ACCESIBLE WCAG */
-
-.btnAccion:focus-visible{
-  outline:3px solid var(--color-focus);
-  outline-offset:2px;
-}
-
-
-/* ======================================================
-   RESPONSIVE (TABLET)
-====================================================== */
-
-@media (max-width:1000px){
-
-  .mainContent{
-    padding:40px 28px;
+@media (max-width: 1000px) {
+  .mainContent {
+    padding: 2.5rem 1.75rem;
   }
 
-  .containerCursos{
-    padding:28px;
-  }
-
-  .headerCursos{
-    font-size:26px;
+  .containerCursos {
+    padding: 1.75rem;
   }
 }
 
-
-/* ======================================================
-   RESPONSIVE (MOBILE)
-====================================================== */
-
-@media (max-width:640px){
-
-  .mainContent{
-    padding:24px 16px;
+@media (max-width: 640px) {
+  .mainContent {
+    padding: 1.5rem 1rem;
   }
 
-  .containerCursos{
-    padding:20px;
+  .containerCursos {
+    padding: 1.25rem;
   }
 
-  .headerCursos{
-    font-size:22px;
-  }
-
-  .tableCursos{
-    font-size:14px;
+  .headerCursos {
+    font-size: 1.5rem;
   }
 }
