@@ -56,6 +56,27 @@ export const syllabusFlujoModel = {
     });
   },
 
+  /**
+   * Cursos con syllabus en revision donde el usuario esta asignado como docente
+   * @param usuarioId - ID del usuario (docente o coordinador que dicta el curso)
+   */
+  async listarPendientesDeRevision(usuarioId: number) {
+    return prisma.course.findMany({
+      where: {
+        cursodocente: { some: { userId: usuarioId } },
+        syllabus: { estado: 'ENVIADO_DOCENTE' },
+      },
+      select: {
+        id: true,
+        code: true,
+        name: true,
+        user: { select: { name: true } },
+        syllabus: { select: { pdfUrl: true, updatedAt: true } },
+      },
+      orderBy: { name: 'asc' },
+    });
+  },
+
   /** IDs de todos los usuarios con rol estudiante */
   async listarIdsEstudiantes() {
     const estudiantes = await prisma.user.findMany({

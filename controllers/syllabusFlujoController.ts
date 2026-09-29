@@ -65,6 +65,25 @@ async function construirNotificaciones(
 }
 
 export const syllabusFlujoController = {
+  /** Syllabus en revision de los cursos donde el usuario esta asignado como docente */
+  async listarPendientes(usuario: CustomJwtPayload) {
+    try {
+      const cursos = await syllabusFlujoModel.listarPendientesDeRevision(usuario.id);
+      const pendientes = cursos.map((c) => ({
+        id: c.id,
+        code: c.code,
+        name: c.name,
+        coordinador: c.user?.name ?? '—',
+        pdfUrl: c.syllabus?.pdfUrl ?? null,
+        enviadoEn: c.syllabus?.updatedAt ?? null,
+      }));
+      return NextResponse.json(pendientes, { status: 200 });
+    } catch (error: unknown) {
+      console.error('❌ Error syllabusFlujoController.listarPendientes:', error);
+      return NextResponse.json({ error: 'Error al obtener los syllabus por revisar' }, { status: 500 });
+    }
+  },
+
   /** Estado actual e historial (solo director, coordinador del curso o docentes del curso) */
   async obtenerEstado(usuario: CustomJwtPayload, courseId: number) {
     try {

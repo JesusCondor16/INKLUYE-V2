@@ -7,6 +7,7 @@ import {
   Search,
   User,
   Info,
+  ClipboardCheck,
 } from "lucide-react";
 
 // ✅ Exportamos el tipo para poder usarlo en controladores y vistas
@@ -28,6 +29,8 @@ export default function getMenuByRole(role: string | null): MenuItem[] {
   const buscar = { label: "Buscar Syllabus", path: "/buscar", icon: <Search size={18} /> };
   const perfil = { label: "Mi Perfil", path: "/perfil", icon: <User size={18} /> };
   const info = { label: "Información", path: "/informacion", icon: <Info size={18} /> };
+  // Docentes y coordinadores que dictan cursos revisan aqui los syllabus enviados
+  const revisar = { label: "Sílabos por revisar", path: "/docente/syllabus", icon: <ClipboardCheck size={18} /> };
 
   switch (r) {
     case "director":
@@ -43,13 +46,14 @@ export default function getMenuByRole(role: string | null): MenuItem[] {
     case "coordinador":
       return [
         { label: "Mis Cursos", path: "/coordinador/cursos", icon: <BookOpen size={18} /> },
+        revisar,
         buscar,
         perfil,
         info,
       ];
 
     case "docente":
-      return [buscar, perfil, info];
+      return [revisar, buscar, perfil, info];
 
     case "estudiante":
       return [

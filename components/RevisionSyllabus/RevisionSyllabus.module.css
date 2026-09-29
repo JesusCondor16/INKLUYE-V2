@@ -1,0 +1,190 @@
+/* RevisionSyllabus.module.css
+   Contrastes verificados >= 7:1 (WCAG 2.1 AAA), areas tactiles de 44px y foco visible */
+
+.mensaje:empty {
+  display: none;
+}
+
+.mensaje {
+  color: #0b3d1a;
+  font-weight: 600;
+}
+
+.error {
+  color: #8a0b0b;
+  font-weight: 600;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+  color: #0b1f3a;
+}
+
+.caption {
+  text-align: left;
+  font-weight: 600;
+  padding-bottom: 0.5rem;
+}
+
+.table th,
+.table td {
+  padding: 0.6rem 0.75rem;
+  border-bottom: 1px solid #dbe3ec;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.table thead th {
+  background: #eef2f6;
+}
+
+.acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.enlace {
+  color: #004085;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.enlace:focus-visible {
+  outline: 4px solid #ffbf47;
+  outline-offset: 2px;
+}
+
+.btnPrimario,
+.btnPeligro,
+.btnSecundario {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 2px solid transparent;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btnPrimario {
+  background: #0a2540;
+  color: #fff;
+}
+
+.btnPrimario:hover {
+  background: #071833;
+}
+
+.btnPeligro {
+  background: #8a0b0b;
+  color: #fff;
+}
+
+.btnPeligro:hover {
+  background: #6b0808;
+}
+
+.btnSecundario {
+  background: #fff;
+  color: #0a2540;
+  border-color: #0a2540;
+}
+
+.btnPrimario:focus-visible,
+.btnPeligro:focus-visible,
+.btnSecundario:focus-visible {
+  outline: 4px solid #ffbf47;
+  outline-offset: 3px;
+}
+
+.btnPrimario:disabled,
+.btnPeligro:disabled {
+  cursor: wait;
+  opacity: 0.85;
+}
+
+/* ===== Modal Devolver ===== */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 1000;
+}
+
+.dialog {
+  background: #fff;
+  color: #0b1f3a;
+  border-radius: 10px;
+  padding: 1.5rem;
+  width: 100%;
+  max-width: 560px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.dialogTitle {
+  margin: 0 0 0.5rem;
+  font-size: 1.3rem;
+}
+
+.label {
+  display: block;
+  font-weight: 700;
+  margin: 1rem 0 0.35rem;
+}
+
+.textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.6rem;
+  border: 2px solid #46525d;
+  border-radius: 6px;
+  font: inherit;
+  color: #0b1f3a;
+  resize: vertical;
+}
+
+.textarea:focus-visible {
+  outline: 4px solid #ffbf47;
+  outline-offset: 2px;
+}
+
+.textarea[aria-invalid='true'] {
+  border-color: #8a0b0b;
+}
+
+.contador {
+  margin: 0.25rem 0 0;
+  font-size: 0.9rem;
+  color: #46525d;
+}
+
+.dialogAcciones {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
