@@ -1,147 +1,247 @@
 /* ==========================================================
-   🌐 GLOBAL STYLESHEET — Sistema de Gestión de Syllabus
-   Cumple con WCAG 2.1 AAA — Enfoque en accesibilidad, legibilidad y contraste.
+   SISTEMA DE DISENO INKLUYE — globals.css
+   Estilo "Accessible & Ethical" — WCAG 2.1 nivel AAA
+   - Texto >= 7:1 (1.4.6), componentes y foco >= 3:1 (1.4.11)
+   - Areas tactiles >= 44px (2.5.5), foco siempre visible (2.4.7)
+   - Tipografia Atkinson Hyperlegible (Braille Institute) + respaldo CJK para chino
+   - Respeta prefers-reduced-motion (2.3.3)
+   Unica fuente de verdad: todos los modulos usan los tokens --ink-*
    ========================================================== */
 
-/* =========================
-   1️⃣ Dependencias base
-   ========================= */
-
-/* ⚙️ Importar Bootstrap */
 @import "bootstrap/dist/css/bootstrap.min.css";
 
 /* =========================
-   2️⃣ Variables globales
+   1. Tokens de diseno
+   (contraste medido sobre #ffffff salvo que se indique)
    ========================= */
 :root {
-  /* 🎨 Colores principales */
-  --color-primario: #003366; /* Azul oscuro con buen contraste */
-  --color-secundario: #004085; /* Azul mas oscuro, 9.61:1 vs #007bff que daba 3.78:1 */
-  --color-acento: #17a2b8; /* Celeste */
-  --color-exito: #28a745;
-  --color-error: #dc3545;
-  --color-advertencia: #ffc107;
+  /* Marca */
+  --ink-primary: #0a2540;          /* 15.5:1 */
+  --ink-primary-hover: #071833;    /* 17.7:1 */
+  --ink-on-primary: #ffffff;       /* 15.5:1 sobre --ink-primary */
 
-  /* 🎨 Colores de fondo y texto */
-  --color-fondo: #f8f9fa;
-  --color-texto: #212529;
-  --color-borde: #ced4da;
+  /* Texto */
+  --ink-text: #0b1f3a;             /* 16.5:1 */
+  --ink-text-muted: #46525d;       /* 8.0:1 (7.4:1 sobre --ink-hover-bg) */
+  --ink-link: #004085;             /* 10.1:1 */
+  --ink-link-hover: #0a2540;       /* 15.5:1 */
 
-  /* ✍️ Tipografía */
-  --fuente-base: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  --fuente-tamano-base: 1rem;
-  --line-height-base: 1.6;
+  /* Superficies */
+  --ink-bg: #ffffff;
+  --ink-surface: #f6f9fc;
+  --ink-surface-alt: #eef2f6;
+  --ink-hover-bg: #f2f6ff;
+
+  /* Bordes */
+  --ink-border: #dbe3ec;           /* decorativo (separadores) */
+  --ink-border-strong: #46525d;    /* bordes de controles: 8.0:1 (1.4.11) */
+
+  /* Estados: texto sobre su fondo >= 7:1 */
+  --ink-success: #0b3d1a;          /* 10.0:1 sobre --ink-success-bg */
+  --ink-success-bg: #d4edda;
+  --ink-warning: #533f03;          /* 9.1:1 sobre --ink-warning-bg */
+  --ink-warning-bg: #fff3cd;
+  --ink-danger: #8a0b0b;           /* 9.8:1 blanco, 8.4:1 sobre --ink-danger-bg */
+  --ink-danger-bg: #fbe9e9;
+  --ink-danger-hover: #6b0808;
+  --ink-info: #003f73;             /* 9.4:1 sobre --ink-info-bg */
+  --ink-info-bg: #e7f1fb;
+
+  /* Foco doble: amarillo interior + azul exterior -> visible sobre fondos claros y oscuros */
+  --ink-focus-inner: #ffbf47;      /* 9.5:1 sobre --ink-primary */
+  --ink-focus-outer: #0a2540;      /* 15.5:1 sobre blanco */
+
+  /* Tipografia */
+  --ink-font: var(--font-atkinson), "Noto Sans SC", "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
+  --ink-font-zh: "Noto Sans SC", "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", var(--font-atkinson), sans-serif;
+  --ink-font-size: 1rem;
+  --ink-line-height: 1.6;
+
+  /* Forma, espacio y capas */
+  --ink-radius-sm: 6px;
+  --ink-radius: 10px;
+  --ink-radius-lg: 12px;
+  --ink-touch: 44px;
+  --ink-shadow: 0 6px 24px rgba(6, 16, 33, 0.08);
+  --ink-backdrop: rgba(0, 0, 0, 0.7);
+  --ink-z-sidebar: 1000;
+  --ink-z-modal: 1060;
+  --ink-z-skip: 9999;
+  --ink-transition: 150ms ease;
+
+  /* Bootstrap: sus enlaces y foco por defecto no llegan a AAA (#0d6efd = 4.5:1) */
+  --bs-body-font-family: var(--ink-font);
+  --bs-body-color: var(--ink-text);
+  --bs-link-color: var(--ink-link);
+  --bs-link-color-rgb: 0, 64, 133;
+  --bs-link-hover-color: var(--ink-link-hover);
+  --bs-link-hover-color-rgb: 10, 37, 64;
+
+  /* Alias de las variables antiguas de este archivo (se usan en algunos modulos) */
+  --color-primario: var(--ink-primary);
+  --color-secundario: var(--ink-link);
+  --color-acento: var(--ink-link);
+  --color-exito: var(--ink-success);
+  --color-error: var(--ink-danger);
+  --color-advertencia: var(--ink-warning);
+  --color-fondo: var(--ink-surface);
+  --color-texto: var(--ink-text);
+  --color-borde: var(--ink-border-strong);
+  --fuente-base: var(--ink-font);
+  --fuente-tamano-base: var(--ink-font-size);
+  --line-height-base: var(--ink-line-height);
 }
 
 /* =========================
-   3️⃣ Estilos globales del documento
+   2. Documento
    ========================= */
 html {
-  scroll-behavior: smooth;
-  font-size: 100%;
+  font-size: 100%; /* respeta el tamano elegido por el usuario (1.4.4) */
 }
 
 body {
   margin: 0;
   padding: 0;
-  background-color: var(--color-fondo);
-  color: var(--color-texto);
-  font-family: var(--fuente-base);
-  font-size: var(--fuente-tamano-base);
-  line-height: var(--line-height-base);
+  background-color: var(--ink-bg);
+  color: var(--ink-text);
+  font-family: var(--ink-font);
+  font-size: var(--ink-font-size);
+  line-height: var(--ink-line-height);
+}
+
+/* Contenido en chino (PDF ZH, enlaces "中文"): fuente con glifos CJK y algo mas de interlineado */
+:lang(zh) {
+  font-family: var(--ink-font-zh);
+  line-height: 1.8;
 }
 
 /* =========================
-   4️⃣ Enlaces y botones accesibles
+   3. Enlaces
+   Subrayados siempre: no depender solo del color (1.4.1)
    ========================= */
 a {
-  color: var(--color-secundario);
-  text-decoration: none;
-}
-
-a:hover,
-a:focus {
-  color: var(--color-primario);
+  color: var(--ink-link);
   text-decoration: underline;
-  outline: none;
+  text-underline-offset: 0.15em;
 }
 
-button:focus,
-a:focus {
-  outline: 3px solid var(--color-primario);
-  outline-offset: 2px;
+a:hover {
+  color: var(--ink-link-hover);
+  text-decoration-thickness: 2px;
 }
 
 /* =========================
-   5️⃣ Contenedores principales
+   4. Foco visible (2.4.7 / 1.4.11)
+   :where() = especificidad 0, los modulos pueden ajustarlo sin !important
    ========================= */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 3px solid var(--ink-focus-inner);
+  outline-offset: 0;
+  box-shadow: 0 0 0 6px var(--ink-focus-outer);
+}
+
+/* Bootstrap reemplaza el foco con un halo celeste de bajo contraste */
+.btn:focus-visible,
+.form-control:focus,
+.form-select:focus,
+.form-check-input:focus {
+  outline: 3px solid var(--ink-focus-inner);
+  outline-offset: 0;
+  box-shadow: 0 0 0 6px var(--ink-focus-outer);
+  border-color: var(--ink-border-strong);
+}
+
+/* Modo de alto contraste de Windows: el sistema elige los colores */
+@media (forced-colors: active) {
+  :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+    outline: 3px solid CanvasText;
+  }
+}
+
+/* =========================
+   5. Movimiento reducido (2.3.3)
+   ========================= */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* =========================
+   6. Skip link (2.4.1)
+   ========================= */
+.skip-link {
+  position: absolute;
+  left: 1rem;
+  top: 0.75rem;
+  z-index: var(--ink-z-skip);
+  padding: 0.75rem 1rem;
+  border-radius: var(--ink-radius-sm);
+  background: var(--ink-primary);
+  color: var(--ink-on-primary);
+  font-weight: 700;
+  text-decoration: none;
+  transform: translateY(-160%);
+  transition: transform var(--ink-transition);
+}
+
+.skip-link:focus,
+.skip-link:focus-visible {
+  transform: translateY(0);
+  color: var(--ink-on-primary);
+}
+
+/* =========================
+   7. Utilitarios compartidos
+   ========================= */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 1rem;
 }
 
-/* =========================
-   6️⃣ Accesibilidad visual
-   ========================= */
-:focus-visible {
-  outline: 3px solid var(--color-primario);
-  outline-offset: 3px;
-}
-
-/* Mejor contraste para textos sobre fondos claros */
 .text-contrast {
-  color: #000 !important;
-  font-weight: 600;
+  color: var(--ink-text) !important;
+  font-weight: 700;
 }
 
-/* =========================
-   Skip link (WCAG 2.4.1)
-   ========================= */
-.skip-link {
-  position: absolute;
-  left: 1rem;
-  top: 0.75rem;
-  background: var(--color-primario);
-  color: #fff;
-  padding: 0.5rem 0.75rem;
-  border-radius: 0.5rem;
-  z-index: 9999;
-  transform: translateY(-140%);
-  transition: transform 120ms ease;
-  text-decoration: none;
-  font-weight: 600;
-}
-
-.skip-link:focus,
-.skip-link:active {
-  transform: translateY(0);
-  color: #fff;
-  outline: 3px solid var(--color-primario);
-  outline-offset: 2px;
-}
-
-/* =========================
-   7️⃣ Utilitarios personalizados
-   ========================= */
 .border-accent {
-  border-color: var(--color-acento) !important;
+  border-color: var(--ink-link) !important;
 }
 
 .bg-primario {
-  background-color: var(--color-primario) !important;
-  color: #fff !important;
+  background-color: var(--ink-primary) !important;
+  color: var(--ink-on-primary) !important;
 }
 
 .bg-secundario {
-  background-color: var(--color-secundario) !important;
-  color: #fff !important;
+  background-color: var(--ink-link) !important;
+  color: var(--ink-on-primary) !important;
 }
 
-
-/* =========================
-   8️⃣ Ajustes responsivos
-   ========================= */
 @media (max-width: 768px) {
   .container {
     padding: 0.5rem;

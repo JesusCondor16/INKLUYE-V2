@@ -1,15 +1,14 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Atkinson_Hyperlegible } from "next/font/google";
 import "../styles/globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+// Atkinson Hyperlegible (Braille Institute): disenada para baja vision.
+// next/font la descarga en el build y la sirve desde el propio sistema (sin peticiones a Google).
+const atkinson = Atkinson_Hyperlegible({
+  weight: ["400", "700"],
+  subsets: ["latin", "latin-ext"],
+  variable: "--font-atkinson",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -32,12 +31,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es">
-      <body className={`${geistSans.variable} ${geistMono.variable} bg-light`}>
-        <a href="#site-main" className="skip-link">
+    // La variable de la fuente va en <html> (:root) porque ahi se define --ink-font en globals.css
+    <html lang="es" className={atkinson.variable}>
+      <body className="bg-light">
+        {/* Salta la barra lateral hasta el <main id="main-content"> de cada pagina */}
+        <a href="#main-content" className="skip-link">
           Saltar al contenido
         </a>
-        <main id="site-main" className="container-fluid p-0">{children}</main>
+        {/* div y no <main>: cada pagina ya tiene su propio <main> (un solo landmark principal) */}
+        <div id="site-main" className="container-fluid p-0">{children}</div>
       </body>
     </html>
   );
