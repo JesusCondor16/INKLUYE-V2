@@ -96,14 +96,16 @@ export default function ModalCerrarSesion({
         <div className={styles.modalFooter}>
           <button
             ref={cancelBtnRef}
-            className="btn btn-secondary"
+            type="button"
+            className={styles.btnSecondary}
             onClick={onCancel}
           >
             Cancelar
           </button>
 
           <button
-            className="btn btn-danger"
+            type="button"
+            className={styles.btnDanger}
             onClick={onConfirm}
           >
             Sí, cerrar sesión

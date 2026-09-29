@@ -6,12 +6,12 @@
 }
 
 .mensaje {
-  color: #0b3d1a;
+  color: var(--ink-success);
   font-weight: 600;
 }
 
 .error {
-  color: #8a0b0b;
+  color: var(--ink-danger);
   font-weight: 600;
 }
 
@@ -19,7 +19,7 @@
   width: 100%;
   border-collapse: collapse;
   margin-top: 1rem;
-  color: #0b1f3a;
+  color: var(--ink-text);
 }
 
 .caption {
@@ -31,13 +31,13 @@
 .table th,
 .table td {
   padding: 0.6rem 0.75rem;
-  border-bottom: 1px solid #dbe3ec;
+  border-bottom: 1px solid var(--ink-border);
   text-align: left;
   vertical-align: middle;
 }
 
 .table thead th {
-  background: #eef2f6;
+  background: var(--ink-surface-alt);
 }
 
 .acciones {
@@ -47,14 +47,9 @@
 }
 
 .enlace {
-  color: #004085;
+  color: var(--ink-link);
   font-weight: 600;
   text-decoration: underline;
-}
-
-.enlace:focus-visible {
-  outline: 4px solid #ffbf47;
-  outline-offset: 2px;
 }
 
 .btnPrimario,
@@ -73,34 +68,27 @@
 }
 
 .btnPrimario {
-  background: #0a2540;
-  color: #fff;
+  background: var(--ink-primary);
+  color: var(--ink-on-primary);
 }
 
 .btnPrimario:hover {
-  background: #071833;
+  background: var(--ink-primary-hover);
 }
 
 .btnPeligro {
-  background: #8a0b0b;
-  color: #fff;
+  background: var(--ink-danger);
+  color: var(--ink-on-primary);
 }
 
 .btnPeligro:hover {
-  background: #6b0808;
+  background: var(--ink-danger-hover);
 }
 
 .btnSecundario {
-  background: #fff;
-  color: #0a2540;
-  border-color: #0a2540;
-}
-
-.btnPrimario:focus-visible,
-.btnPeligro:focus-visible,
-.btnSecundario:focus-visible {
-  outline: 4px solid #ffbf47;
-  outline-offset: 3px;
+  background: var(--ink-bg);
+  color: var(--ink-primary);
+  border-color: var(--ink-primary);
 }
 
 .btnPrimario:disabled,
@@ -113,7 +101,7 @@
 .backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: var(--ink-backdrop);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -122,8 +110,8 @@
 }
 
 .dialog {
-  background: #fff;
-  color: #0b1f3a;
+  background: var(--ink-bg);
+  color: var(--ink-text);
   border-radius: 10px;
   padding: 1.5rem;
   width: 100%;
@@ -147,26 +135,21 @@
   width: 100%;
   box-sizing: border-box;
   padding: 0.6rem;
-  border: 2px solid #46525d;
+  border: 2px solid var(--ink-text-muted);
   border-radius: 6px;
   font: inherit;
-  color: #0b1f3a;
+  color: var(--ink-text);
   resize: vertical;
 }
 
-.textarea:focus-visible {
-  outline: 4px solid #ffbf47;
-  outline-offset: 2px;
-}
-
 .textarea[aria-invalid='true'] {
-  border-color: #8a0b0b;
+  border-color: var(--ink-danger);
 }
 
 .contador {
   margin: 0.25rem 0 0;
   font-size: 0.9rem;
-  color: #46525d;
+  color: var(--ink-text-muted);
 }
 
 .dialogAcciones {

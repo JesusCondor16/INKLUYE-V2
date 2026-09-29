@@ -4,10 +4,10 @@
 .panel {
   margin-top: 1.5rem;
   padding: 1rem 1.25rem;
-  border: 1px solid var(--border, #dbe3ec);
-  border-radius: var(--radius, 10px);
-  background: var(--surface, #f6f9fc);
-  color: var(--text, #0b1f3a);
+  border: 1px solid var(--ink-border);
+  border-radius: var(--ink-radius);
+  background: var(--ink-surface);
+  color: var(--ink-text);
 }
 
 .title {
@@ -25,12 +25,12 @@
 }
 
 .mensaje {
-  color: #0b3d1a;
+  color: var(--ink-success);
   font-weight: 600;
 }
 
 .error {
-  color: #8a0b0b;
+  color: var(--ink-danger);
   font-weight: 600;
 }
 
@@ -52,42 +52,37 @@
 }
 
 .badgeBorrador {
-  background: #e9ecef;
-  color: #212529;
+  background: var(--ink-surface-alt);
+  color: var(--ink-text);
 }
 
 .badgeEnviado {
-  background: #fff3cd;
-  color: #533f03;
+  background: var(--ink-warning-bg);
+  color: var(--ink-warning);
 }
 
 .badgePublicado {
-  background: #d4edda;
-  color: #0b3d1a;
+  background: var(--ink-success-bg);
+  color: var(--ink-success);
 }
 
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: var(--touch, 44px);
+  min-height: var(--ink-touch);
   min-width: 44px;
   padding: 0.55rem 1rem;
   border-radius: 8px;
   border: 2px solid transparent;
   font-weight: 700;
   cursor: pointer;
-  background: var(--primary, #0a2540);
-  color: #fff;
+  background: var(--ink-primary);
+  color: var(--ink-on-primary);
 }
 
 .btn:hover {
-  background: var(--primary-strong, #071833);
-}
-
-.btn:focus-visible {
-  outline: var(--focus, 4px solid #ffbf47);
-  outline-offset: 3px;
+  background: var(--ink-primary-hover);
 }
 
 .btn:disabled {
@@ -111,8 +106,8 @@
 .observacion {
   margin: 0.3rem 0 0;
   padding: 0.5rem 0.75rem;
-  border-left: 4px solid #533f03;
-  background: #fff;
+  border-left: 4px solid var(--ink-warning);
+  background: var(--ink-bg);
   white-space: pre-wrap;
 }
 

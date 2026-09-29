@@ -16,10 +16,12 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const [mostrarAyuda, setMostrarAyuda] = useState(false);
+  const [enviando, setEnviando] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setErrorMsg('');
+    setEnviando(true);
 
     try {
       const res = await fetch('/api/auth/login', {
@@ -70,11 +72,13 @@ export default function LoginPage() {
     } catch (error) {
       console.error(error);
       setErrorMsg('Error inesperado al iniciar sesión');
+    } finally {
+      setEnviando(false);
     }
   }
 
   return (
-    <main className={styles.container}>
+    <main id="main-content" className={styles.container}>
       <div className={styles.card}>
         <h1 className={styles.title}>Iniciar Sesión</h1>
 
@@ -83,7 +87,12 @@ export default function LoginPage() {
             Ingresa tu correo y contraseña para acceder al sistema. Todos los campos son obligatorios.
           </p>
 
-          {errorMsg && <div className={styles.error}>{errorMsg}</div>}
+          {/* role="alert": el lector de pantalla anuncia el error apenas aparece (3.3.1 / 4.1.3) */}
+          {errorMsg && (
+            <div id="login-error" role="alert" className={styles.error}>
+              {errorMsg}
+            </div>
+          )}
 
           <div>
             <label htmlFor="email" className={styles.label}>Correo electrónico *</label>
@@ -94,7 +103,10 @@ export default function LoginPage() {
               className={styles.input}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              autoComplete="email"
               required
+              aria-invalid={!!errorMsg}
+              aria-describedby={errorMsg ? 'login-error' : undefined}
             />
           </div>
 
@@ -107,25 +119,31 @@ export default function LoginPage() {
               className={styles.input}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              autoComplete="current-password"
               required
+              aria-invalid={!!errorMsg}
+              aria-describedby={errorMsg ? 'login-error' : undefined}
             />
           </div>
 
-          <button type="submit" className={styles.button}>
-            Iniciar sesión
+          <button type="submit" className={styles.button} disabled={enviando} aria-busy={enviando}>
+            {enviando ? 'Ingresando…' : 'Iniciar sesión'}
           </button>
         </form>
 
         <button
+          type="button"
           onClick={() => setMostrarAyuda(!mostrarAyuda)}
           className={styles.helpButton}
+          aria-expanded={mostrarAyuda}
+          aria-controls="ayuda-accesibilidad"
         >
           {mostrarAyuda ? 'Ocultar ayuda' : 'Ayuda de accesibilidad'}
         </button>
 
         {mostrarAyuda && (
-          <section className={styles.helpSection}>
-            <h2>Instrucciones de navegación accesible</h2>
+          <section id="ayuda-accesibilidad" className={styles.helpSection} aria-labelledby="ayuda-titulo">
+            <h2 id="ayuda-titulo">Instrucciones de navegación accesible</h2>
             <ul>
               <li>Presiona <strong>Tab</strong> para moverte entre campos y botones.</li>
               <li>Usa <strong>Shift + Tab</strong> para retroceder.</li>

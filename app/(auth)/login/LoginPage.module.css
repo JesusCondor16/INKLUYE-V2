@@ -1,246 +1,144 @@
-/* ================================
-   LoginPage.module.css (WCAG 2.1 AAA)
-   ================================ */
+/* app/(auth)/login/LoginPage.module.css
+   Inicio de sesion — WCAG 2.1 AAA, usa solo tokens --ink-* de styles/globals.css
+   Antes: borde de campos #c7d6ea (1.5:1) y foco #ffd571 (1.4:1 sobre blanco) */
 
-/* Contenedor principal */
 .container {
-  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #e6f0fa;
+  min-height: 100vh;
   padding: 2rem;
+  background: var(--ink-surface-alt);
   box-sizing: border-box;
 }
 
-/* Tarjeta del formulario */
 .card {
-  background-color: #ffffff;
-  border: 3px solid #002244; /* borde más oscuro para contraste */
-  border-radius: 12px;
-  padding: 2rem;
-  max-width: 520px;
   width: 100%;
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.10);
+  max-width: 520px;
+  padding: 2rem;
+  border: 3px solid var(--ink-primary);
+  border-radius: var(--ink-radius-lg);
+  background: var(--ink-bg);
+  box-shadow: var(--ink-shadow);
   box-sizing: border-box;
 }
 
-/* Título */
 .title {
-  color: #001833;
-  font-weight: 800;
+  margin: 0 0 1.25rem;
   text-align: center;
-  margin: 0 0 1.25rem 0;
-  font-size: 1.6rem;
+  font-size: 1.75rem;
+  font-weight: 700;
   line-height: 1.2;
+  color: var(--ink-primary);
 }
 
-/* Texto de descripción */
 .description {
-  color: #111111;
-  line-height: 1.6;
-  text-align: left;
   margin-bottom: 1rem;
-  font-size: 1rem;
-}
-
-/* Campos de formulario */
-.field {
-  margin-bottom: 0.75rem;
+  line-height: var(--ink-line-height);
+  color: var(--ink-text);
 }
 
 .label {
   display: block;
+  margin-bottom: 0.3rem;
   font-weight: 700;
-  color: #002244;
-  margin-bottom: 0.25rem;
-  font-size: 0.95rem;
+  color: var(--ink-text);
 }
 
-/* Input (mejor contraste y borde más perceptible) */
+/* Borde 8:1 sobre blanco: el limite del campo se distingue (1.4.11) */
 .input {
-  border: 2px solid #c7d6ea;
-  border-radius: 8px;
+  width: 100%;
+  min-height: var(--ink-touch);
   padding: 0.75rem 0.9rem;
-  width: 100%;
-  font-size: 1rem;
-  background: #ffffff;
-  color: #111111;
+  border: 2px solid var(--ink-border-strong);
+  border-radius: var(--ink-radius-sm);
+  background: var(--ink-bg);
+  color: var(--ink-text);
+  font: inherit;
   box-sizing: border-box;
-  transition: box-shadow 140ms ease, border-color 140ms ease;
-  min-height: 44px; /* objetivo mínimo */
 }
 
-/* Focus visible accesible (no quitar outline sin alternativa) */
-.input:focus-visible {
-  outline: 3px solid #ffd571;
-  outline-offset: 3px;
-  box-shadow: 0 0 0 4px rgba(255,191,71,0.10);
-  border-color: #002244;
-}
-
-/* Botón principal */
 .button {
-  background-color: #002244; /* contraste fuerte */
-  border: 2px solid #002244;
-  color: #ffffff;
-  padding: 0.85rem;
-  font-weight: 800;
-  border-radius: 8px;
-  cursor: pointer;
   width: 100%;
-  font-size: 1rem;
-  min-height: 44px;
-  box-sizing: border-box;
-  transition: transform 120ms ease, box-shadow 120ms ease, background-color 120ms ease;
+  min-height: var(--ink-touch);
+  margin-top: 1.25rem;
+  padding: 0.85rem;
+  border: 2px solid var(--ink-primary);
+  border-radius: var(--ink-radius-sm);
+  background: var(--ink-primary);
+  color: var(--ink-on-primary);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color var(--ink-transition);
 }
 
-.button:hover,
-.button:active {
-  transform: translateY(-1px);
-  background-color: #001833;
-  box-shadow: 0 8px 18px rgba(0,0,0,0.10);
+.button:hover {
+  background: var(--ink-primary-hover);
 }
 
-.button:focus-visible {
-  outline: 3px solid #ffd571;
-  outline-offset: 3px;
+.button:disabled {
+  cursor: wait;
+  opacity: 0.85;
 }
 
-/* Mensaje de error (alto contraste y legible) */
+/* Error: fondo, borde y texto, anunciado con role="alert" en el JSX */
 .error {
-  color: #6b0f0f;
-  background-color: #fff1f1;
-  border: 2px solid #9b1c1c;
-  border-radius: 8px;
-  padding: 0.75rem 1rem;
   margin-bottom: 1rem;
-  font-size: 0.95rem;
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--ink-danger);
+  border-radius: var(--ink-radius-sm);
+  background: var(--ink-danger-bg);
+  color: var(--ink-danger);
+  font-weight: 700;
   line-height: 1.4;
 }
 
-/* Password wrapper y toggle */
-.passwordWrap {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-}
-
-.togglePassword {
-  background: none;
-  border: 2px solid #003366;
-  color: #003366;
-  padding: 0.5rem 0.75rem;
-  border-radius: 8px;
-  font-weight: 700;
-  cursor: pointer;
-  min-height: 44px;
-  min-width: 88px;
-  box-sizing: border-box;
-}
-
-.togglePassword:hover,
-.togglePassword:active {
-  background-color: #e8f1fb;
-}
-
-.togglePassword:focus-visible {
-  outline: 3px solid #ffd571;
-  outline-offset: 3px;
-}
-
-/* Sección de ayuda */
 .helpButton {
-  border: 2px solid #003366;
-  color: #003366;
-  background-color: #ffffff;
-  font-size: 0.95rem;
-  padding: 0.6rem 0.8rem;
-  border-radius: 8px;
+  min-height: var(--ink-touch);
   margin-top: 1rem;
-  cursor: pointer;
+  padding: 0.6rem 0.9rem;
+  border: 2px solid var(--ink-primary);
+  border-radius: var(--ink-radius-sm);
+  background: var(--ink-bg);
+  color: var(--ink-primary);
+  font: inherit;
   font-weight: 700;
-  min-height: 44px;
+  cursor: pointer;
 }
 
-.helpButton:hover,
-.helpButton:active {
-  background-color: #f2f7ff;
+.helpButton:hover {
+  background: var(--ink-hover-bg);
 }
 
-.helpButton:focus-visible {
-  outline: 3px solid #ffd571;
-  outline-offset: 3px;
-}
-
-/* Help section visible / hidden (sin lecturas accidentales) */
 .helpSection {
-  background-color: #d9ecff;
-  border: 2px solid #003366;
-  color: #002244;
-  border-radius: 8px;
-  padding: 1rem;
   margin-top: 1rem;
-  font-size: 0.95rem;
-  line-height: 1.6;
+  padding: 1rem;
+  border: 2px solid var(--ink-info);
+  border-radius: var(--ink-radius-sm);
+  background: var(--ink-info-bg);
+  color: var(--ink-text);
+  line-height: var(--ink-line-height);
 }
 
-/* visible/hidden para sincronizar con aria-hidden en JS */
-.visible {
-  display: block;
-  visibility: visible;
-  height: auto;
-  overflow: visible;
+.helpSection h2 {
+  margin-top: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--ink-info);
 }
 
-.hidden {
-  display: none;
-  visibility: hidden;
-  height: 0;
-  overflow: hidden;
-}
-
-/* sr-only para live regions y textos solo para AT */
-.srOnly {
-  position: absolute !important;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  white-space: nowrap;
-  border: 0;
-}
-
-/* Responsiveness */
 @media (max-width: 520px) {
-  .card {
+  .container {
     padding: 1rem;
+  }
+
+  .card {
+    padding: 1.25rem;
     border-width: 2px;
-    max-width: 96%;
   }
 
   .title {
-    font-size: 1.25rem;
-  }
-
-  .description {
-    font-size: 0.95rem;
-  }
-
-  .togglePassword {
-    min-width: 72px;
-    padding: 0.45rem 0.6rem;
-  }
-}
-
-/* Reduce motion preference (CORREGIDO para CSS Modules: :global(*) ) */
-@media (prefers-reduced-motion: reduce) {
-  :global(*) {
-    animation-duration: 0.001ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.001ms !important;
-    scroll-behavior: auto !important;
+    font-size: 1.4rem;
   }
 }

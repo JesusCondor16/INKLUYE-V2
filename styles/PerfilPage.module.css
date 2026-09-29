@@ -1,71 +1,80 @@
-/* Layout principal: sidebar izquierda + contenido derecha */
+/* styles/PerfilPage.module.css
+   Pagina "Mi perfil" — WCAG 2.1 AAA, usa solo tokens --ink-* */
+
 .pageWrapper {
   display: flex;
   min-height: 100vh;
-  background: #f2f6fc;
+  background: var(--ink-surface);
 }
 
-/* Contenedor del contenido derecho */
 .main {
-  flex: 1;
-  padding: 32px;
   display: flex;
-  justify-content: center;
+  flex: 1;
   align-items: flex-start;
+  justify-content: center;
+  padding: 2rem;
 }
 
-/* Wrapper del PerfilCard */
 .cardWrapper {
   width: 100%;
   max-width: 520px;
 }
 
-/* Loading */
 .loading {
   font-size: 1.2rem;
-  color: #003366;
-  font-weight: bold;
+  font-weight: 700;
+  color: var(--ink-primary);
 }
 
-/* Error box */
 .errorBox {
-  background: #fff0f0;
-  border: 1px solid #cc0000;
-  padding: 20px;
-  border-radius: 10px;
   max-width: 480px;
+  padding: 1.25rem;
+  border: 2px solid var(--ink-danger);
+  border-radius: var(--ink-radius);
+  background: var(--ink-danger-bg);
 }
+
 .errorTitle {
   margin: 0;
-  font-weight: bold;
-  color: #b00000;
+  font-weight: 700;
+  color: var(--ink-danger);
 }
+
 .errorText {
-  margin-top: 10px;
-  color: #5a0000;
+  margin-top: 0.6rem;
+  color: var(--ink-text);
 }
 
 .center {
+  margin-top: 1.25rem;
   text-align: center;
-  margin-top: 20px;
-}
-.loginBtn {
-  padding: 10px 20px;
-  background: #004a99;
-  color: white;
-  border-radius: 6px;
-  text-decoration: none;
-  font-weight: bold;
 }
 
-/* Responsive */
+.loginBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--ink-touch);
+  padding: 0.6rem 1.25rem;
+  border-radius: var(--ink-radius-sm);
+  background: var(--ink-primary);
+  color: var(--ink-on-primary);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.loginBtn:hover {
+  background: var(--ink-primary-hover);
+  color: var(--ink-on-primary);
+}
+
 @media (max-width: 820px) {
   .pageWrapper {
     flex-direction: column;
   }
 
   .main {
-    padding: 20px;
+    padding: 1.25rem;
   }
 
   .cardWrapper {

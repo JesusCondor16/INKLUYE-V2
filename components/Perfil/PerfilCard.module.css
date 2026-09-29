@@ -1,100 +1,41 @@
-/* Layout con sidebar */
-.wrapper {
-  display: flex;
-  min-height: 100vh;
-  background-color: #ffffff;
-  color: #000000;
-}
+/* components/Perfil/PerfilCard.module.css
+   Tarjeta de perfil — WCAG 2.1 AAA, usa solo tokens --ink-* */
 
-/* Skip link accesible */
-.skipLink {
-  position: absolute;
-  top: -40px;
-  left: 0;
-  background: #000000;
-  color: #ffffff;
-  padding: 8px 12px;
-  z-index: 1000;
-  font-size: 0.9rem;
-  text-decoration: none;
-}
-.skipLink:focus {
-  top: 0;
-}
-
-/* Sidebar */
-.sidebarContainer {
-  width: 260px;
-  border-right: 2px solid #000000;
-  background-color: #ffffff;
-}
-
-/* Main content */
-.main {
-  flex: 1;
-  padding: 24px;
-}
-
-/* Card */
 .card {
-  background-color: #ffffff;
-  border: 2px solid #000000;
-  padding: 20px;
-  border-radius: 8px;
-  max-width: 460px;
+  max-width: 480px;
+  padding: 1.5rem;
+  border: 2px solid var(--ink-primary);
+  border-radius: var(--ink-radius);
+  background: var(--ink-bg);
+  color: var(--ink-text);
 }
 
-/* Title */
-.title {
-  font-size: 1.8rem;
-  margin-bottom: 10px;
-  font-weight: bold;
-  color: #000000;
+.header h2 {
+  margin: 0 0 1rem;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--ink-primary);
 }
 
-/* Field group */
-.fieldGroup {
-  margin-bottom: 16px;
+/* Lista de definicion: el lector anuncia "Correo electrónico: ..." */
+.datos {
+  margin: 0;
 }
 
 .label {
-  font-weight: bold;
-  font-size: 1rem;
+  font-weight: 700;
+  color: var(--ink-text);
 }
 
 .value {
-  font-size: 1rem;
-  margin-top: 4px;
-  color: #000000;
+  margin: 0.25rem 0 1rem;
+  overflow-wrap: anywhere;
+  color: var(--ink-text);
 }
 
-/* Divider */
 .divider {
-  margin: 16px 0;
-  border-top: 2px solid #000000;
-}
-
-/* Meta info */
-.profileMeta {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.metaItem {
-  font-size: 1rem;
-  font-weight: 500;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .wrapper {
-    flex-direction: column;
-  }
-
-  .sidebarContainer {
-    width: 100%;
-    border-right: none;
-    border-bottom: 2px solid #000000;
-  }
+  margin: 1rem 0;
+  border: 0;
+  border-top: 2px solid var(--ink-border);
+  opacity: 1;
 }

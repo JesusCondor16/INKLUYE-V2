@@ -13,10 +13,10 @@
   width: 100%;
   min-height: 44px;
   padding: 0.5rem 0.75rem;
-  border: 2px solid #0a2540;
+  border: 2px solid var(--ink-primary);
   border-radius: 10px;
-  background: #ffffff;
-  color: #071833;
+  background: var(--ink-bg);
+  color: var(--ink-primary-hover);
   font: inherit;
   font-weight: 700;
   cursor: pointer;
@@ -24,19 +24,12 @@
 }
 
 .toggle:hover {
-  background: #f2f6ff;
-}
-
-.toggle:focus-visible,
-.enlace:focus-visible,
-.btnSecundario:focus-visible {
-  outline: 4px solid #ffbf47;
-  outline-offset: 2px;
+  background: var(--ink-hover-bg);
 }
 
 .toggle[aria-expanded='true'] {
-  background: #0a2540;
-  color: #ffffff;
+  background: var(--ink-primary);
+  color: var(--ink-on-primary);
 }
 
 .contador {
@@ -44,8 +37,8 @@
   min-width: 1.6rem;
   padding: 0.05rem 0.45rem;
   border-radius: 999px;
-  background: #8a0b0b;
-  color: #ffffff;
+  background: var(--ink-danger);
+  color: var(--ink-on-primary);
   text-align: center;
   font-size: 0.85rem;
 }
@@ -53,10 +46,10 @@
 .panel {
   margin-top: 0.5rem;
   padding: 0.75rem;
-  border: 1px solid #dbe3ec;
+  border: 1px solid var(--ink-border);
   border-radius: 10px;
-  background: #ffffff;
-  color: #0b1f3a;
+  background: var(--ink-bg);
+  color: var(--ink-text);
   max-height: 60vh;
   overflow-y: auto;
 }
@@ -79,20 +72,20 @@
 .item {
   padding: 0.5rem 0.5rem 0.5rem 0.6rem;
   border-left: 4px solid transparent;
-  border-bottom: 1px solid #e5ecf5;
+  border-bottom: 1px solid var(--ink-border);
   font-size: 0.9rem;
   line-height: 1.4;
 }
 
 .noLeida {
-  border-left-color: #0a2540;
-  background: #f2f6ff;
+  border-left-color: var(--ink-primary);
+  background: var(--ink-hover-bg);
   font-weight: 700;
 }
 
 .enlace {
   display: block;
-  color: #0a2540;
+  color: var(--ink-primary);
   text-decoration: underline;
 }
 
@@ -101,7 +94,7 @@
   margin-top: 0.2rem;
   font-size: 0.8rem;
   font-weight: 400;
-  color: #46525d;
+  color: var(--ink-text-muted);
 }
 
 .acciones {
@@ -114,17 +107,17 @@
 .btnSecundario {
   min-height: 44px;
   padding: 0.4rem 0.75rem;
-  border: 2px solid #0a2540;
+  border: 2px solid var(--ink-primary);
   border-radius: 8px;
-  background: #ffffff;
-  color: #0a2540;
+  background: var(--ink-bg);
+  color: var(--ink-primary);
   font: inherit;
   font-weight: 700;
   cursor: pointer;
 }
 
 .btnSecundario:hover {
-  background: #f2f6ff;
+  background: var(--ink-hover-bg);
 }
 
 .srOnly {

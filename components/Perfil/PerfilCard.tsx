@@ -13,24 +13,21 @@ export default function PerfilCard({ user }: Props) {
   // Garantizamos que role siempre tenga un valor legible
   const role = user.role && user.role.trim() !== '' ? user.role : 'N/A';
 
+  // <section> con titulo en vez de aria-label en <div> (que los lectores ignoran);
+  // sin tabIndex en textos: solo lo interactivo debe recibir foco con Tab (2.4.3)
   return (
-    <div className={styles.card} role="region" aria-label="Perfil del usuario">
+    <section className={styles.card} aria-labelledby="perfil-nombre">
       <header className={styles.header}>
-        <h2 tabIndex={0}>{user.name}</h2>
+        <h2 id="perfil-nombre">{user.name}</h2>
       </header>
 
-      <div className={styles.fieldGroup} aria-label="Correo electrónico">
-        <span className={styles.label}>Correo electrónico</span>
-        <p className={styles.value} tabIndex={0}>{user.email}</p>
-      </div>
+      <dl className={styles.datos}>
+        <dt className={styles.label}>Correo electrónico</dt>
+        <dd className={styles.value}>{user.email}</dd>
 
-      <hr className={styles.divider} />
-
-      <div className={styles.profileMeta} aria-label="Rol del usuario">
-        <div className={styles.metaItem} tabIndex={0}>
-          Rol: {role}
-        </div>
-      </div>
-    </div>
+        <dt className={styles.label}>Rol</dt>
+        <dd className={styles.value}>{role}</dd>
+      </dl>
+    </section>
   );
 }
