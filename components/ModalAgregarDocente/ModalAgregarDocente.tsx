@@ -1,5 +1,6 @@
 'use client';
 
+import { X } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import styles from './ModalAgregarDocente.module.css';
 
@@ -92,7 +93,7 @@ export default function ModalAgregarDocente({ onClose, onSuccess, docente }: Pro
               {docente ? 'Editar Docente' : 'Añadir a personal'}
             </h5>
             <button type="button" onClick={onClose} aria-label="Cerrar modal de docente">
-              ✖
+              <X size={22} aria-hidden="true" focusable={false} />
             </button>
           </div>
 

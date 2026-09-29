@@ -1,5 +1,6 @@
 'use client';
 
+import { X } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 import styles from './ModalEditarDocente.module.css';
 import { updateDocenteView } from '@/controllers/docenteViewController';
@@ -189,7 +190,7 @@ export default function ModalEditarDocente({ docente, onClose, onSuccess }: Prop
               aria-label="Cerrar diálogo"
               className={styles.closeButton}
             >
-              ✖
+              <X size={22} aria-hidden="true" focusable={false} />
             </button>
           </header>
 

@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useParams } from "next/navigation";
+import { FileDown } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import styles from "@/styles/coordinador.module.css";
 import ModalSeccion1 from "@/components/ModalsSyllabus/ModalSeccion1/ModalSeccion1";
@@ -47,9 +48,9 @@ export default function SyllabusCursoPage() {
   );
 
   if (!cursoId || isNaN(cursoId))
-    return <div className={styles.errorBox}>❌ ID de curso inválido</div>;
+    return <div className={styles.errorBox} role="alert">ID de curso inválido</div>;
   if (loading) return <div className={styles.statusBox}>Cargando datos del curso...</div>;
-  if (error) return <div className={styles.errorBox}>❌ {error}</div>;
+  if (error) return <div className={styles.errorBox} role="alert">{error}</div>;
 
   return (
     <div className={styles.wrapper}>
@@ -102,29 +103,21 @@ export default function SyllabusCursoPage() {
           </tbody>
         </table>
 
-        <div className="mt-3 d-flex gap-2">
-          <button
-            className={`${styles.btn} btn-success`}
-            onClick={() => handleGenerar("es")}
-            disabled={generating || !curso}
-          >
-            {generating ? "Generando..." : "📘 Generar y Abrir Syllabus (ES)"}
+        {/* Iconos SVG en vez de emojis (el lector leia "libro azul", "bandera de China") */}
+        <div className="mt-3 d-flex flex-wrap gap-2">
+          <button type="button" className={styles.btn} onClick={() => handleGenerar("es")} disabled={generating || !curso}>
+            <FileDown size={18} aria-hidden="true" focusable={false} />
+            {generating ? "Generando..." : "Generar y abrir syllabus (ES)"}
           </button>
 
-          <button
-            className={`${styles.btn} btn-outline-primary`}
-            onClick={() => handleGenerar("en")}
-            disabled={generating || !curso}
-          >
-            {generating ? "Generando..." : "🌍 Generar y Abrir Syllabus (EN)"}
+          <button type="button" className={styles.btn} onClick={() => handleGenerar("en")} disabled={generating || !curso}>
+            <FileDown size={18} aria-hidden="true" focusable={false} />
+            {generating ? "Generando..." : "Generar y abrir syllabus (EN)"}
           </button>
 
-          <button
-            className={`${styles.btn} btn-outline-secondary`}
-            onClick={() => handleGenerar("zh")}
-            disabled={generating || !curso}
-          >
-            {generating ? "Generando..." : "🇨🇳 Generar y Abrir Syllabus (ZH)"}
+          <button type="button" className={styles.btn} onClick={() => handleGenerar("zh")} disabled={generating || !curso}>
+            <FileDown size={18} aria-hidden="true" focusable={false} />
+            {generating ? "Generando..." : <>Generar y abrir syllabus (<span lang="zh">中文</span>)</>}
           </button>
         </div>
 

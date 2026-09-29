@@ -1,5 +1,6 @@
 'use client';
 
+import { Globe } from 'lucide-react';
 import React from 'react';
 import Sidebar from '@/components/Sidebar';
 import styles from '@/styles/Informacion.module.css';
@@ -21,9 +22,7 @@ export default function InformacionPage() {
           aria-labelledby="page-title"
         >
           <h1 id="page-title" className={styles.title}>
-            {/* Emoji decorativo marcado aria-hidden + texto adicional para SR */}
-            <span aria-hidden="true">🌐</span>
-            <span className={styles.srOnly}> </span>
+            <Globe size={28} aria-hidden="true" focusable={false} style={{ verticalAlign: 'middle', marginRight: '0.5rem' }} />
             Información del Sistema Inkluye
           </h1>
 

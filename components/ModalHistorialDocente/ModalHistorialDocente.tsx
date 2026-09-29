@@ -1,5 +1,6 @@
 'use client';
 
+import { X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import styles from './ModalHistorialDocente.module.css';
 
@@ -138,7 +139,7 @@ export default function ModalHistorialDocente({ docente, onClose }: Props) {
             className={styles.closeButton}
             aria-label="Cerrar ventana de historial"
           >
-            ✕
+            <X size={22} aria-hidden="true" focusable={false} />
           </button>
 
         </header>

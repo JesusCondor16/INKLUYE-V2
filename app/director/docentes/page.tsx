@@ -34,7 +34,7 @@ export default function GestionDocentesPage() {
     } catch (error: unknown) {
       console.error('Error al cargar docentes:', error);
       const msg = error instanceof Error ? error.message : String(error);
-      setMensaje(`❌ ${msg}`);
+      setMensaje(`Error: ${msg}`);
       setTimeout(() => setMensaje(''), 5000);
     }
   };
@@ -49,13 +49,13 @@ export default function GestionDocentesPage() {
       const res = await fetch(`/api/users/${id}`, { method: 'DELETE' });
       const resData: { error?: string } = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(resData.error ?? 'No se pudo eliminar');
-      setMensaje('✅ Docente eliminado correctamente.');
+      setMensaje('Docente eliminado correctamente.');
       cargarDocentes();
       setTimeout(() => setMensaje(''), 5000);
     } catch (error: unknown) {
       console.error('Error al eliminar docente:', error);
       const msg = error instanceof Error ? error.message : String(error);
-      setMensaje(`❌ ${msg}`);
+      setMensaje(`Error: ${msg}`);
       setTimeout(() => setMensaje(''), 5000);
     }
   };
@@ -73,9 +73,8 @@ export default function GestionDocentesPage() {
   return (
     <main className={styles.container} role="main" aria-label="Gestión de docentes">
       <header className={styles.header}>
-        <h1 tabIndex={0} className={styles.title}>
-          👩‍🏫 Gestión de Docentes
-        </h1>
+        {/* Sin emoji (el lector leia "mujer docente") y sin tabIndex: un titulo no es interactivo */}
+        <h1 className={styles.title}>Gestión de Docentes</h1>
         <button
           className={styles.btnPrimary}
           onClick={() => {
@@ -89,7 +88,8 @@ export default function GestionDocentesPage() {
       </header>
 
       {mensaje && (
-        <div className={styles.alert} role="alert" aria-live="polite" tabIndex={0}>
+        // Errores con role="alert" (se anuncian de inmediato); confirmaciones con role="status"
+        <div className={styles.alert} role={mensaje.startsWith('Error') ? 'alert' : 'status'}>
           {mensaje}
         </div>
       )}

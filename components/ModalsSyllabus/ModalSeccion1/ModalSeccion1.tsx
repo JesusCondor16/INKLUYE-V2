@@ -1,5 +1,6 @@
 'use client';
 
+import { X } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import styles from './ModalSeccion1.module.css';
 import { useModalSeccion1Controller } from './ModalSeccion1.controller';
@@ -87,7 +88,7 @@ export default function ModalSeccion1({ show, onClose, cursoId }: ModalSeccion1P
             aria-label="Cerrar modal"
             onClick={onClose}
           >
-            ✕
+            <X size={22} aria-hidden="true" focusable={false} />
           </button>
         </header>
 

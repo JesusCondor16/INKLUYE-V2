@@ -1,5 +1,6 @@
 'use client';
 
+import { X } from 'lucide-react';
 import { useModalSeccion3Controller } from './ModalSeccion3.controller';
 import styles from './ModalSeccion3.module.css';
 
@@ -42,7 +43,7 @@ export default function ModalSeccion3({ cursoId, onClose }: ModalSeccion3Props) 
             aria-label="Cerrar ventana"
             onClick={onClose}
           >
-            ✕
+            <X size={22} aria-hidden="true" focusable={false} />
           </button>
         </header>
 
