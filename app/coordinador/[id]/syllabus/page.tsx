@@ -9,6 +9,7 @@ import ModalSeccion2 from "@/components/ModalsSyllabus/ModalSeccion2/ModalSeccio
 import ModalSeccion3 from "@/components/ModalsSyllabus/ModalSeccion3/ModalSeccion3";
 import ModalSeccion4 from "@/components/ModalsSyllabus/ModalSeccion4/ModalSeccion4";
 import { useSyllabusController } from "@/controllers/useSyllabusController";
+import EstadoSyllabus from "@/components/EstadoSyllabus/EstadoSyllabus";
 
 export default function SyllabusCursoPage() {
   const params = useParams();
@@ -16,6 +17,8 @@ export default function SyllabusCursoPage() {
 
   const { curso, loading, error, loadCurso, generarPDF, generating } = useSyllabusController();
   const [modal, setModal] = useState({ s1: false, s2: false, s3: false, s4: false });
+  // Se incrementa tras generar un PDF para que el panel de estado vuelva a consultar (regenerar lo deja en borrador)
+  const [recargarEstado, setRecargarEstado] = useState(0);
 
   // Cargar datos del curso al montar el componente
   useEffect(() => {
@@ -23,8 +26,8 @@ export default function SyllabusCursoPage() {
     loadCurso(cursoId);
   }, [cursoId, loadCurso]);
 
-  // Handler que llama a generarPDF y notifica a otras pestañas (BroadcastChannel + localStorage fallback)
-  const handleGenerarYNotificar = useCallback(
+  // Genera el PDF en el idioma indicado; el servidor lo guarda y deja el syllabus en borrador
+  const handleGenerar = useCallback(
     async (lang: "es" | "en" | "zh") => {
       if (!cursoId || isNaN(cursoId)) {
         alert("ID de curso inválido");
@@ -32,34 +35,8 @@ export default function SyllabusCursoPage() {
       }
 
       try {
-         const result = await generarPDF(lang);
-
-        const pdfUrl = result?.url ?? null;
-
-        if (typeof window !== "undefined") {
-          try {
-            const bc = new BroadcastChannel("syllabus_channel");
-            bc.postMessage({
-              type: "updated",
-              courseId: cursoId,
-              pdfUrl: pdfUrl,
-              ts: Date.now(),
-            });
-            bc.close();
-          } catch (_err) {
-            try {
-              const payload = {
-                type: "updated",
-                courseId: cursoId,
-                pdfUrl: pdfUrl,
-                ts: Date.now(),
-              };
-              localStorage.setItem("syllabus_updated", JSON.stringify(payload));
-            } catch (_err2) {
-              console.warn("No se pudo notificar vía localStorage", _err2);
-            }
-          }
-        }
+        await generarPDF(lang);
+        setRecargarEstado((n) => n + 1);
       } catch (err: unknown) {
         const error = err instanceof Error ? err : new Error('Error desconocido');
         console.error("Error generando syllabus:", error);
@@ -89,7 +66,7 @@ export default function SyllabusCursoPage() {
           {curso?.name || "Syllabus del Curso"}
         </h1>
         <p className={styles.lead}>
-          Aquí puedes editar las secciones del syllabus y generar el PDF.
+          Aquí puedes editar las secciones del syllabus, generar el PDF y enviarlo a los docentes para su revisión.
         </p>
 
         <table className={styles.table} role="table" aria-describedby="table-desc">
@@ -128,7 +105,7 @@ export default function SyllabusCursoPage() {
         <div className="mt-3 d-flex gap-2">
           <button
             className={`${styles.btn} btn-success`}
-            onClick={() => handleGenerarYNotificar("es")}
+            onClick={() => handleGenerar("es")}
             disabled={generating || !curso}
           >
             {generating ? "Generando..." : "📘 Generar y Abrir Syllabus (ES)"}
@@ -136,7 +113,7 @@ export default function SyllabusCursoPage() {
 
           <button
             className={`${styles.btn} btn-outline-primary`}
-            onClick={() => handleGenerarYNotificar("en")}
+            onClick={() => handleGenerar("en")}
             disabled={generating || !curso}
           >
             {generating ? "Generando..." : "🌍 Generar y Abrir Syllabus (EN)"}
@@ -144,12 +121,14 @@ export default function SyllabusCursoPage() {
 
           <button
             className={`${styles.btn} btn-outline-secondary`}
-            onClick={() => handleGenerarYNotificar("zh")}
+            onClick={() => handleGenerar("zh")}
             disabled={generating || !curso}
           >
             {generating ? "Generando..." : "🇨🇳 Generar y Abrir Syllabus (ZH)"}
           </button>
         </div>
+
+        <EstadoSyllabus cursoId={cursoId} recargarKey={recargarEstado} />
 
         {modal.s1 && (
           <ModalSeccion1

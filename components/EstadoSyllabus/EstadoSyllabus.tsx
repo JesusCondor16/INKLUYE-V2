@@ -1,0 +1,84 @@
+'use client';
+
+import styles from './EstadoSyllabus.module.css';
+import { useEstadoSyllabusController } from './EstadoSyllabus.controller';
+import { DESCRIPCION_ESTADO, ETIQUETA_ACCION, ETIQUETA_ESTADO } from './EstadoSyllabus.model';
+
+interface Props {
+  cursoId: number;
+  recargarKey: number;
+}
+
+const CLASE_ESTADO = {
+  BORRADOR: styles.badgeBorrador,
+  ENVIADO_DOCENTE: styles.badgeEnviado,
+  PUBLICADO: styles.badgePublicado,
+};
+
+export default function EstadoSyllabus({ cursoId, recargarKey }: Props) {
+  const { estado, historial, loading, enviando, mensaje, error, enviarADocentes } =
+    useEstadoSyllabusController(cursoId, recargarKey);
+
+  return (
+    <section className={styles.panel} aria-labelledby="estado-syllabus-title">
+      <h2 id="estado-syllabus-title" className={styles.title}>Estado del syllabus</h2>
+
+      {/* Mensajes de estado anunciados por lectores de pantalla (WCAG 4.1.3) */}
+      <p role="status" aria-live="polite" className={styles.mensaje}>{mensaje}</p>
+      {error && <p role="alert" className={styles.error}>{error}</p>}
+
+      {loading && !estado && <p>Cargando estado...</p>}
+
+      {!loading && !estado && !error && (
+        <p>Aún no se ha generado el syllabus. Genera el PDF para poder enviarlo a los docentes.</p>
+      )}
+
+      {estado && (
+        <>
+          <p className={styles.estadoLinea}>
+            Estado actual:{' '}
+            <span className={`${styles.badge} ${CLASE_ESTADO[estado]}`}>{ETIQUETA_ESTADO[estado]}</span>
+          </p>
+          <p className={styles.descripcion}>{DESCRIPCION_ESTADO[estado]}</p>
+
+          {estado === 'BORRADOR' && (
+            <button
+              type="button"
+              className={styles.btn}
+              onClick={enviarADocentes}
+              disabled={enviando}
+              aria-busy={enviando}
+            >
+              {enviando ? 'Enviando...' : 'Enviar a docentes para revisión'}
+            </button>
+          )}
+        </>
+      )}
+
+      {historial.length > 0 && (
+        <>
+          <h3 className={styles.subtitle}>Historial</h3>
+          <ol className={styles.historial}>
+            {historial.map((h) => (
+              <li key={h.id} className={styles.historialItem}>
+                <p className={styles.historialCabecera}>
+                  <strong>{ETIQUETA_ACCION[h.accion]}</strong>
+                  {' — '}
+                  {h.usuario.name}
+                  {' — '}
+                  <time dateTime={h.fecha}>{new Date(h.fecha).toLocaleString('es-PE')}</time>
+                </p>
+                {h.observacion && (
+                  <blockquote className={styles.observacion}>
+                    <span className={styles.visuallyHidden}>Observaciones: </span>
+                    {h.observacion}
+                  </blockquote>
+                )}
+              </li>
+            ))}
+          </ol>
+        </>
+      )}
+    </section>
+  );
+}
