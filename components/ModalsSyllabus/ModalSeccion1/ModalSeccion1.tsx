@@ -5,6 +5,7 @@ import React, { useState, useEffect } from 'react';
 import styles from './ModalSeccion1.module.css';
 import { useModalSeccion1Controller } from './ModalSeccion1.controller';
 import { Usuario } from './ModalSeccion1.model';
+import { useDialogoAccesible } from '@/hooks/useDialogoAccesible';
 
 interface ModalSeccion1Props {
   show: boolean;
@@ -13,6 +14,7 @@ interface ModalSeccion1Props {
 }
 
 export default function ModalSeccion1({ show, onClose, cursoId }: ModalSeccion1Props) {
+  const dialogoRef = useDialogoAccesible<HTMLDivElement>(onClose);
   const { curso, sumilla, loading, textareaRef } = useModalSeccion1Controller(cursoId);
 
   const [coordinadores, setCoordinadores] = useState<Usuario[]>([]);
@@ -73,6 +75,8 @@ export default function ModalSeccion1({ show, onClose, cursoId }: ModalSeccion1P
     <div
       className={styles.modalOverlay}
       onClick={handleOutsideClick}
+      ref={dialogoRef}
+      tabIndex={-1}
       role="dialog"
       aria-modal="true"
       aria-labelledby="modalTitle"

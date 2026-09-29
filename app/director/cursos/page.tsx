@@ -311,7 +311,7 @@ export default function DirectorCursosPage() {
   return (
 
     <div className={stylesPage.wrapper}>
-      <main className={stylesPage.mainContent}>
+      <main id="main-content" tabIndex={-1} className={stylesPage.mainContent}>
         <section className={stylesPage.containerCursos}>
           <h1 className={stylesPage.headerCursos}>
             Gestión de cursos (Director)

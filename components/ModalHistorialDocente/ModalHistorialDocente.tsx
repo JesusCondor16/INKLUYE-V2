@@ -1,8 +1,9 @@
 'use client';
 
 import { X } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import styles from './ModalHistorialDocente.module.css';
+import { useDialogoAccesible } from '@/hooks/useDialogoAccesible';
 
 interface HistorialItem {
   id: number;
@@ -28,35 +29,8 @@ export default function ModalHistorialDocente({ docente, onClose }: Props) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  const modalRef = useRef<HTMLDivElement>(null);
-
-  /* =======================================
-     Accesibilidad: focus inicial del modal
-  ======================================== */
-
-  useEffect(() => {
-    modalRef.current?.focus();
-  }, []);
-
-  /* =======================================
-     Cerrar con tecla ESC
-  ======================================== */
-
-  useEffect(() => {
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        onClose();
-      }
-    };
-
-    document.addEventListener('keydown', handleKeyDown);
-
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-    };
-
-  }, [onClose]);
+  // Foco inicial, ESC, trampa de Tab y retorno del foco al cerrar
+  const modalRef = useDialogoAccesible<HTMLDivElement>(onClose);
 
   /* =======================================
      Obtener historial

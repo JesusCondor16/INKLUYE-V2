@@ -4,6 +4,7 @@ import type { BibliografiaCategoria } from '@prisma/client';
 import { Plus, Trash2, X } from 'lucide-react';
 import { useModalSeccion4Controller, CATEGORIAS_BIBLIOGRAFIA } from './ModalSeccion4.controller';
 import styles from './ModalSeccion4.module.css';
+import { useDialogoAccesible } from '@/hooks/useDialogoAccesible';
 
 interface ModalSeccion4Props {
   cursoId: number;
@@ -25,10 +26,13 @@ export default function ModalSeccion4({ cursoId, onClose }: ModalSeccion4Props) 
     handleRemoveBibliografia,
     handleGuardarBibliografia,
   } = useModalSeccion4Controller(cursoId);
+  const dialogoRef = useDialogoAccesible<HTMLDivElement>(onClose);
 
   return (
     <div className={styles.overlay} role="presentation">
       <div
+        ref={dialogoRef}
+        tabIndex={-1}
         className={styles.dialog}
         role="dialog"
         aria-modal="true"

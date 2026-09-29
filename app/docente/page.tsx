@@ -8,9 +8,8 @@ export default function BienvenidaDocentePage() {
   return (
     <div className={styles.wrapper}>
       
-      <nav aria-label="Navegación principal">
-        <Sidebar />
-      </nav>
+      {/* El Sidebar ya es un <aside> con su propio <nav>: sin envoltorios extra */}
+      <Sidebar />
 
       <main
         id="main-content"

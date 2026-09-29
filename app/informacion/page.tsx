@@ -10,13 +10,14 @@ export default function InformacionPage() {
     <>
       
       <div className={styles.container}>
-        {/* Sidebar accesible como aside */}
-        <aside className={styles.sidebarWrapper} aria-label="Navegación lateral">
+        {/* div y no <aside>: el Sidebar ya es un <aside> (evita regiones anidadas) */}
+        <div className={styles.sidebarWrapper}>
           <Sidebar />
-        </aside>
+        </div>
 
         <main
-          id="maincontent"
+          id="main-content"
+          tabIndex={-1}
           className={styles.main}
           role="main"
           aria-labelledby="page-title"

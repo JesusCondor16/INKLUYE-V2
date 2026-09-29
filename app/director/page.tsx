@@ -8,7 +8,7 @@ export default function DirectorHomePage() {
   const { nombre, status, error } = useNombreUsuario();
 
   return (
-    <main role="main" aria-label="Panel principal del director" className={styles.main}>
+    <main id="main-content" tabIndex={-1} aria-label="Panel principal del director" className={styles.main}>
       <section className={styles.section}>
         <h1 className={styles.title}>
           {status === 'loading' ? 'Cargando...' : `Bienvenido, ${nombre}`}

@@ -3,6 +3,7 @@
 import { X } from 'lucide-react';
 import { useModalSeccion3Controller } from './ModalSeccion3.controller';
 import styles from './ModalSeccion3.module.css';
+import { useDialogoAccesible } from '@/hooks/useDialogoAccesible';
 
 interface ModalSeccion3Props {
   cursoId: number;
@@ -11,6 +12,7 @@ interface ModalSeccion3Props {
 
 export default function ModalSeccion3({ cursoId, onClose }: ModalSeccion3Props) {
   const { loading, capacidades, programaciones } = useModalSeccion3Controller(cursoId);
+  const dialogoRef = useDialogoAccesible<HTMLDivElement>(onClose, !loading);
 
   if (loading) {
     return <p role="status">Cargando datos...</p>;
@@ -21,6 +23,7 @@ export default function ModalSeccion3({ cursoId, onClose }: ModalSeccion3Props) 
   return (
     <div
       className={styles.overlay}
+      ref={dialogoRef}
       role="dialog"
       aria-modal="true"
       aria-labelledby="modal-seccion3-title"

@@ -5,6 +5,7 @@ import React from 'react';
 import styles from './ModalSeccion2.module.css';
 import { useModalSeccion2Controller } from './ModalSeccion2.controller';
 import { Competencia, Logro } from './ModalSeccion2.model';
+import { useDialogoAccesible } from '@/hooks/useDialogoAccesible';
 
 interface ModalSeccion2Props {
   cursoId: number;
@@ -14,6 +15,7 @@ interface ModalSeccion2Props {
 export default function ModalSeccion2({ cursoId, onClose }: ModalSeccion2Props) {
 
   const { competenciasCurso, logros, loading } = useModalSeccion2Controller(cursoId);
+  const dialogoRef = useDialogoAccesible<HTMLDivElement>(onClose, !loading);
 
   if (loading) {
     return (
@@ -28,6 +30,8 @@ export default function ModalSeccion2({ cursoId, onClose }: ModalSeccion2Props) 
   return (
     <div
       className={styles.modalOverlay}
+      ref={dialogoRef}
+      tabIndex={-1}
       role="dialog"
       aria-modal="true"
       aria-labelledby="modalTitle"

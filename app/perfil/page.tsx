@@ -41,8 +41,9 @@ export default function PerfilPage() {
       <div className={styles.pageWrapper}>
         <Sidebar />
 
-        <main className={styles.main} role="status" aria-live="polite">
-          <p className={styles.loading}>Cargando perfil…</p>
+        {/* role="status" va en el parrafo: en el <main> borraba la region principal */}
+        <main id="main-content" tabIndex={-1} className={styles.main}>
+          <p className={styles.loading} role="status">Cargando perfil…</p>
         </main>
       </div>
     );
@@ -53,13 +54,8 @@ export default function PerfilPage() {
       <div className={styles.pageWrapper}>
         <Sidebar />
 
-        <main className={styles.main}>
-          <div
-            role="alert"
-            aria-live="assertive"
-            className={styles.errorBox}
-            tabIndex={0}
-          >
+        <main id="main-content" tabIndex={-1} className={styles.main}>
+          <div role="alert" className={styles.errorBox}>
             <h2 className={styles.errorTitle}>Acceso al perfil</h2>
             <p className={styles.errorText}>{error}</p>
 
@@ -83,12 +79,10 @@ export default function PerfilPage() {
     <div className={styles.pageWrapper}>
       <Sidebar />
 
-      <main
-        className={styles.main}
-        role="main"
-        aria-label="Sección principal del perfil"
-      >
+      <main id="main-content" tabIndex={-1} className={styles.main} aria-labelledby="perfil-titulo">
         <div className={styles.cardWrapper}>
+          {/* Titulo principal de la pagina (antes no habia ningun h1) */}
+          <h1 id="perfil-titulo" className={styles.titulo}>Mi perfil</h1>
           <PerfilCard user={userWithRole} />
         </div>
       </main>

@@ -63,7 +63,7 @@ export default function HomePage() {
         className={styles.srOnly} // srOnly: visibilidad solo para lectores; definir en CSS
       />
 
-      <main id="mainContent" className={styles.main} role="main">
+      <main id="main-content" tabIndex={-1} className={styles.main}>
         <div className={styles.container}>
           <h1 className={styles.title}>
             Bienvenido al Sistema de Gestión de Syllabus - Inkluye

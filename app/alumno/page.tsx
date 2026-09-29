@@ -8,10 +8,8 @@ export default function BienvenidaEstudiantePage() {
   return (
     <div className={styles.wrapper}>
       
-      {/* Sidebar dentro de landmark nav */}
-      <nav aria-label="Navegación principal">
-        <Sidebar />
-      </nav>
+      {/* El Sidebar ya es un <aside> con su propio <nav>: sin envoltorios extra */}
+      <Sidebar />
 
       {/* Contenido principal accesible */}
       <main

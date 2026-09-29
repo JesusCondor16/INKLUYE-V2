@@ -62,6 +62,7 @@ export default function SyllabusCursoPage() {
         className={styles.main}
         role="main"
         aria-labelledby="page-title"
+        tabIndex={-1}
       >
         <h1 id="page-title" className={styles.title}>
           {curso?.name || "Syllabus del Curso"}

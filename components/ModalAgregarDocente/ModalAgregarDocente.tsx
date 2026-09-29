@@ -3,6 +3,7 @@
 import { X } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import styles from './ModalAgregarDocente.module.css';
+import { useDialogoAccesible } from '@/hooks/useDialogoAccesible';
 
 interface Docente {
   id?: number;
@@ -18,6 +19,7 @@ interface Props {
 }
 
 export default function ModalAgregarDocente({ onClose, onSuccess, docente }: Props) {
+  const dialogoRef = useDialogoAccesible<HTMLDivElement>(onClose);
   const [form, setForm] = useState({
     name: '',
     email: '',
@@ -80,6 +82,8 @@ export default function ModalAgregarDocente({ onClose, onSuccess, docente }: Pro
   return (
     <div
       className={styles.modalBackdrop}
+      ref={dialogoRef}
+      tabIndex={-1}
       role="dialog"
       aria-modal="true"
       aria-labelledby="modal-agregar-docente-titulo"

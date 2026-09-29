@@ -61,11 +61,8 @@ export function useModalSeccion1Controller(cursoId: number) {
 
   }, [cursoId]);
 
-  useEffect(() => {
-    if (textareaRef.current) {
-      textareaRef.current.focus();
-    }
-  }, []);
+  // El foco inicial lo maneja useDialogoAccesible (boton Cerrar). Antes aqui se enfocaba la sumilla,
+  // pero ese campo se desmonta mientras carga y el foco se perdia en <body>.
 
   return {
     curso,

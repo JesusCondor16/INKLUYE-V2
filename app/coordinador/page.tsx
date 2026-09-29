@@ -7,11 +7,8 @@ export default function BienvenidaCoordinadorPage() {
   return (
     <div className={styles.wrapper}>
 
-      {/* Si Sidebar es un nav por sí mismo, esto no rompe nada.
-          Lo envolvemos en <nav> para garantizar el landmark si Sidebar no lo define. */}
-      <nav aria-label="Navegación principal">
-        <Sidebar />
-      </nav>
+      {/* El Sidebar ya es un <aside> con su propio <nav>: sin envoltorios extra */}
+      <Sidebar />
 
       {/* Main: id para skip-link y tabIndex para permitir que el ancla enfoque aquí */}
       <main

@@ -20,6 +20,13 @@
   max-width: 520px;
 }
 
+.titulo {
+  margin: 0 0 1rem;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--ink-primary);
+}
+
 .loading {
   font-size: 1.2rem;
   font-weight: 700;

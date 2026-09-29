@@ -206,7 +206,7 @@ export default function ModalEditarDocente({ docente, onClose, onSuccess }: Prop
             </div>
           )}
 
-          <main className={styles.modalBody}>
+          <div className={styles.modalBody}>
             <div className={styles.formGroup}>
               <label htmlFor="name" className={styles.formLabel}>
                 Nombre completo
@@ -270,7 +270,7 @@ export default function ModalEditarDocente({ docente, onClose, onSuccess }: Prop
                 <option value="coordinador">Coordinador</option>
               </select>
             </div>
-          </main>
+          </div>
 
           <footer className={styles.modalFooter}>
             <button

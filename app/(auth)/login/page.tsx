@@ -78,7 +78,7 @@ export default function LoginPage() {
   }
 
   return (
-    <main id="main-content" className={styles.container}>
+    <main id="main-content" tabIndex={-1} className={styles.container}>
       <div className={styles.card}>
         <h1 className={styles.title}>Iniciar Sesión</h1>
 

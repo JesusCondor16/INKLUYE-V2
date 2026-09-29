@@ -105,7 +105,7 @@ export default function CursosCoordinadorPage() {
   return (
     <div className={styles.wrapper}>
       <Sidebar />
-      <main id="main-content" className={styles.main} role="main" aria-labelledby="page-title">
+      <main id="main-content" tabIndex={-1} className={styles.main} aria-labelledby="page-title">
         <h1 id="page-title" className={styles.title}>Mis Cursos Asignados</h1>
         <p className={styles.lead}>
           Panel de cursos asignados. Usa el teclado para navegar y los enlaces para ver o generar syllabus.

@@ -88,7 +88,7 @@ export default function BuscarSyllabusPage() {
     <div className={styles.wrapper}>
       <Sidebar />
 
-      <main id="main-content" className={styles.main} role="main" aria-labelledby="page-title">
+      <main id="main-content" tabIndex={-1} className={styles.main} aria-labelledby="page-title">
         <h1 id="page-title" className={styles.title}>Buscar Syllabus</h1>
 
         {loading && <p className={styles.info}>Cargando cursos...</p>}

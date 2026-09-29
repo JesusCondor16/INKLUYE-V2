@@ -71,7 +71,7 @@ export default function GestionDocentesPage() {
   };
 
   return (
-    <main className={styles.container} role="main" aria-label="Gestión de docentes">
+    <main id="main-content" tabIndex={-1} className={styles.container} aria-label="Gestión de docentes">
       <header className={styles.header}>
         {/* Sin emoji (el lector leia "mujer docente") y sin tabIndex: un titulo no es interactivo */}
         <h1 className={styles.title}>Gestión de Docentes</h1>

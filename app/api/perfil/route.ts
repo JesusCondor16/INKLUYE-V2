@@ -23,7 +23,8 @@ export async function GET(req: Request) {
 
     const user = await prisma.user.findUnique({
       where: { id: Number(decoded.id) },
-      select: { name: true, email: true },
+      // Antes solo pedia name y email: el rol nunca llegaba y la pagina mostraba "N/A"
+      select: { name: true, email: true, role: true },
     });
 
     if (!user) return NextResponse.json({ error: 'Usuario no encontrado.' }, { status: 404 });
