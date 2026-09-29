@@ -23,7 +23,6 @@ export default function ModalSeccion3({ cursoId, onClose }: ModalSeccion3Props) 
       role="dialog"
       aria-modal="true"
       aria-labelledby="modal-seccion3-title"
-      aria-describedby="modal-seccion3-description"
       tabIndex={-1}
     >
       <div className={styles.modalContent}>
@@ -47,8 +46,8 @@ export default function ModalSeccion3({ cursoId, onClose }: ModalSeccion3Props) 
           </button>
         </header>
 
-        {/* BODY */}
-        <main
+        {/* BODY (div y no <main>: la pagina ya tiene su region principal) */}
+        <div
           className={styles.modalBody}
           id="modal-seccion3-description"
         >
@@ -241,7 +240,7 @@ export default function ModalSeccion3({ cursoId, onClose }: ModalSeccion3Props) 
             </section>
           ))}
 
-        </main>
+        </div>
 
         {/* FOOTER */}
 

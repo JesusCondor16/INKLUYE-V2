@@ -1,251 +1,98 @@
-:global(:root) {
-  --bg-overlay: rgba(0,0,0,0.72);
-  --modal-bg: #ffffff;
-  --surface: #f8fafc;
+/* ModalSeccion3.module.css — 5. Capacidades / 6. Programación de contenidos
+   Hereda la base comun de ../ModalBase.module.css (WCAG 2.1 AAA, tokens --ink-*) */
 
-  --primary: #003366;
-  --primary-cta: #0056b3;
-  --primary-cta-hover: #003f88;
-
-  --text: #0b0b0b;
-  --muted: #4b5563;
-
-  --focus-ring-color: rgba(0,86,179,0.35);
-
-  --border: #e2e8f0;
-
-  --radius: 10px;
+.overlay {
+  composes: overlay from "../ModalBase.module.css";
 }
 
-.overlay{
-  position:fixed;
-  inset:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:var(--bg-overlay);
-  padding:24px;
-  z-index:9999;
+.modalContent {
+  composes: dialog from "../ModalBase.module.css";
 }
 
-.modalContent{
-  width:100%;
-  max-width:1100px;
-  max-height:90vh;
-
-  background:var(--modal-bg);
-  border-radius:var(--radius);
-
-  display:flex;
-  flex-direction:column;
-
-  overflow:hidden;
-
-  box-shadow:
-  0 25px 50px rgba(0,0,0,0.35),
-  0 2px 8px rgba(0,0,0,0.15);
+.modalHeader {
+  composes: header from "../ModalBase.module.css";
 }
 
-.modalHeader{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-
-  padding:20px 24px;
-
-  border-bottom:1px solid var(--border);
-
-  background:
-  linear-gradient(
-  90deg,
-  rgba(0,51,102,0.06),
-  rgba(0,51,102,0.02)
-  );
+.modalTitle {
+  composes: title from "../ModalBase.module.css";
 }
 
-.modalTitle{
-  margin:0;
-  font-size:1.15rem;
-  font-weight:700;
-  color:var(--primary);
+/* Antes ~38px y con foco de bajo contraste: ahora 44x44 y foco global */
+.btnClose {
+  composes: closeButton from "../ModalBase.module.css";
 }
 
-.btnClose{
-  border:none;
-  background:transparent;
-
-  font-size:1.4rem;
-
-  color:var(--muted);
-
-  cursor:pointer;
-
-  padding:8px;
-  border-radius:6px;
+.modalBody {
+  composes: body from "../ModalBase.module.css";
 }
 
-.btnClose:hover{
-  color:var(--primary);
+.sectionTitle {
+  composes: sectionTitle from "../ModalBase.module.css";
 }
 
-.btnClose:focus{
-  outline:none;
-  box-shadow:0 0 0 4px var(--focus-ring-color);
+/* Cada unidad de aprendizaje */
+.unidad {
+  margin-bottom: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--ink-border);
+  border-radius: var(--ink-radius-sm);
+  background: var(--ink-surface);
 }
 
-.modalBody{
-  padding:24px;
-  overflow:auto;
-
-  line-height:1.5;
-
-  font-family:
-  Inter,
-  system-ui,
-  -apple-system,
-  Segoe UI,
-  Roboto,
-  Arial;
+.unidadLegend {
+  font-weight: 700;
+  color: var(--ink-primary);
 }
 
-.sectionTitle{
-  font-size:1rem;
-  font-weight:700;
-
-  color:var(--primary);
-
-  margin-bottom:16px;
-
-  border-left:4px solid var(--primary);
-
-  padding-left:12px;
+.formControl {
+  composes: control from "../ModalBase.module.css";
 }
 
-.unidad{
-  background:var(--surface);
-
-  border-radius:8px;
-
-  padding:16px;
-
-  margin-bottom:16px;
-
-  border:1px solid var(--border);
-
-  box-shadow:0 2px 6px rgba(0,0,0,0.04);
+.disabledControl {
+  background: var(--ink-surface);
+  color: var(--ink-text);
 }
 
-.unidadLegend{
-  font-weight:700;
-  color:var(--primary);
+.preserveWhitespace {
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
 }
 
-.formControl{
-  width:100%;
-  padding:10px 12px;
-
-  border-radius:6px;
-
-  border:1px solid #cbd5e1;
-
-  font-size:1rem;
-
-  min-height:40px;
+.tableResponsive {
+  composes: tableWrapper from "../ModalBase.module.css";
 }
 
-.disabledControl{
-  background:#f8fafc;
-  color:var(--text);
+.table {
+  composes: table from "../ModalBase.module.css";
 }
 
-.preserveWhitespace{
-  white-space:pre-wrap;
-  word-break:break-word;
+.tableHead {
+  background: var(--ink-surface-alt);
 }
 
-.table{
-  width:100%;
-  border-collapse:collapse;
+.tableHeadCell {
+  font-weight: 700;
+  color: var(--ink-primary);
 }
 
-.tableHead{
-  background:#f1f9ff;
+.tableBodyCell {
+  vertical-align: top;
 }
 
-.tableHeadCell{
-  padding:10px;
-
-  text-align:left;
-
-  font-weight:700;
-
-  border:1px solid var(--border);
-
-  color:var(--primary);
+/* Filas fijas de la programacion (examen parcial/final) */
+.fixedRow {
+  font-weight: 700;
+  background: var(--ink-surface-alt);
 }
 
-.tableBodyCell{
-  padding:10px;
-
-  border:1px solid var(--border);
-
-  vertical-align:top;
+.modalFooter {
+  composes: footer from "../ModalBase.module.css";
 }
 
-.fixedRow{
-  font-weight:600;
-  background:#f9fafb;
+.btn {
+  composes: button from "../ModalBase.module.css";
 }
 
-.tableResponsive{
-  overflow:auto;
-}
-
-.modalFooter{
-  display:flex;
-  justify-content:flex-end;
-
-  gap:10px;
-
-  padding:16px 24px;
-
-  border-top:1px solid var(--border);
-}
-
-.btn{
-  padding:10px 16px;
-
-  border-radius:8px;
-
-  font-size:0.95rem;
-
-  cursor:pointer;
-}
-
-.btnSecondary{
-  background:#f1f5f9;
-  border:none;
-}
-
-.btnSecondary:focus{
-  outline:none;
-  box-shadow:0 0 0 4px var(--focus-ring-color);
-}
-
-@media (max-width:720px){
-
-.modalContent{
-max-width:96vw;
-}
-
-.modalBody{
-padding:16px;
-}
-
-.tableHeadCell,
-.tableBodyCell{
-font-size:0.9rem;
-padding:8px;
-}
-
+.btnSecondary {
+  composes: buttonSecondary from "../ModalBase.module.css";
 }

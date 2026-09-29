@@ -1,6 +1,7 @@
 'use client';
 
 import type { BibliografiaCategoria } from '@prisma/client';
+import { Plus, Trash2, X } from 'lucide-react';
 import { useModalSeccion4Controller, CATEGORIAS_BIBLIOGRAFIA } from './ModalSeccion4.controller';
 import styles from './ModalSeccion4.module.css';
 
@@ -26,274 +27,186 @@ export default function ModalSeccion4({ cursoId, onClose }: ModalSeccion4Props) 
   } = useModalSeccion4Controller(cursoId);
 
   return (
-    <div
-      className={`modal show d-block ${styles.overlay}`}
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="modalTitle"
-      aria-describedby="modalDescription"
-    >
-      <div className="modal-dialog modal-xl modal-dialog-centered">
-
-        <div className="modal-content">
-
-          {/* HEADER */}
-          <header className={`modal-header ${styles.header}`}>
-
-          <h2
-            id="modal-seccion3-title"
-            className={styles.modalTitle}
-          >
-            Sección de Capacidades y Programación de Contenidos
+    <div className={styles.overlay} role="presentation">
+      <div
+        className={styles.dialog}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modal-seccion4-title"
+      >
+        {/* HEADER */}
+        <header className={styles.header}>
+          <h2 id="modal-seccion4-title" className={styles.modalTitle}>
+            Estrategia, Recursos, Evaluación y Bibliografía
           </h2>
 
-            <button
-              type="button"
-              className={`btn-close ${styles.btnCloseAAA}`}
-              onClick={onClose}
-              aria-label="Cerrar ventana de edición de estrategia, recursos y bibliografía"
+          <button
+            type="button"
+            className={styles.closeButton}
+            onClick={onClose}
+            aria-label="Cerrar ventana de estrategia, recursos, evaluación y bibliografía"
+          >
+            <X size={22} aria-hidden="true" focusable={false} />
+          </button>
+        </header>
+
+        {/* BODY (div y no <main>: la pagina ya tiene su region principal) */}
+        <div className={styles.body}>
+
+          {/* 7. ESTRATEGIA DIDÁCTICA */}
+          <section className={styles.section} aria-labelledby="estrategiaTitulo">
+            <h3 id="estrategiaTitulo" className={styles.sectionTitle}>
+              7. Estrategia didáctica
+            </h3>
+
+            <label htmlFor="estrategiaTextarea" className={styles.visuallyHidden}>
+              Estrategia didáctica del curso
+            </label>
+            <textarea
+              id="estrategiaTextarea"
+              className={styles.control}
+              rows={12}
+              value={estrategia}
+              readOnly
             />
+          </section>
 
-          </header>
+          {/* 8. RECURSOS */}
+          <section className={styles.section} aria-labelledby="recursosTitulo">
+            <h3 id="recursosTitulo" className={styles.sectionTitle}>
+              8. Recursos y materiales
+            </h3>
 
-          {/* BODY */}
-          <main className="modal-body" id="modalDescription">
+            <label htmlFor="recursosTextarea" className={styles.visuallyHidden}>
+              Recursos y materiales del curso
+            </label>
+            <textarea
+              id="recursosTextarea"
+              className={styles.control}
+              rows={6}
+              value={recursos}
+              readOnly
+            />
+          </section>
 
-            {/* ====================== */}
-            {/* 7. ESTRATEGIA DIDÁCTICA */}
-            {/* ====================== */}
+          {/* 9. MATRIZ DE EVALUACIÓN */}
+          <section className={styles.section} aria-labelledby="evaluacionTitulo">
+            <h3 id="evaluacionTitulo" className={styles.sectionTitle}>
+              9. Evaluación
+            </h3>
 
-            <section className="mb-4" aria-labelledby="estrategiaTitulo">
-
-              <h2 id="estrategiaTitulo">
-                7. Estrategia didáctica
-              </h2>
-
-              <label htmlFor="estrategiaTextarea" className={styles.visuallyHidden}>
-                Estrategia didáctica del curso
-              </label>
-
-              <textarea
-                id="estrategiaTextarea"
-                className="form-control"
-                rows={12}
-                value={estrategia}
-                disabled
-                aria-readonly="true"
-              />
-
-            </section>
-
-            {/* ====================== */}
-            {/* 8. RECURSOS */}
-            {/* ====================== */}
-
-            <section className="mb-4" aria-labelledby="recursosTitulo">
-
-              <h2 id="recursosTitulo">
-                8. Recursos y materiales
-              </h2>
-
-              <label htmlFor="recursosTextarea" className={styles.visuallyHidden}>
-                Recursos y materiales del curso
-              </label>
-
-              <textarea
-                id="recursosTextarea"
-                className="form-control"
-                rows={6}
-                value={recursos}
-                disabled
-                aria-readonly="true"
-              />
-
-            </section>
-
-            {/* ====================== */}
-            {/* 9. MATRIZ DE EVALUACIÓN */}
-            {/* ====================== */}
-
-            <section className="mb-4" aria-labelledby="evaluacionTitulo">
-
-              <h2 id="evaluacionTitulo">
-                9. Evaluación
-              </h2>
-
-              <div style={{ overflowX: 'auto' }}>
-
-                <table
-                  className="table table-bordered table-evaluacion"
-                  role="table"
-                  aria-label="Matriz de evaluación del curso"
-                >
-
-                  <thead>
-                    <tr>
-                      <th scope="col">Unidad de aprendizaje</th>
-                      <th scope="col">Criterio y logros de aprendizaje</th>
-                      <th scope="col">Procedimientos (Producto)</th>
-                      <th scope="col">Instrumentos de evaluación</th>
-                      <th scope="col">Peso (%)</th>
-                      <th scope="col">Nota SUM</th>
+            <div className={styles.tableWrapper}>
+              <table className={styles.table}>
+                <caption className={styles.visuallyHidden}>Matriz de evaluación del curso</caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Unidad de aprendizaje</th>
+                    <th scope="col">Criterio y logros de aprendizaje</th>
+                    <th scope="col">Procedimientos (Producto)</th>
+                    <th scope="col">Instrumentos de evaluación</th>
+                    <th scope="col">Peso (%)</th>
+                    <th scope="col">Nota SUM</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {matriz.map((fila, index) => (
+                    <tr key={index}>
+                      <td>{fila.unidad}</td>
+                      <td>{fila.criterio}</td>
+                      <td>{fila.producto}</td>
+                      <td>{fila.instrumento}</td>
+                      <td>{fila.nota_peso}</td>
+                      <td>{fila.nota_sum}</td>
                     </tr>
-                  </thead>
+                  ))}
+                </tbody>
+              </table>
+            </div>
 
-                  <tbody>
-                    {matriz.map((fila, index) => (
-                      <tr key={index}>
+            <p className={styles.notaFinal}>Nota Final: {notaFinalFormula}</p>
+          </section>
 
-                        <td>{fila.unidad}</td>
+          {/* 10. BIBLIOGRAFÍA */}
+          <section className={styles.section} aria-labelledby="bibliografiaTitulo">
+            <h3 id="bibliografiaTitulo" className={styles.sectionTitle}>
+              10. Bibliografía
+            </h3>
 
-                        <td>{fila.criterio}</td>
+            {bibliografia.map((item, index) => {
+              const textareaId = `bibliografia-${index}`;
+              const selectId = `bibliografia-categoria-${index}`;
 
-                        <td>{fila.producto}</td>
-
-                        <td>{fila.instrumento}</td>
-
-                        <td>{fila.nota_peso}</td>
-
-                        <td>{fila.nota_sum}</td>
-
-                      </tr>
-                    ))}
-                  </tbody>
-
-                </table>
-
-              </div>
-
-              <div className="mt-3">
-
-                <strong>
-                  Nota Final: {notaFinalFormula}
-                </strong>
-
-              </div>
-
-            </section>
-
-            {/* ====================== */}
-            {/* 10. BIBLIOGRAFÍA */}
-            {/* ====================== */}
-
-            <section className="mb-4" aria-labelledby="bibliografiaTitulo">
-
-              <h2 id="bibliografiaTitulo">
-                10. Bibliografía
-              </h2>
-
-              {bibliografia.map((item, index) => {
-
-                const textareaId = `bibliografia-${index}`;
-                const selectId = `bibliografia-categoria-${index}`;
-
-                return (
-
-                  <div
-                    key={index}
-                    className="mb-2"
+              return (
+                <div key={index} className={styles.bibliografiaItem}>
+                  <label htmlFor={selectId} className={styles.visuallyHidden}>
+                    Categoría de la bibliografía {index + 1}
+                  </label>
+                  <select
+                    id={selectId}
+                    className={styles.control}
+                    value={item.categoria}
+                    onChange={(e) =>
+                      handleChangeBibliografiaCategoria(index, e.target.value as BibliografiaCategoria)
+                    }
                   >
+                    {CATEGORIAS_BIBLIOGRAFIA.map((cat) => (
+                      <option key={cat.value} value={cat.value}>
+                        {cat.label}
+                      </option>
+                    ))}
+                  </select>
 
-                    <label
-                      htmlFor={selectId}
-                      className={styles.visuallyHidden}
-                    >
-                      Categoría de la bibliografía {index + 1}
+                  <div className={styles.bibliografiaFila}>
+                    <label htmlFor={textareaId} className={styles.visuallyHidden}>
+                      Bibliografía {index + 1}
                     </label>
+                    <textarea
+                      id={textareaId}
+                      className={styles.control}
+                      rows={3}
+                      value={item.texto}
+                      maxLength={maxLength}
+                      placeholder={`Bibliografía ${index + 1}`}
+                      onChange={(e) => handleChangeBibliografia(index, e.target.value)}
+                    />
 
-                    <select
-                      id={selectId}
-                      className="form-select form-select-sm mb-1"
-                      value={item.categoria}
-                      aria-label={`Categoría de la bibliografía ${index + 1}`}
-                      onChange={(e) =>
-                        handleChangeBibliografiaCategoria(index, e.target.value as BibliografiaCategoria)
-                      }
+                    <button
+                      type="button"
+                      className={styles.buttonDanger}
+                      onClick={() => handleRemoveBibliografia(index)}
+                      aria-label={`Eliminar bibliografía ${index + 1}`}
+                      title={`Eliminar bibliografía ${index + 1}`}
                     >
-                      {CATEGORIAS_BIBLIOGRAFIA.map((cat) => (
-                        <option key={cat.value} value={cat.value}>
-                          {cat.label}
-                        </option>
-                      ))}
-                    </select>
-
-                    <div className="d-flex gap-2 align-items-start">
-
-                      <label
-                        htmlFor={textareaId}
-                        className={styles.visuallyHidden}
-                      >
-                        Bibliografía {index + 1}
-                      </label>
-
-                      <textarea
-                        id={textareaId}
-                        className="form-control"
-                        rows={3}
-                        value={item.texto}
-                        maxLength={maxLength}
-                        placeholder={`Bibliografía ${index + 1}`}
-                        aria-label={`Bibliografía ${index + 1}`}
-                        onChange={(e) =>
-                          handleChangeBibliografia(index, e.target.value)
-                        }
-                      />
-
-                      <button
-                        type="button"
-                        className={`btn btn-danger btn-sm ${styles.btnDangerAAA}`}
-                        onClick={() => handleRemoveBibliografia(index)}
-                        aria-label={`Eliminar bibliografía ${index + 1}`}
-                        title={`Eliminar bibliografía ${index + 1}`}
-                      >
-                        🗑
-                      </button>
-
-                    </div>
-
+                      <Trash2 size={20} aria-hidden="true" focusable={false} />
+                    </button>
                   </div>
+                </div>
+              );
+            })}
 
-                );
-
-              })}
-
-              <button
-                type="button"
-                className="btn btn-primary mb-3"
-                onClick={handleAddBibliografia}
-                aria-label="Agregar una nueva referencia bibliográfica"
-              >
-                + Agregar bibliografía
-              </button>
-
-            </section>
-
-          </main>
-
-          {/* FOOTER */}
-
-          <footer className="modal-footer">
-
-            <button
-              className={`btn btn-secondary ${styles.btnSecondaryAAA}`}
-              onClick={onClose}
-              disabled={loading}
-            >
-              Cerrar
+            <button type="button" className={styles.buttonPrimary} onClick={handleAddBibliografia}>
+              <Plus size={18} aria-hidden="true" focusable={false} />
+              Agregar bibliografía
             </button>
-
-            <button
-              className={`btn btn-success ${styles.btnSuccessAAA}`}
-              onClick={handleGuardarBibliografia}
-              disabled={loading}
-              aria-label="Guardar cambios de bibliografía"
-            >
-              {loading ? 'Guardando...' : 'Guardar'}
-            </button>
-
-          </footer>
-
+          </section>
         </div>
+
+        {/* FOOTER */}
+        <footer className={styles.footer}>
+          <button type="button" className={styles.buttonSecondary} onClick={onClose} disabled={loading}>
+            Cerrar
+          </button>
+
+          <button
+            type="button"
+            className={styles.buttonSuccess}
+            onClick={handleGuardarBibliografia}
+            disabled={loading}
+            aria-busy={loading}
+          >
+            {loading ? 'Guardando...' : 'Guardar bibliografía'}
+          </button>
+        </footer>
       </div>
     </div>
   );
