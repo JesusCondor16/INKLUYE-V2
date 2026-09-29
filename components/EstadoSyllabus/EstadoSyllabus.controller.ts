@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import type { EstadoSyllabus, EstadoSyllabusResponse, HistorialSyllabusItem } from './EstadoSyllabus.model';
+import type { EnlaceIdioma } from '@/components/IdiomasSyllabus/IdiomasSyllabus';
 
 /**
  * Carga el estado e historial del syllabus y permite enviarlo a los docentes.
@@ -11,6 +12,7 @@ import type { EstadoSyllabus, EstadoSyllabusResponse, HistorialSyllabusItem } fr
 export function useEstadoSyllabusController(cursoId: number, recargarKey: number) {
   const [estado, setEstado] = useState<EstadoSyllabus | null>(null);
   const [historial, setHistorial] = useState<HistorialSyllabusItem[]>([]);
+  const [idiomas, setIdiomas] = useState<EnlaceIdioma[]>([]);
   const [loading, setLoading] = useState(true);
   const [enviando, setEnviando] = useState(false);
   const [mensaje, setMensaje] = useState('');
@@ -25,6 +27,7 @@ export function useEstadoSyllabusController(cursoId: number, recargarKey: number
       if (!res.ok) throw new Error(data.error ?? 'No se pudo cargar el estado del syllabus');
       setEstado(data.estado);
       setHistorial(data.historial);
+      setIdiomas(data.idiomas ?? []);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'No se pudo cargar el estado del syllabus');
     } finally {
@@ -59,5 +62,5 @@ export function useEstadoSyllabusController(cursoId: number, recargarKey: number
     }
   }, [cursoId, cargar]);
 
-  return { estado, historial, loading, enviando, mensaje, error, enviarADocentes };
+  return { estado, historial, idiomas, loading, enviando, mensaje, error, enviarADocentes };
 }

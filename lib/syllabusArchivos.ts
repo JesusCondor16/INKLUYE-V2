@@ -1,6 +1,7 @@
 // lib/syllabusArchivos.ts
 // Ubicacion y nombres de los PDF de syllabus. Se guardan fuera de public/
 // para que solo se puedan descargar a traves de la ruta que valida permisos.
+import fs from 'fs';
 import path from 'path';
 
 export const IDIOMAS_SYLLABUS = ['es', 'en', 'zh'] as const;
@@ -25,4 +26,22 @@ export function rutaArchivoSyllabus(courseId: number, lang: IdiomaSyllabus): str
 
 export function urlSyllabus(courseId: number, lang: IdiomaSyllabus): string {
   return `/api/cursos/${courseId}/syllabus-pdf?lang=${lang}`;
+}
+
+export interface ArchivoIdioma {
+  lang: IdiomaSyllabus;
+  url: string;
+  generadoEn: string; // ISO; fecha de ultima modificacion del PDF en disco
+}
+
+// Idiomas cuyo PDF existe en disco (cada idioma se genera por separado)
+export function idiomasDisponibles(courseId: number): ArchivoIdioma[] {
+  return IDIOMAS_SYLLABUS.flatMap((lang) => {
+    try {
+      const { mtime } = fs.statSync(rutaArchivoSyllabus(courseId, lang));
+      return [{ lang, url: urlSyllabus(courseId, lang), generadoEn: mtime.toISOString() }];
+    } catch {
+      return [];
+    }
+  });
 }

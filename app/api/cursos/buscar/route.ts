@@ -4,6 +4,7 @@ import type { EstadoSyllabus } from "@prisma/client";
 import { cursoModel } from "@/models/cursoModel";
 import { obtenerUsuarioDesdeTokenServer } from "@/lib/authServer";
 import { puedeVerSyllabus } from "@/lib/syllabusPermisos";
+import { idiomasDisponibles } from "@/lib/syllabusArchivos";
 
 // Tipado de la estructura que devuelve cursoModel
 type CursoRaw = {
@@ -63,6 +64,8 @@ export async function GET(req: NextRequest) {
         user: c.user ?? null,
         cursodocente: c.cursodocente ?? [],
         syllabusUrl: visible ? c.syllabus?.pdfUrl ?? null : null,
+        // Enlaces por idioma (ES/EN/ZH) que existan, solo si el usuario puede verlos
+        syllabusIdiomas: visible ? idiomasDisponibles(c.id).map(({ lang, url }) => ({ lang, url })) : [],
       };
     });
 

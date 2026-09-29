@@ -5,6 +5,7 @@ import styles from './RevisionSyllabus.module.css';
 import { useRevisionSyllabusController } from './RevisionSyllabus.controller';
 import type { SyllabusPendiente } from './RevisionSyllabus.model';
 import ModalDevolverSyllabus from './ModalDevolverSyllabus';
+import IdiomasSyllabus from '@/components/IdiomasSyllabus/IdiomasSyllabus';
 
 export default function RevisionSyllabus() {
   const { pendientes, loading, procesandoId, mensaje, error, publicar, devolver } =
@@ -72,15 +73,8 @@ export default function RevisionSyllabus() {
                   ) : '—'}
                 </td>
                 <td>
-                  {c.pdfUrl ? (
-                    <a
-                      href={c.pdfUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={styles.enlace}
-                    >
-                      Ver PDF<span className={styles.visuallyHidden}> de {c.name} (abre en otra pestaña)</span>
-                    </a>
+                  {c.idiomas.length > 0 ? (
+                    <IdiomasSyllabus idiomas={c.idiomas} nombreCurso={c.name} />
                   ) : 'No disponible'}
                 </td>
                 <td>

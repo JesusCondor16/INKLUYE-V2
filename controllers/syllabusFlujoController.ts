@@ -4,6 +4,7 @@ import { NextResponse } from 'next/server';
 import type { CustomJwtPayload } from '@/lib/authServer';
 import { evaluarTransicion, esAccionFlujo, type AccionFlujo } from '@/lib/syllabusFlujo';
 import { syllabusFlujoModel, type NuevaNotificacion } from '@/models/syllabusFlujoModel';
+import { idiomasDisponibles } from '@/lib/syllabusArchivos';
 
 type ContextoCurso = NonNullable<Awaited<ReturnType<typeof syllabusFlujoModel.obtenerContextoCurso>>>;
 
@@ -76,6 +77,7 @@ export const syllabusFlujoController = {
         coordinador: c.user?.name ?? '—',
         pdfUrl: c.syllabus?.pdfUrl ?? null,
         enviadoEn: c.syllabus?.updatedAt ?? null,
+        idiomas: idiomasDisponibles(c.id).map(({ lang, url }) => ({ lang, url })),
       }));
       return NextResponse.json(pendientes, { status: 200 });
     } catch (error: unknown) {
@@ -98,11 +100,14 @@ export const syllabusFlujoController = {
       if (!autorizado) return NextResponse.json({ error: 'No autorizado' }, { status: 403 });
 
       if (!curso.syllabus) {
-        return NextResponse.json({ estado: null, historial: [] }, { status: 200 });
+        return NextResponse.json({ estado: null, historial: [], idiomas: [] }, { status: 200 });
       }
 
       const historial = await syllabusFlujoModel.obtenerHistorial(curso.syllabus.id);
-      return NextResponse.json({ estado: curso.syllabus.estado, historial }, { status: 200 });
+      return NextResponse.json(
+        { estado: curso.syllabus.estado, historial, idiomas: idiomasDisponibles(courseId) },
+        { status: 200 },
+      );
     } catch (error: unknown) {
       console.error('❌ Error syllabusFlujoController.obtenerEstado:', error);
       return NextResponse.json({ error: 'Error al obtener el estado del syllabus' }, { status: 500 });

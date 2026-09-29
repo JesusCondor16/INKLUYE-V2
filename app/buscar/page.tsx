@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Sidebar from "@/components/Sidebar";
 import styles from "@/styles/buscar-syllabus.module.css";
+import IdiomasSyllabus, { type EnlaceIdioma } from "@/components/IdiomasSyllabus/IdiomasSyllabus";
 
 interface Usuario {
   id?: number;
@@ -22,7 +23,7 @@ interface Curso {
   credits?: number | null;
   user?: Usuario | null;
   cursodocente?: CursoDocente[];
-  pdfUrl?: string | null;
+  idiomas: EnlaceIdioma[];
 }
 
 export default function BuscarSyllabusPage() {
@@ -46,7 +47,7 @@ export default function BuscarSyllabusPage() {
         }
 
         // El servidor solo envia syllabusUrl si este usuario puede ver el PDF (segun el estado del syllabus)
-        const mapped: Curso[] = (data.data || []).map((c: Curso & { syllabusUrl?: string | null }) => ({
+        const mapped: Curso[] = (data.data || []).map((c: Curso & { syllabusIdiomas?: EnlaceIdioma[] }) => ({
           id: c.id,
           code: c.code,
           name: c.name,
@@ -55,7 +56,7 @@ export default function BuscarSyllabusPage() {
           credits: c.credits,
           user: c.user ?? null,
           cursodocente: c.cursodocente ?? [],
-          pdfUrl: c.syllabusUrl ?? null,
+          idiomas: c.syllabusIdiomas ?? [],
         }));
 
         if (!mounted) return;
@@ -121,17 +122,8 @@ export default function BuscarSyllabusPage() {
                   <td>{c.user?.name ?? '—'}</td>
                   <td>{safeDocentesNames(c.cursodocente)}</td>
                   <td>
-                    {c.pdfUrl ? (
-                      <a
-                        href={c.pdfUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={styles.iconBtn}
-                        aria-label={`Abrir syllabus de ${c.name}`}
-                        title="Abrir Syllabus"
-                      >
-                        📄
-                      </a>
+                    {c.idiomas.length > 0 ? (
+                      <IdiomasSyllabus idiomas={c.idiomas} nombreCurso={c.name} />
                     ) : (
                       <span className={styles.noIcon}>No disponible</span>
                     )}

@@ -1,0 +1,66 @@
+/* components/IdiomasSyllabus/IdiomasSyllabus.module.css
+   Enlaces al syllabus por idioma (ES · EN · 中文) — WCAG 2.1 AAA, tokens --ink-* */
+
+.lista {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+/* Area de 44x44 minimo; borde visible para que se lea como boton-enlace */
+.enlace {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-width: var(--ink-touch);
+  min-height: var(--ink-touch);
+  padding: 0.35rem 0.75rem;
+  border: 2px solid var(--ink-link);
+  border-radius: var(--ink-radius-sm);
+  background: var(--ink-bg);
+  color: var(--ink-link);
+  font-weight: 700;
+  text-decoration: none;
+  transition: background-color var(--ink-transition);
+}
+
+.enlace:hover {
+  background: var(--ink-hover-bg);
+  color: var(--ink-link-hover);
+}
+
+.fecha {
+  font-size: 0.9rem;
+  color: var(--ink-text-muted);
+}
+
+.aviso {
+  max-width: 16rem;
+  padding: 0.25rem 0.5rem;
+  border-left: 4px solid var(--ink-warning);
+  background: var(--ink-warning-bg);
+  color: var(--ink-warning);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

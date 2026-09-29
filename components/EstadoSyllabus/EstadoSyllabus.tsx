@@ -3,9 +3,11 @@
 import styles from './EstadoSyllabus.module.css';
 import { useEstadoSyllabusController } from './EstadoSyllabus.controller';
 import { DESCRIPCION_ESTADO, ETIQUETA_ACCION, ETIQUETA_ESTADO } from './EstadoSyllabus.model';
+import IdiomasSyllabus from '@/components/IdiomasSyllabus/IdiomasSyllabus';
 
 interface Props {
   cursoId: number;
+  nombreCurso: string;
   recargarKey: number;
 }
 
@@ -15,8 +17,8 @@ const CLASE_ESTADO = {
   PUBLICADO: styles.badgePublicado,
 };
 
-export default function EstadoSyllabus({ cursoId, recargarKey }: Props) {
-  const { estado, historial, loading, enviando, mensaje, error, enviarADocentes } =
+export default function EstadoSyllabus({ cursoId, nombreCurso, recargarKey }: Props) {
+  const { estado, historial, idiomas, loading, enviando, mensaje, error, enviarADocentes } =
     useEstadoSyllabusController(cursoId, recargarKey);
 
   return (
@@ -40,6 +42,13 @@ export default function EstadoSyllabus({ cursoId, recargarKey }: Props) {
             <span className={`${styles.badge} ${CLASE_ESTADO[estado]}`}>{ETIQUETA_ESTADO[estado]}</span>
           </p>
           <p className={styles.descripcion}>{DESCRIPCION_ESTADO[estado]}</p>
+
+          {idiomas.length > 0 && (
+            <>
+              <h3 className={styles.subtitle}>PDF generados</h3>
+              <IdiomasSyllabus idiomas={idiomas} nombreCurso={nombreCurso} mostrarFechas />
+            </>
+          )}
 
           {estado === 'BORRADOR' && (
             <button

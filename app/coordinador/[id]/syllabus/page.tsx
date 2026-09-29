@@ -128,7 +128,7 @@ export default function SyllabusCursoPage() {
           </button>
         </div>
 
-        <EstadoSyllabus cursoId={cursoId} recargarKey={recargarEstado} />
+        <EstadoSyllabus cursoId={cursoId} nombreCurso={curso?.name ?? "este curso"} recargarKey={recargarEstado} />
 
         {modal.s1 && (
           <ModalSeccion1
