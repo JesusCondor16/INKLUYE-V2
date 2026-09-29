@@ -7,6 +7,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { LogOut } from 'lucide-react';
 import styles from './Sidebar.module.css';
 import ModalCerrarSesion from './ModalCerrarSesion/ModalCerrarSesion';
+import Notificaciones from './Notificaciones/Notificaciones';
 import { getUserRoleFromToken, getSidebarMenu, logoutUser } from '../controllers/sidebarController';
 import type { MenuItem } from '../utils/getMenuByRole';
 import type { UserRole } from '../models/SidebarUserModel';
@@ -83,6 +84,8 @@ export default function Sidebar() {
         <Image src="/images/inkluye.png" alt="Logo Inkluye" width={40} height={40} priority />
         <h2 className={styles.brand}>Sistema Inkluye</h2>
       </div>
+
+      <Notificaciones />
 
       <nav className={styles.nav} aria-label="Menú principal del sistema">
         <ul className={styles.menuList}>

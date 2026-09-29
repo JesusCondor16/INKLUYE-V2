@@ -1,0 +1,140 @@
+/* Notificaciones.module.css
+   Contrastes verificados >= 7:1 (WCAG 2.1 AAA), areas tactiles de 44px y foco visible.
+   Las no leidas se distinguen por negrita, borde y texto oculto "No leída" (no solo por color, WCAG 1.4.1) */
+
+.contenedor {
+  margin-bottom: 1rem;
+}
+
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  min-height: 44px;
+  padding: 0.5rem 0.75rem;
+  border: 2px solid #0a2540;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #071833;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: left;
+}
+
+.toggle:hover {
+  background: #f2f6ff;
+}
+
+.toggle:focus-visible,
+.enlace:focus-visible,
+.btnSecundario:focus-visible {
+  outline: 4px solid #ffbf47;
+  outline-offset: 2px;
+}
+
+.toggle[aria-expanded='true'] {
+  background: #0a2540;
+  color: #ffffff;
+}
+
+.contador {
+  margin-left: auto;
+  min-width: 1.6rem;
+  padding: 0.05rem 0.45rem;
+  border-radius: 999px;
+  background: #8a0b0b;
+  color: #ffffff;
+  text-align: center;
+  font-size: 0.85rem;
+}
+
+.panel {
+  margin-top: 0.5rem;
+  padding: 0.75rem;
+  border: 1px solid #dbe3ec;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #0b1f3a;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.titulo {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+}
+
+.vacio {
+  margin: 0;
+}
+
+.lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.item {
+  padding: 0.5rem 0.5rem 0.5rem 0.6rem;
+  border-left: 4px solid transparent;
+  border-bottom: 1px solid #e5ecf5;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.noLeida {
+  border-left-color: #0a2540;
+  background: #f2f6ff;
+  font-weight: 700;
+}
+
+.enlace {
+  display: block;
+  color: #0a2540;
+  text-decoration: underline;
+}
+
+.fecha {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: #46525d;
+}
+
+.acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.btnSecundario {
+  min-height: 44px;
+  padding: 0.4rem 0.75rem;
+  border: 2px solid #0a2540;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #0a2540;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btnSecundario:hover {
+  background: #f2f6ff;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
