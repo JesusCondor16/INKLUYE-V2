@@ -9,9 +9,17 @@ interface Props {
   };
 }
 
+// Nombre legible de cada rol del sistema
+const NOMBRE_ROL: Record<string, string> = {
+  director: 'Director',
+  coordinador: 'Coordinador',
+  docente: 'Docente',
+  estudiante: 'Estudiante',
+};
+
 export default function PerfilCard({ user }: Props) {
-  // Garantizamos que role siempre tenga un valor legible
-  const role = user.role && user.role.trim() !== '' ? user.role : 'N/A';
+  const rolBase = user.role?.trim().toLowerCase() ?? '';
+  const role = NOMBRE_ROL[rolBase] ?? (rolBase !== '' ? user.role : 'Sin rol asignado');
 
   // <section> con titulo en vez de aria-label en <div> (que los lectores ignoran);
   // sin tabIndex en textos: solo lo interactivo debe recibir foco con Tab (2.4.3)
