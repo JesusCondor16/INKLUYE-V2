@@ -94,6 +94,18 @@
   line-height: 1.4;
 }
 
+/* Aviso de sesion expirada: informativo, colores --ink-info (9.4:1, AAA) */
+.aviso {
+  margin: 0 0 1rem;
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--ink-info);
+  border-radius: var(--ink-radius-sm);
+  background: var(--ink-info-bg);
+  color: var(--ink-info);
+  font-weight: 700;
+  line-height: 1.4;
+}
+
 .helpButton {
   min-height: var(--ink-touch);
   margin-top: 1rem;

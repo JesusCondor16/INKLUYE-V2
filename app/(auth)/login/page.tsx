@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import styles from './LoginPage.module.css';
 
 export default function LoginPage() {
@@ -9,6 +9,12 @@ export default function LoginPage() {
   const [errorMsg, setErrorMsg] = useState('');
   const [mostrarAyuda, setMostrarAyuda] = useState(false);
   const [enviando, setEnviando] = useState(false);
+  const [sesionExpirada, setSesionExpirada] = useState(false);
+
+  // middleware.ts redirige aqui con ?sesion=expirada cuando el token vencio
+  useEffect(() => {
+    setSesionExpirada(new URLSearchParams(window.location.search).get('sesion') === 'expirada');
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -57,6 +63,13 @@ export default function LoginPage() {
           <p className={styles.description}>
             Ingresa tu correo y contraseña para acceder al sistema. Todos los campos son obligatorios.
           </p>
+
+          {/* Aviso (no error): role="status" lo anuncia sin interrumpir (4.1.3) */}
+          {sesionExpirada && !errorMsg && (
+            <p role="status" className={styles.aviso}>
+              Su sesión expiró. Inicie sesión nuevamente para continuar.
+            </p>
+          )}
 
           {/* role="alert": el lector de pantalla anuncia el error apenas aparece (3.3.1 / 4.1.3) */}
           {errorMsg && (
