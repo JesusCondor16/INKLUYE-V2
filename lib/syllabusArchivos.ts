@@ -45,3 +45,39 @@ export function idiomasDisponibles(courseId: number): ArchivoIdioma[] {
     }
   });
 }
+
+// ---------------------------------------------------------------------------
+// Syllabus inclusivo (WCAG 2.1 AAA): una pagina HTML accesible y su PDF etiquetado (PDF/UA).
+// Se guardan junto a los otros PDF: "<courseId>-inclusivo.html" y "<courseId>-inclusivo.pdf".
+export const FORMATOS_INCLUSIVO = ['html', 'pdf'] as const;
+export type FormatoInclusivo = (typeof FORMATOS_INCLUSIVO)[number];
+
+export function esFormatoInclusivo(valor: string): valor is FormatoInclusivo {
+  return (FORMATOS_INCLUSIVO as readonly string[]).includes(valor);
+}
+
+export function rutaSyllabusInclusivo(courseId: number, formato: FormatoInclusivo): string {
+  return path.join(CARPETA_SYLLABUS, `${courseId}-inclusivo.${formato}`);
+}
+
+export function urlSyllabusInclusivo(courseId: number, formato: FormatoInclusivo): string {
+  return `/api/cursos/${courseId}/syllabus-inclusivo?formato=${formato}`;
+}
+
+export interface ArchivoInclusivo {
+  formato: FormatoInclusivo;
+  url: string;
+  generadoEn: string;
+}
+
+// Formatos del syllabus inclusivo que ya existen en disco
+export function inclusivoDisponible(courseId: number): ArchivoInclusivo[] {
+  return FORMATOS_INCLUSIVO.flatMap((formato) => {
+    try {
+      const { mtime } = fs.statSync(rutaSyllabusInclusivo(courseId, formato));
+      return [{ formato, url: urlSyllabusInclusivo(courseId, formato), generadoEn: mtime.toISOString() }];
+    } catch {
+      return [];
+    }
+  });
+}

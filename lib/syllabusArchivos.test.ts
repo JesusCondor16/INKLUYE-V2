@@ -7,6 +7,10 @@ import {
   idiomasDisponibles,
   rutaArchivoSyllabus,
   urlSyllabus,
+  esFormatoInclusivo,
+  rutaSyllabusInclusivo,
+  urlSyllabusInclusivo,
+  inclusivoDisponible,
 } from './syllabusArchivos';
 
 describe('esIdiomaSyllabus', () => {
@@ -77,5 +81,39 @@ describe('idiomasDisponibles', () => {
       throw new Error('ENOENT');
     });
     expect(idiomasDisponibles(1)).toEqual([]);
+  });
+});
+
+describe('syllabus inclusivo (archivos)', () => {
+  afterEach(() => jest.restoreAllMocks());
+
+  it.each(['html', 'pdf'])('acepta el formato "%s"', (f) => {
+    expect(esFormatoInclusivo(f)).toBe(true);
+  });
+
+  it.each(['docx', 'HTML', '', '../../etc/passwd'])('rechaza el formato "%s"', (f) => {
+    expect(esFormatoInclusivo(f)).toBe(false);
+  });
+
+  it('se guarda en la carpeta privada, no en public/', () => {
+    const ruta = rutaSyllabusInclusivo(7, 'pdf');
+    expect(ruta).toBe(path.join(CARPETA_SYLLABUS, '7-inclusivo.pdf'));
+    expect(ruta).not.toContain(`${path.sep}public${path.sep}`);
+  });
+
+  it('la URL pasa por la ruta que valida permisos', () => {
+    expect(urlSyllabusInclusivo(7, 'html')).toBe('/api/cursos/7/syllabus-inclusivo?formato=html');
+  });
+
+  it('lista solo los formatos que existen en disco', () => {
+    const fecha = new Date('2026-10-04T20:00:00.000Z');
+    jest.spyOn(fs, 'statSync').mockImplementation(((ruta: fs.PathLike) => {
+      if (String(ruta).endsWith('1-inclusivo.pdf')) throw new Error('ENOENT');
+      return { mtime: fecha } as fs.Stats;
+    }) as typeof fs.statSync);
+
+    expect(inclusivoDisponible(1)).toEqual([
+      { formato: 'html', url: '/api/cursos/1/syllabus-inclusivo?formato=html', generadoEn: fecha.toISOString() },
+    ]);
   });
 });

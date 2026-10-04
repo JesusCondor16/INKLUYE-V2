@@ -87,3 +87,35 @@ export async function obtenerDatosSyllabusInclusivo(cursoId: number): Promise<Da
     generadoEn: new Date().toISOString(),
   };
 }
+
+/** Datos para decidir si un usuario puede ver el syllabus (mismas reglas que los otros PDF) */
+export async function obtenerContextoPermiso(cursoId: number, usuarioId: number) {
+  return prisma.course.findUnique({
+    where: { id: cursoId },
+    select: {
+      coordinadorId: true,
+      syllabus: { select: { estado: true } },
+      cursodocente: { where: { userId: usuarioId }, select: { userId: true } },
+    },
+  });
+}
+
+/**
+ * Registra que se genero el syllabus inclusivo. Igual que los otros PDF:
+ * vuelve a BORRADOR (debe revisarse otra vez) y queda en el historial.
+ * No cambia el pdfUrl principal si ya existe (los botones ES/EN/中文 siguen igual).
+ */
+export async function registrarGeneracionInclusivo(cursoId: number, usuarioId: number, urlPdf: string) {
+  const ahora = new Date();
+  return prisma.$transaction(async (tx) => {
+    const syllabus = await tx.syllabus.upsert({
+      where: { courseId: cursoId },
+      update: { estado: 'BORRADOR', updatedAt: ahora },
+      create: { courseId: cursoId, pdfUrl: urlPdf, estado: 'BORRADOR', createdAt: ahora, updatedAt: ahora },
+    });
+    await tx.syllabushistorial.create({
+      data: { syllabusId: syllabus.id, accion: 'GENERADO', usuarioId },
+    });
+    return syllabus;
+  });
+}
