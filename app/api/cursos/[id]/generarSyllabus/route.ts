@@ -1,16 +1,26 @@
 export const runtime = 'nodejs';
 
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { obtenerUsuarioDesdeTokenServer, esDirectorOCoordinadorDelCurso } from '@/lib/authServer';
 
 type Params = { id?: string };
 
-export async function GET(_req: Request, context: { params: Params | Promise<Params> }) {
+export async function GET(req: NextRequest, context: { params: Params | Promise<Params> }) {
   const { id: idStr } = await context.params;
   if (!idStr) return NextResponse.json({ error: 'ID no proporcionado' }, { status: 400 });
 
   const cursoId = parseInt(idStr, 10);
   if (Number.isNaN(cursoId)) return NextResponse.json({ error: 'ID inválido' }, { status: 400 });
+
+  // Antes respondia sin sesion: devolvia el syllabus completo aunque estuviera en borrador
+  const usuario = obtenerUsuarioDesdeTokenServer(req);
+  if (!usuario) {
+    return NextResponse.json({ error: 'Usuario no autenticado' }, { status: 401 });
+  }
+  if (!(await esDirectorOCoordinadorDelCurso(usuario, cursoId))) {
+    return NextResponse.json({ error: 'No autorizado' }, { status: 403 });
+  }
 
   try {
     // Traer datos principales del curso

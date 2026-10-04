@@ -27,7 +27,11 @@ function verificarDirector(req: NextRequest): NextResponse | null {
 }
 
 // GET
-export async function GET(_req: NextRequest, context: Context) {
+export async function GET(req: NextRequest, context: Context) {
+  // Antes era el unico metodo de esta ruta sin verificacion
+  const authError = verificarDirector(req);
+  if (authError) return authError;
+
   try {
 
     const id = await parseId(context.params);

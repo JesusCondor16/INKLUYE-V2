@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { capacidad, programacioncontenido, Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
-import { obtenerUsuarioDesdeTokenServer, esCoordinadorDelCurso } from "@/lib/authServer";
+import { obtenerUsuarioDesdeTokenServer, esCoordinadorDelCurso, esDirectorOCoordinadorDelCurso } from "@/lib/authServer";
 
 type CapacidadConProgramacion = capacidad & { programacioncontenido?: programacioncontenido[] };
 
@@ -27,12 +27,21 @@ function mapCapacidad(cap: CapacidadConProgramacion) {
 }
 
 // GET
-export async function GET(_req: Request, context: { params: Promise<{ id: string }> }) {
+export async function GET(req: NextRequest, context: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await context.params;
     if (!id) return NextResponse.json({ error: "ID de curso no proporcionado" }, { status: 400 });
     const cursoId = parseInt(id, 10);
     if (isNaN(cursoId)) return NextResponse.json({ error: "ID inválido" }, { status: 400 });
+
+    // Antes este GET respondia sin sesion: cualquiera podia leer el syllabus aun en borrador
+    const usuario = obtenerUsuarioDesdeTokenServer(req);
+    if (!usuario) {
+      return NextResponse.json({ error: "Usuario no autenticado" }, { status: 401 });
+    }
+    if (!(await esDirectorOCoordinadorDelCurso(usuario, cursoId))) {
+      return NextResponse.json({ error: "No autorizado" }, { status: 403 });
+    }
 
     const capacidades = await prisma.capacidad.findMany({
       where: { cursoId },

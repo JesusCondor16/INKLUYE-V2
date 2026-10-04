@@ -24,7 +24,11 @@ function verificarDirector(req: NextRequest): NextResponse | null {
 /**
  * GET /api/docentes/:id
  */
-export async function GET(_req: NextRequest, context: { params: Promise<{ id: string }> }) {
+export async function GET(req: NextRequest, context: { params: Promise<{ id: string }> }) {
+  // Antes era el unico metodo de esta ruta sin verificacion
+  const authError = verificarDirector(req);
+  if (authError) return authError;
+
   const { id: idStr } = await context.params;
   if (!idStr) return badIdResponse();
 

@@ -3,7 +3,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { userModel } from '@/models/userModel';
-import { obtenerUsuarioDesdeTokenServer, esCoordinadorDelCurso } from '@/lib/authServer';
+import { obtenerUsuarioDesdeTokenServer, esCoordinadorDelCurso, esDirectorOCoordinadorDelCurso } from '@/lib/authServer';
 
 function mapCursoResponse(c: any) {
 
@@ -78,7 +78,7 @@ function mapCursoResponse(c: any) {
 }
 
 export async function GET(
-  req: Request,
+  req: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
 
@@ -92,6 +92,15 @@ export async function GET(
         { error: 'ID inválido' },
         { status: 400 }
       );
+    }
+
+    // Antes este GET respondia sin sesion: cualquiera podia ver el curso con su sumilla y personal
+    const usuario = obtenerUsuarioDesdeTokenServer(req);
+    if (!usuario) {
+      return NextResponse.json({ error: 'Usuario no autenticado' }, { status: 401 });
+    }
+    if (!(await esDirectorOCoordinadorDelCurso(usuario, id))) {
+      return NextResponse.json({ error: 'No autorizado' }, { status: 403 });
     }
 
     const curso =

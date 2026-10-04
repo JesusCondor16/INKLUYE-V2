@@ -57,3 +57,9 @@ export async function esCoordinadorDelCurso(usuario: CustomJwtPayload | null, cu
   return curso?.coordinadorId === usuario.id;
 }
 
+// Lectura de los datos del syllabus de un curso: el director ve todos,
+// el coordinador solo los cursos que le pertenecen
+export async function esDirectorOCoordinadorDelCurso(usuario: CustomJwtPayload | null, cursoId: number): Promise<boolean> {
+  if (requiereRol(usuario, 'director')) return true;
+  return esCoordinadorDelCurso(usuario, cursoId);
+}
