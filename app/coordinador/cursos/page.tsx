@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Sidebar from "@/components/Sidebar";
 import styles from "@/styles/coordinador.module.css";
-import { obtenerUsuarioDesdeToken } from "@/lib/authClient"; // cliente
 
 interface Docente {
   id: number;
@@ -32,13 +31,7 @@ export default function CursosCoordinadorPage() {
     let mounted = true;
 
     const fetchCursos = async () => {
-      const usuario = obtenerUsuarioDesdeToken();
-      if (!usuario) {
-        setError("No se pudo obtener información del usuario");
-        setLoading(false);
-        return;
-      }
-
+      // La API identifica al coordinador por la cookie de sesion
       try {
         const res = await fetch(`/api/coordinador/cursos`);
         const data: { success: boolean; data?: unknown[]; error?: string } = await res.json();

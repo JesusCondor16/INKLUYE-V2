@@ -1,15 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import jwtDecode from 'jwt-decode';
 import styles from './LoginPage.module.css';
-
-type JwtPayload = {
-  role?: string;
-  name?: string;
-  email?: string;
-  // agrega otros campos que tengas en tu token
-};
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -37,38 +29,17 @@ export default function LoginPage() {
         return;
       }
 
-      const { token } = data;
+      // El servidor guardo el token en una cookie httpOnly (JavaScript no puede leerla)
+      // y nos dice a donde ir segun el rol. Antes el token se guardaba en localStorage
+      // y se decodificaba aqui con jwt-decode.
+      localStorage.removeItem('token'); // limpia el token que dejaban versiones anteriores
 
-      if (!token) {
-        setErrorMsg('No se recibió token de autenticación.');
+      if (!data.redirectTo) {
+        setErrorMsg('Rol no reconocido. Contacte al administrador.');
         return;
       }
 
-      // Guardamos token en localStorage
-      localStorage.setItem('token', token);
-
-      // Decodificamos para obtener rol y nombre
-      const decoded = jwtDecode<JwtPayload>(token);
-      const userRole = decoded.role?.toLowerCase();
-
-      // Redirigimos según rol
-      switch (userRole) {
-        case 'director':
-          window.location.href = '/director';
-          break;
-        case 'coordinador':
-          window.location.href = '/coordinador';
-          break;
-        case 'docente':
-          window.location.href = '/docente';
-          break;
-        case 'estudiante':
-        case 'alumno':
-          window.location.href = '/alumno';
-          break;
-        default:
-          setErrorMsg(`Rol no reconocido: ${decoded.role}`);
-      }
+      window.location.href = data.redirectTo;
     } catch (error) {
       console.error(error);
       setErrorMsg('Error inesperado al iniciar sesión');

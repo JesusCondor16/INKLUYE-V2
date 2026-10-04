@@ -3,30 +3,27 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState, useRef } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { LogOut } from 'lucide-react';
 import styles from './Sidebar.module.css';
 import ModalCerrarSesion from './ModalCerrarSesion/ModalCerrarSesion';
 import Notificaciones from './Notificaciones/Notificaciones';
-import { getUserRoleFromToken, getSidebarMenu, logoutUser } from '../controllers/sidebarController';
+import { normalizarRol, getSidebarMenu, logoutUser } from '../controllers/sidebarController';
+import { useSesion, olvidarSesion } from '../hooks/useSesion';
 import type { MenuItem } from '../utils/getMenuByRole';
-import type { UserRole } from '../models/SidebarUserModel';
 
 export default function Sidebar() {
-  const [role, setRole] = useState<UserRole>('docente');
-  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+  const sesion = useSesion();
   const [modalOpen, setModalOpen] = useState(false);
   const [liveMsg, setLiveMsg] = useState('');
   const liveRef = useRef<HTMLDivElement>(null);
 
   const pathname = usePathname() ?? '/';
-  const router = useRouter();
 
-  useEffect(() => {
-    const r = getUserRoleFromToken();
-    setRole(r);
-    setMenuItems(getSidebarMenu(r));
-  }, []);
+  // El rol viene de /api/perfil (cookie httpOnly). Mientras carga no se muestra
+  // ningun menu (antes se asumia 'docente' y aparecia un menu equivocado)
+  const role = sesion.estado === 'activa' ? normalizarRol(sesion.user.role) : null;
+  const menuItems: MenuItem[] = role ? getSidebarMenu(role) : [];
 
   /* Live region: limpio y reescribo para forzar anuncio en SR */
   useEffect(() => {
@@ -54,9 +51,11 @@ export default function Sidebar() {
     setLiveMsg('Se ha cerrado el diálogo de cierre de sesión');
   };
 
-  const handleLogoutConfirm = () => {
-    logoutUser();
-    router.replace('/login');
+  const handleLogoutConfirm = async () => {
+    await logoutUser();
+    olvidarSesion();
+    // Recarga completa: no queda estado del usuario anterior en memoria
+    window.location.replace('/login');
   };
 
   const isMenuItemActive = (itemPath: string): boolean => {

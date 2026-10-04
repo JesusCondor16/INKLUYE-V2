@@ -1,42 +1,15 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import PerfilCard from '@/components/Perfil/PerfilCard';
-import { getPerfil } from '@/controllers/perfilController';
+import { useSesion } from '@/hooks/useSesion';
 import Sidebar from '@/components/Sidebar';
 import styles from '@/styles/PerfilPage.module.css';
 
-interface User {
-  name: string;
-  email: string;
-  role?: string | null;
-}
-
 export default function PerfilPage() {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  // La sesion sale de la cookie httpOnly (via /api/perfil), ya no de localStorage
+  const sesion = useSesion();
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      setError('No hay token para identificar al usuario.');
-      setLoading(false);
-      return;
-    }
-
-    getPerfil(token)
-      .then(({ user, error }) => {
-        if (error) setError(error);
-        else setUser(user);
-      })
-      .catch(() => {
-        setError('Error al obtener el perfil.');
-      })
-      .finally(() => setLoading(false));
-  }, []);
-
-  if (loading) {
+  if (sesion.estado === 'cargando') {
     return (
       <div className={styles.pageWrapper}>
         <Sidebar />
@@ -49,7 +22,12 @@ export default function PerfilPage() {
     );
   }
 
-  if (error) {
+  if (sesion.estado !== 'activa') {
+    const error =
+      sesion.estado === 'sin-sesion'
+        ? 'Su sesión no está iniciada o expiró. Inicie sesión nuevamente.'
+        : sesion.error;
+
     return (
       <div className={styles.pageWrapper}>
         <Sidebar />
@@ -70,9 +48,10 @@ export default function PerfilPage() {
     );
   }
 
+  const { user } = sesion;
   const userWithRole = {
-    ...user!,
-    role: user?.role && user.role.trim() !== '' ? user.role : 'N/A',
+    ...user,
+    role: user.role && user.role.trim() !== '' ? user.role : 'N/A',
   };
 
   return (

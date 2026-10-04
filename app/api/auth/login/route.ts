@@ -27,11 +27,9 @@ export async function POST(request: Request) {
     const res = NextResponse.json({
       ok: true,
       message: "Autenticación exitosa",
-      // A donde ir segun el rol (lo calcula authController): la pantalla de login ya no
-      // necesitara decodificar el token
+      // A donde ir segun el rol (lo calcula authController).
+      // El token ya NO viaja en el cuerpo: solo en la cookie httpOnly
       redirectTo: result.to ?? null,
-      // TEMPORAL: se quita en la fase 3b, cuando ninguna pantalla lea el token desde JavaScript
-      token: result.token,
     });
 
     res.cookies.set("token", result.token, {

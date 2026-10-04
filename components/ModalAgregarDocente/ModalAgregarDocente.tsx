@@ -45,9 +45,6 @@ export default function ModalAgregarDocente({ onClose, onSuccess, docente }: Pro
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const token = localStorage.getItem('token');
-    if (!token) return alert('Token no encontrado. Inicia sesión nuevamente.');
-
     const url = docente?.id ? `/api/users/${docente.id}` : '/api/users';
     const method = docente?.id ? 'PUT' : 'POST';
 
@@ -62,7 +59,8 @@ export default function ModalAgregarDocente({ onClose, onSuccess, docente }: Pro
     try {
         const res = await fetch(url, {
         method,
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        // La sesion viaja en la cookie httpOnly (el header Bearer la API nunca lo leia)
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
         });
 

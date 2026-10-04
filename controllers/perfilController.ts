@@ -1,20 +1,28 @@
-export async function getPerfil(token: string) {
+export interface UsuarioSesion {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+}
+
+export type ResultadoPerfil =
+  | { estado: 'activa'; user: UsuarioSesion }
+  | { estado: 'sin-sesion' }
+  | { estado: 'error'; error: string };
+
+// El navegador envia solo la cookie httpOnly: ya no se lee el token desde localStorage
+export async function getPerfil(): Promise<ResultadoPerfil> {
   try {
-    const res = await fetch('/api/perfil', {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const res = await fetch('/api/perfil', { cache: 'no-store' });
+
+    // 401 = no hay sesion o el token expiro (no es un error del sistema)
+    if (res.status === 401) return { estado: 'sin-sesion' };
 
     const data = await res.json();
-    if (!res.ok) return { user: null, error: data.error };
+    if (!res.ok) return { estado: 'error', error: data.error ?? 'Error al obtener perfil' };
 
-    // Aseguramos que role siempre esté presente
-    const userWithRole = {
-      ...data.user,
-      role: data.user.role ?? 'N/A', // si no viene, ponemos 'N/A'
-    };
-
-    return { user: userWithRole, error: null };
+    return { estado: 'activa', user: data.user };
   } catch {
-    return { user: null, error: 'Error al obtener perfil' };
+    return { estado: 'error', error: 'Error al obtener perfil' };
   }
 }

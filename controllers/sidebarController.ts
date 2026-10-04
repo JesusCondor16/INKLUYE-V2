@@ -1,29 +1,19 @@
-import jwtDecode from 'jwt-decode';
 import type { UserRole } from '../models/SidebarUserModel';
 import getMenuByRole, { MenuItem } from '../utils/getMenuByRole';
 
 /**
- * Obtener rol de usuario desde token JWT
+ * Normalizar el rol que llega de /api/perfil
+ * (antes se decodificaba el token guardado en localStorage)
  */
-export function getUserRoleFromToken(): UserRole {
-  const token = localStorage.getItem('token');
-  if (!token) return 'docente';
-
-  try {
-    const decoded = jwtDecode<{ role?: string }>(token);
-    const role = decoded.role?.toLowerCase();
-    switch (role) {
-      case 'director':
-      case 'coordinador':
-      case 'docente':
-      case 'estudiante':
-        return role as UserRole;
-      default:
-        return 'docente';
-    }
-  } catch (err) {
-    console.warn('[SidebarController] Error decoding token', err);
-    return 'docente';
+export function normalizarRol(role?: string | null): UserRole | null {
+  switch (role?.toLowerCase()) {
+    case 'director':
+    case 'coordinador':
+    case 'docente':
+    case 'estudiante':
+      return role!.toLowerCase() as UserRole;
+    default:
+      return null;
   }
 }
 
@@ -35,8 +25,13 @@ export function getSidebarMenu(role: UserRole): MenuItem[] {
 }
 
 /**
- * Cerrar sesión
+ * Cerrar sesión: el servidor borra la cookie httpOnly del token
  */
-export function logoutUser(): void {
-  localStorage.removeItem('token');
+export async function logoutUser(): Promise<void> {
+  try {
+    await fetch('/api/auth/logout', { method: 'POST' });
+  } finally {
+    // Limpia el token que guardaban versiones anteriores del login
+    localStorage.removeItem('token');
+  }
 }

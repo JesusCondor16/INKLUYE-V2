@@ -1,40 +1,21 @@
-import { useState, useEffect } from 'react';
-import { obtenerUsuarioDesdeToken } from '@/lib/authClient';
+import { useSesion } from '@/hooks/useSesion';
 
 /**
  * Hook para obtener el nombre del usuario
  * Maneja carga, éxito y errores de forma accesible
+ * (antes decodificaba el token de localStorage y volvia a pedir /api/users/[id])
  */
 export function useNombreUsuario() {
-  const [nombre, setNombre] = useState('Cargando...');
-  const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
-  const [error, setError] = useState('');
+  const sesion = useSesion();
 
-  useEffect(() => {
-    const fetchNombre = async () => {
-      const usuarioToken = obtenerUsuarioDesdeToken();
-      if (!usuarioToken?.id) {
-        setNombre('Usuario');
-        setStatus('success');
-        return;
-      }
-
-      try {
-        const res = await fetch(`/api/users/${usuarioToken.id}`);
-        if (!res.ok) throw new Error('Error al obtener usuario');
-        const data = await res.json();
-        setNombre(data.name || 'Usuario');
-        setStatus('success');
-      } catch (err) {
-        console.error(err);
-        setNombre('Usuario');
-        setError('No se pudo cargar el nombre del usuario.');
-        setStatus('error');
-      }
-    };
-
-    fetchNombre();
-  }, []);
-
-  return { nombre, status, error };
+  if (sesion.estado === 'cargando') {
+    return { nombre: 'Cargando...', status: 'loading' as const, error: '' };
+  }
+  if (sesion.estado === 'activa') {
+    return { nombre: sesion.user.name || 'Usuario', status: 'success' as const, error: '' };
+  }
+  if (sesion.estado === 'sin-sesion') {
+    return { nombre: 'Usuario', status: 'error' as const, error: 'Su sesión expiró. Inicie sesión nuevamente.' };
+  }
+  return { nombre: 'Usuario', status: 'error' as const, error: 'No se pudo cargar el nombre del usuario.' };
 }
