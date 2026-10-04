@@ -6,7 +6,7 @@ export interface UsuarioSesion {
 }
 
 export type ResultadoPerfil =
-  | { estado: 'activa'; user: UsuarioSesion }
+  | { estado: 'activa'; user: UsuarioSesion; expiraEn: number | null }
   | { estado: 'sin-sesion' }
   | { estado: 'error'; error: string };
 
@@ -21,7 +21,7 @@ export async function getPerfil(): Promise<ResultadoPerfil> {
     const data = await res.json();
     if (!res.ok) return { estado: 'error', error: data.error ?? 'Error al obtener perfil' };
 
-    return { estado: 'activa', user: data.user };
+    return { estado: 'activa', user: data.user, expiraEn: data.expiraEn ?? null };
   } catch {
     return { estado: 'error', error: 'Error al obtener perfil' };
   }

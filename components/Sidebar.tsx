@@ -8,6 +8,7 @@ import { LogOut } from 'lucide-react';
 import styles from './Sidebar.module.css';
 import ModalCerrarSesion from './ModalCerrarSesion/ModalCerrarSesion';
 import Notificaciones from './Notificaciones/Notificaciones';
+import AvisoSesion from './AvisoSesion/AvisoSesion';
 import { normalizarRol, getSidebarMenu, logoutUser } from '../controllers/sidebarController';
 import { useSesion, olvidarSesion } from '../hooks/useSesion';
 import type { MenuItem } from '../utils/getMenuByRole';
@@ -85,6 +86,9 @@ export default function Sidebar() {
       </div>
 
       <Notificaciones />
+
+      {/* Aviso antes de que venza la sesion y reingreso sin perder datos (WCAG 2.1 - 2.2.5, 2.2.6) */}
+      <AvisoSesion />
 
       <nav className={styles.nav} aria-label="Menú principal del sistema">
         <ul className={styles.menuList}>

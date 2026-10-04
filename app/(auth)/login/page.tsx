@@ -62,6 +62,7 @@ export default function LoginPage() {
         <form onSubmit={handleSubmit}>
           <p className={styles.description}>
             Ingresa tu correo y contraseña para acceder al sistema. Todos los campos son obligatorios.
+            Por seguridad, la sesión dura una hora: cinco minutos antes te avisaremos para que puedas continuar.
           </p>
 
           {/* Aviso (no error): role="status" lo anuncia sin interrumpir (4.1.3) */}

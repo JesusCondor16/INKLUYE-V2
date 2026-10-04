@@ -1,0 +1,23 @@
+/* components/AvisoSesion/AvisoSesion.module.css
+   Aviso de vencimiento de sesion. Hereda el aspecto de los demas dialogos (ModalBase). */
+
+.overlay {
+  composes: overlay from "../ModalsSyllabus/ModalBase.module.css";
+  /* Por encima de cualquier otro modal abierto (p. ej. el de bibliografia que el usuario esta llenando) */
+  z-index: calc(var(--ink-z-modal) + 10);
+}
+
+.dialog {
+  composes: dialog from "../ModalsSyllabus/ModalBase.module.css";
+  max-width: 560px;
+}
+
+.campo {
+  margin-top: 1rem;
+}
+
+.etiqueta {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-weight: 700;
+}
