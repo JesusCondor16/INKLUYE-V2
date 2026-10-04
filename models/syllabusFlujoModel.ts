@@ -87,6 +87,18 @@ export const syllabusFlujoModel = {
   },
 
   /**
+   * Nombre y correo de quienes reciben aviso por correo (F7).
+   * Los estudiantes se excluyen: a ellos se les avisa solo dentro de Inkluye.
+   */
+  async obtenerDestinatariosCorreo(usuarioIds: number[]) {
+    if (usuarioIds.length === 0) return [];
+    return prisma.user.findMany({
+      where: { id: { in: usuarioIds }, role: { not: 'estudiante' } },
+      select: { id: true, name: true, email: true },
+    });
+  },
+
+  /**
    * Cambia el estado, registra el historial y crea las notificaciones en una sola transaccion.
    * Devuelve false si el estado ya no era el esperado (otro usuario lo cambio antes).
    */

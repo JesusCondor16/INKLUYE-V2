@@ -5,6 +5,8 @@ import type { CustomJwtPayload } from '@/lib/authServer';
 import { evaluarTransicion, esAccionFlujo, type AccionFlujo } from '@/lib/syllabusFlujo';
 import { syllabusFlujoModel, type NuevaNotificacion } from '@/models/syllabusFlujoModel';
 import { idiomasDisponibles, inclusivoDisponible } from '@/lib/syllabusArchivos';
+import { construirCorreoFlujo } from '@/lib/correo/plantillas';
+import { correoConfigurado, enviarCorreos, urlBase } from '@/lib/correo/enviar';
 
 type ContextoCurso = NonNullable<Awaited<ReturnType<typeof syllabusFlujoModel.obtenerContextoCurso>>>;
 
@@ -62,6 +64,42 @@ async function construirNotificaciones(
       }
       return avisos;
     }
+  }
+}
+
+/**
+ * Avisos por correo (F7) al personal del curso, con el mismo destinatario y enlace que la
+ * notificacion de la campanita. Nunca bloquea ni hace fallar la accion: si el correo no esta
+ * configurado o falla, solo se registra en la consola del servidor.
+ */
+async function enviarCorreosDelFlujo(
+  accion: AccionFlujo,
+  curso: ContextoCurso,
+  usuario: CustomJwtPayload,
+  notificaciones: NuevaNotificacion[],
+  observacion: string | null,
+) {
+  try {
+    if (!correoConfigurado()) return;
+    const enlacePorUsuario = new Map(notificaciones.map((n) => [n.usuarioId, n.enlace]));
+    const destinatarios = await syllabusFlujoModel.obtenerDestinatariosCorreo([...enlacePorUsuario.keys()]);
+
+    const destinos = destinatarios.map((u) => ({
+      para: u.email,
+      correo: construirCorreoFlujo({
+        accion,
+        destinatario: u.name,
+        actor: nombreDelActor(curso, usuario),
+        nombreCurso: `${curso.code} - ${curso.name}`,
+        enlace: `${urlBase()}${enlacePorUsuario.get(u.id) ?? '/'}`,
+        observacion,
+      }),
+    }));
+
+    const enviados = await enviarCorreos(destinos);
+    console.info(`[correo] ${accion}: ${enviados} de ${destinos.length} correos enviados`);
+  } catch (error: unknown) {
+    console.error('[correo] Error al preparar los correos del flujo:', error);
   }
 }
 
@@ -170,6 +208,9 @@ export const syllabusFlujoController = {
           { status: 409 },
         );
       }
+
+      // Sin await: la respuesta no espera al servidor de correo
+      void enviarCorreosDelFlujo(accion, curso, usuario, notificaciones, resultado.observacion);
 
       return NextResponse.json({ estado: resultado.nuevoEstado }, { status: 200 });
     } catch (error: unknown) {
