@@ -164,21 +164,25 @@ export default function DirectorCursosPage() {
 
       const data = await res.json();
 
+      // GET /api/cursos/[id] devuelve "coordinador" y "docentes" (ver mapCursoResponse).
+      // Antes aqui se leian data.user y data.cursodocente, que no existen: el modal abria
+      // sin coordinador ni docentes y al guardar se los quitaba al curso.
       const modalCurso: ModalCurso = {
 
         ...data,
 
-        user: data.user
+        user: data.coordinador
           ? {
-              id: data.user.id,
-              name: data.user.name
+              id: data.coordinador.id,
+              name: data.coordinador.name
             }
           : null,
 
-        docentes: Array.isArray(data.cursodocente)
-          ? data.cursodocente
-              .map((d: any) => d.user)
-              .filter(Boolean)
+        docentes: Array.isArray(data.docentes)
+          ? data.docentes.map((d: any) => ({
+              id: d.id,
+              name: d.name
+            }))
           : []
 
       };
@@ -258,23 +262,24 @@ export default function DirectorCursosPage() {
                   cycle:
                     updated.cycle ?? c.cycle,
 
+                  // La respuesta del PUT tiene la misma forma que el GET:
+                  // "coordinador" y "docentes" (antes se leia user/cursodocente y la
+                  // tabla quedaba con el coordinador anterior y sin docentes)
                   user:
-                    updated.user
+                    updated.coordinador
                       ? {
-                          id: updated.user.id,
-                          name: updated.user.name
+                          id: updated.coordinador.id,
+                          name: updated.coordinador.name
                         }
-                      : c.user,
+                      : null,
 
                   cursodocente:
-                    (updated.cursodocente ?? []).map((cd: any) => ({
+                    (updated.docentes ?? []).map((d: any) => ({
 
-                      user: cd.user
-                        ? {
-                            id: cd.user.id,
-                            name: cd.user.name
-                          }
-                        : undefined
+                      user: {
+                        id: d.id,
+                        name: d.name
+                      }
 
                     }))
 
