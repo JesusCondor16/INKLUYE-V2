@@ -4,6 +4,7 @@ import type { BibliografiaCategoria } from '@prisma/client';
 import { Plus, Trash2, X } from 'lucide-react';
 import { useModalSeccion4Controller, CATEGORIAS_BIBLIOGRAFIA } from './ModalSeccion4.controller';
 import styles from './ModalSeccion4.module.css';
+import base from '../ModalBase.module.css';
 import { useDialogoAccesible } from '@/hooks/useDialogoAccesible';
 
 interface ModalSeccion4Props {
@@ -25,6 +26,7 @@ export default function ModalSeccion4({ cursoId, onClose }: ModalSeccion4Props) 
     handleAddBibliografia,
     handleRemoveBibliografia,
     handleGuardarBibliografia,
+    mensaje,
   } = useModalSeccion4Controller(cursoId);
   const dialogoRef = useDialogoAccesible<HTMLDivElement>(onClose);
 
@@ -194,6 +196,17 @@ export default function ModalSeccion4({ cursoId, onClose }: ModalSeccion4Props) 
             </button>
           </section>
         </div>
+
+        {/* Resultado del guardado: exito con role="status", error con role="alert" */}
+        {mensaje && (
+          <p
+            role={mensaje.tipo === 'error' ? 'alert' : 'status'}
+            className={mensaje.tipo === 'error' ? base.mensajeError : base.mensajeExito}
+            style={{ margin: '0 1.5rem 1rem' }}
+          >
+            {mensaje.texto}
+          </p>
+        )}
 
         {/* FOOTER */}
         <footer className={styles.footer}>

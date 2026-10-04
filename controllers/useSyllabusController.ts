@@ -197,6 +197,8 @@ export function useSyllabusController() {
   const [curso, setCurso] = useState<Curso | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Aviso cuando no se pudo traducir y se genero en espanol (antes: alert())
+  const [aviso, setAviso] = useState<string | null>(null);
   const [generating, setGenerating] = useState(false);
 
   // ======================================================
@@ -302,6 +304,7 @@ export function useSyllabusController() {
     if (!curso) return;
     setGenerating(true);
     setError(null);
+    setAviso(null);
 
     try {
       let capacidades = curso.capacidad ?? curso.capacidades ?? [];
@@ -319,10 +322,10 @@ export function useSyllabusController() {
           programacion = traducido.programacion;
         } catch (err: unknown) {
           if (err instanceof TranslateNotConfiguredError) {
-            alert('La traducción automática todavía no está configurada (falta la API key). Se generará el syllabus en español.');
+            setAviso('La traducción automática todavía no está configurada. El syllabus se generó en español.');
           } else {
             console.error('Error traduciendo syllabus:', err);
-            alert('No se pudo traducir el syllabus. Se generará en español.');
+            setAviso('No se pudo traducir el syllabus. Se generó en español.');
           }
           cursoParaPdf = curso;
           langFinal = 'es';
@@ -367,5 +370,6 @@ export function useSyllabusController() {
     loadCurso,
     generarPDF: generarPDFController,
     generating,
+    aviso,
   };
 }

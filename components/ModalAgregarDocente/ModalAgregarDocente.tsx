@@ -4,6 +4,7 @@ import { X } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import styles from './ModalAgregarDocente.module.css';
 import { useDialogoAccesible } from '@/hooks/useDialogoAccesible';
+import base from '../ModalsSyllabus/ModalBase.module.css';
 
 interface Docente {
   id?: number;
@@ -26,6 +27,8 @@ export default function ModalAgregarDocente({ onClose, onSuccess, docente }: Pro
     password: '',
     role: 'DOCENTE',
   });
+  // Error del servidor mostrado dentro del dialogo (antes: alert() con el JSON crudo)
+  const [errorEnvio, setErrorEnvio] = useState('');
 
   useEffect(() => {
     if (docente) {
@@ -45,6 +48,7 @@ export default function ModalAgregarDocente({ onClose, onSuccess, docente }: Pro
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorEnvio('');
     const url = docente?.id ? `/api/users/${docente.id}` : '/api/users';
     const method = docente?.id ? 'PUT' : 'POST';
 
@@ -68,12 +72,12 @@ export default function ModalAgregarDocente({ onClose, onSuccess, docente }: Pro
         onClose();
         onSuccess();
         } else {
-        const err = await res.text();
-        alert(`Error al ${docente ? 'editar' : 'registrar'} docente: ${err}`);
+        const err: { error?: string; message?: string } = await res.json().catch(() => ({}));
+        setErrorEnvio(`No se pudo ${docente ? 'editar' : 'registrar'} el docente: ${err.error ?? err.message ?? 'error del servidor'}.`);
         }
     } catch (error) {
         console.error('Error en la petición:', error);
-        alert('Ocurrió un error al enviar el formulario.');
+        setErrorEnvio('Ocurrió un error de conexión al enviar el formulario. Intente nuevamente.');
     }
     };
 
@@ -105,6 +109,10 @@ export default function ModalAgregarDocente({ onClose, onSuccess, docente }: Pro
 
           {/* Body */}
           <div className={styles.modalBody}>
+            {errorEnvio && (
+              <p role="alert" className={base.mensajeError}>{errorEnvio}</p>
+            )}
+
             <div className="mb-3">
               <label htmlFor="name" className="form-label">Nombre</label>
               <input type="text" id="name" name="name" className="form-control" value={form.name} onChange={handleChange} required />
@@ -133,7 +141,8 @@ export default function ModalAgregarDocente({ onClose, onSuccess, docente }: Pro
 
           {/* Footer */}
           <div className={styles.modalFooter}>
-            <button type="submit" className={styles.btnPrimary} aria-label={docente ? 'Guardar cambios del docente' : 'Registrar nuevo docente'}>
+            {/* El nombre accesible debe contener el texto visible "Guardar" (WCAG 2.5.3) */}
+            <button type="submit" className={styles.btnPrimary} aria-label={docente ? 'Guardar cambios del docente' : 'Guardar nuevo docente'}>
               Guardar
             </button>
             <button type="button" className={styles.btnSecondary} onClick={onClose} aria-label="Cancelar registro o edición de docente">

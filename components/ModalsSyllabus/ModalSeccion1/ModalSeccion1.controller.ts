@@ -7,6 +7,7 @@ export function useModalSeccion1Controller(cursoId: number) {
   const [curso, setCurso] = useState<Curso | null>(null);
   const [sumilla, setSumilla] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   useEffect(() => {
@@ -14,6 +15,7 @@ export function useModalSeccion1Controller(cursoId: number) {
 
     const fetchCurso = async () => {
       setLoading(true);
+      setError('');
 
       try {
         const res = await fetch(`/api/cursos/${cursoId}`);
@@ -51,7 +53,7 @@ export function useModalSeccion1Controller(cursoId: number) {
 
       } catch (error) {
         console.error('❌ Error al cargar el curso:', error);
-        alert('Error al cargar datos del curso');
+        setError('No se pudieron cargar los datos del curso. Cierre la ventana e intente nuevamente.');
       } finally {
         setLoading(false);
       }
@@ -68,6 +70,7 @@ export function useModalSeccion1Controller(cursoId: number) {
     curso,
     sumilla,
     loading,
+    error,
     textareaRef,
   };
 }

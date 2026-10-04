@@ -16,7 +16,9 @@ export default function SyllabusCursoPage() {
   const params = useParams();
   const cursoId = Number(params?.id);
 
-  const { curso, loading, error, loadCurso, generarPDF, generating } = useSyllabusController();
+  const { curso, loading, error, loadCurso, generarPDF, generating, aviso } = useSyllabusController();
+  // Error al generar, mostrado junto a los botones (antes: alert())
+  const [errorGeneracion, setErrorGeneracion] = useState<string | null>(null);
   const [modal, setModal] = useState({ s1: false, s2: false, s3: false, s4: false });
   // Se incrementa tras generar un PDF para que el panel de estado vuelva a consultar (regenerar lo deja en borrador)
   const [recargarEstado, setRecargarEstado] = useState(0);
@@ -30,18 +32,17 @@ export default function SyllabusCursoPage() {
   // Genera el PDF en el idioma indicado; el servidor lo guarda y deja el syllabus en borrador
   const handleGenerar = useCallback(
     async (lang: "es" | "en" | "zh") => {
-      if (!cursoId || isNaN(cursoId)) {
-        alert("ID de curso inválido");
-        return;
-      }
+      // (sin id valido la pagina ya muestra "ID de curso inválido" y no hay botones)
+      if (!cursoId || isNaN(cursoId)) return;
 
+      setErrorGeneracion(null);
       try {
         await generarPDF(lang);
         setRecargarEstado((n) => n + 1);
       } catch (err: unknown) {
         const error = err instanceof Error ? err : new Error('Error desconocido');
         console.error("Error generando syllabus:", error);
-        alert("Error al generar syllabus: " + error.message);
+        setErrorGeneracion("No se pudo generar el syllabus: " + error.message);
       }
     },
     [cursoId, generarPDF]
@@ -121,6 +122,10 @@ export default function SyllabusCursoPage() {
             {generating ? "Generando..." : <>Generar y abrir syllabus (<span lang="zh">中文</span>)</>}
           </button>
         </div>
+
+        {/* Avisos del generador: el error con role="alert", la traduccion no disponible con role="status" */}
+        {errorGeneracion && <div className={styles.errorBox} role="alert">{errorGeneracion}</div>}
+        {aviso && !errorGeneracion && <div className={styles.statusBox} role="status">{aviso}</div>}
 
         <EstadoSyllabus cursoId={cursoId} nombreCurso={curso?.name ?? "este curso"} recargarKey={recargarEstado} />
 

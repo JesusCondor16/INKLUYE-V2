@@ -89,9 +89,13 @@ export function useModalSeccion4Controller(cursoId: number) {
     setBibliografia(prev => prev.filter((_, i) => i !== index));
   };
 
+  // Resultado del guardado mostrado en el dialogo (antes: alert())
+  const [mensaje, setMensaje] = useState<{ tipo: 'exito' | 'error'; texto: string } | null>(null);
+
   const handleGuardarBibliografia = async () => {
     if (!cursoId) return;
     setLoading(true);
+    setMensaje(null);
     try {
       const res = await fetch(`/api/cursos/${cursoId}/recurso`, {
         method: 'PUT',
@@ -100,10 +104,10 @@ export function useModalSeccion4Controller(cursoId: number) {
       });
       const result = await res.json();
       if (!res.ok) throw new Error(result.error || 'Error al guardar bibliografía');
-      alert('Bibliografía guardada correctamente');
+      setMensaje({ tipo: 'exito', texto: 'Bibliografía guardada correctamente.' });
     } catch (err: unknown) {
       const error = err instanceof Error ? err : new Error('Error desconocido');
-      alert('Error: ' + error.message);
+      setMensaje({ tipo: 'error', texto: 'No se pudo guardar la bibliografía: ' + error.message });
       console.error(error);
     } finally {
       setLoading(false);
@@ -123,5 +127,6 @@ export function useModalSeccion4Controller(cursoId: number) {
     handleAddBibliografia,
     handleRemoveBibliografia,
     handleGuardarBibliografia,
+    mensaje,
   };
 }

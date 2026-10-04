@@ -91,6 +91,33 @@
   color: var(--ink-primary);
 }
 
+/* Mensajes dentro de los dialogos (reemplazan a alert()): texto + borde + fondo, AAA */
+.mensajeError,
+.mensajeExito,
+.mensajeAviso {
+  margin: 0 0 1rem;
+  padding: 0.75rem 1rem;
+  border: 2px solid currentColor;
+  border-radius: var(--ink-radius-sm);
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.mensajeError {
+  background: var(--ink-danger-bg);
+  color: var(--ink-danger);
+}
+
+.mensajeExito {
+  background: var(--ink-success-bg);
+  color: var(--ink-success);
+}
+
+.mensajeAviso {
+  background: var(--ink-info-bg);
+  color: var(--ink-info);
+}
+
 .loadingText {
   padding: 2rem;
   text-align: center;

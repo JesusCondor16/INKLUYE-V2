@@ -3,6 +3,7 @@
 import { X } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import styles from './ModalSeccion1.module.css';
+import base from '../ModalBase.module.css';
 import { useModalSeccion1Controller } from './ModalSeccion1.controller';
 import { Usuario } from './ModalSeccion1.model';
 import { useDialogoAccesible } from '@/hooks/useDialogoAccesible';
@@ -15,7 +16,7 @@ interface ModalSeccion1Props {
 
 export default function ModalSeccion1({ show, onClose, cursoId }: ModalSeccion1Props) {
   const dialogoRef = useDialogoAccesible<HTMLDivElement>(onClose);
-  const { curso, sumilla, loading, textareaRef } = useModalSeccion1Controller(cursoId);
+  const { curso, sumilla, loading, error, textareaRef } = useModalSeccion1Controller(cursoId);
 
   const [coordinadores, setCoordinadores] = useState<Usuario[]>([]);
   const [docentes, setDocentes] = useState<Usuario[]>([]);
@@ -98,6 +99,11 @@ export default function ModalSeccion1({ show, onClose, cursoId }: ModalSeccion1P
 
         {loading ? (
           <p className={styles.loadingText}>Cargando datos...</p>
+        ) : error ? (
+          // Antes: alert() del navegador
+          <div className={styles.modalBody}>
+            <p role="alert" className={base.mensajeError}>{error}</p>
+          </div>
         ) : (
           <div className={styles.modalBody}>
 

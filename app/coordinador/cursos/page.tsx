@@ -89,7 +89,8 @@ export default function CursosCoordinadorPage() {
 
   const handleIrASyllabus = (cursoId: number | undefined) => {
     if (!cursoId || isNaN(cursoId)) {
-      alert("ID de curso inválido");
+      // Antes: alert(). Se muestra en el recuadro de error de la pagina (role="alert")
+      setError("ID de curso inválido");
       return;
     }
     router.push(`/coordinador/${cursoId}/syllabus`);

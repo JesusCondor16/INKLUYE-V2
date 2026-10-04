@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useDialogoAccesible } from '@/hooks/useDialogoAccesible';
 import styles from './ModalCerrarSesion.module.css';
 
 interface Props {
@@ -10,6 +10,8 @@ interface Props {
   description: string;
   onConfirm: () => void;
   onCancel: () => void;
+  // Permite reutilizar el dialogo para otras confirmaciones (p. ej. eliminar un docente)
+  textoConfirmar?: string;
 }
 
 export default function ModalCerrarSesion({
@@ -18,57 +20,13 @@ export default function ModalCerrarSesion({
   title,
   description,
   onConfirm,
-  onCancel
+  onCancel,
+  textoConfirmar = 'Sí, cerrar sesión'
 }: Props) {
-  const cancelBtnRef = useRef<HTMLButtonElement | null>(null);
-  const modalRef = useRef<HTMLDivElement | null>(null);
-
-  /* -------------------- FOCUS AL ABRIR -------------------- */
-  useEffect(() => {
-    if (!isOpen) return;
-    cancelBtnRef.current?.focus();
-  }, [isOpen]);
-
-  /* -------------------- CERRAR CON ESC -------------------- */
-  useEffect(() => {
-    if (!isOpen) return;
-
-    function handleKey(e: KeyboardEvent) {
-      if (e.key === 'Escape') {
-        e.preventDefault();
-        onCancel();
-      }
-
-      // Trampa de foco mínima WCAG AAA
-      if (e.key === 'Tab') {
-        const focusable = modalRef.current?.querySelectorAll<HTMLElement>(
-          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-        );
-
-        if (!focusable || focusable.length === 0) return;
-
-        const first = focusable[0];
-        const last = focusable[focusable.length - 1];
-
-        if (e.shiftKey) {
-          // Shift + Tab
-          if (document.activeElement === first) {
-            e.preventDefault();
-            last.focus();
-          }
-        } else {
-          // Tab normal
-          if (document.activeElement === last) {
-            e.preventDefault();
-            first.focus();
-          }
-        }
-      }
-    }
-
-    document.addEventListener('keydown', handleKey);
-    return () => document.removeEventListener('keydown', handleKey);
-  }, [isOpen, onCancel]);
+  // Foco inicial en "Cancelar" (la opcion segura), Escape, trampa de Tab y, al cerrar,
+  // el foco vuelve al boton que abrio el dialogo. Antes este componente tenia su propia
+  // version y no devolvia el foco (quedaba en <body>).
+  const modalRef = useDialogoAccesible<HTMLDivElement>(onCancel, isOpen);
 
   if (!isOpen) return null;
 
@@ -95,7 +53,6 @@ export default function ModalCerrarSesion({
 
         <div className={styles.modalFooter}>
           <button
-            ref={cancelBtnRef}
             type="button"
             className={styles.btnSecondary}
             onClick={onCancel}
@@ -108,7 +65,7 @@ export default function ModalCerrarSesion({
             className={styles.btnDanger}
             onClick={onConfirm}
           >
-            Sí, cerrar sesión
+            {textoConfirmar}
           </button>
         </div>
       </div>

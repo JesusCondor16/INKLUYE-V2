@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import ModalAgregarDocente from '@/components/ModalAgregarDocente/ModalAgregarDocente';
 import ModalEditarDocente from '@/components/ModalEditarDocente/ModalEditarDocente';
 import ModalHistorialDocente from '@/components/ModalHistorialDocente/ModalHistorialDocente';
+import ModalCerrarSesion from '@/components/ModalCerrarSesion/ModalCerrarSesion';
 import { Pencil, Trash2, Clock } from 'lucide-react';
 import styles from '@/styles/GestionDocentes.module.css'; // ⚡ CSS separado
 
@@ -21,6 +22,8 @@ export default function GestionDocentesPage() {
   const [mostrarEditar, setMostrarEditar] = useState(false);
   const [mostrarHistorial, setMostrarHistorial] = useState(false);
   const [docenteSeleccionado, setDocenteSeleccionado] = useState<Docente | null>(null);
+  // Docente a eliminar mientras se muestra el dialogo de confirmacion (antes: confirm() del navegador)
+  const [docenteAEliminar, setDocenteAEliminar] = useState<Docente | null>(null);
 
   const cargarDocentes = async () => {
     try {
@@ -44,7 +47,7 @@ export default function GestionDocentesPage() {
   }, []);
 
   const handleEliminar = async (id: number) => {
-    if (!confirm('¿Seguro que desea eliminar este docente?')) return;
+    setDocenteAEliminar(null);
     try {
       const res = await fetch(`/api/users/${id}`, { method: 'DELETE' });
       const resData: { error?: string } = await res.json().catch(() => ({}));
@@ -81,7 +84,7 @@ export default function GestionDocentesPage() {
             setDocenteSeleccionado(null);
             setMostrarAgregar(true);
           }}
-          aria-label="Agregar nuevo docente"
+          aria-label="Añadir docente nuevo"
         >
           + Añadir Docente
         </button>
@@ -127,7 +130,7 @@ export default function GestionDocentesPage() {
                       <button className={styles.btnEdit} onClick={() => handleEditClick(docente)}>
                         <Pencil size={16} className={styles.icon} /> Editar
                       </button>
-                      <button className={styles.btnDelete} onClick={() => handleEliminar(docente.id)}>
+                      <button className={styles.btnDelete} onClick={() => setDocenteAEliminar(docente)}>
                         <Trash2 size={16} className={styles.icon} /> Eliminar
                       </button>
                       <button className={styles.btnHistorial} onClick={() => handleVerHistorial(docente)}>
@@ -174,6 +177,17 @@ export default function GestionDocentesPage() {
             setMostrarHistorial(false);
             setDocenteSeleccionado(null);
           }}
+        />
+      )}
+      {docenteAEliminar && (
+        <ModalCerrarSesion
+          id="modal-eliminar-docente"
+          isOpen
+          title="Eliminar docente"
+          description={`¿Seguro que desea eliminar a ${docenteAEliminar.name}? Esta acción no se puede deshacer.`}
+          textoConfirmar="Sí, eliminar"
+          onCancel={() => setDocenteAEliminar(null)}
+          onConfirm={() => handleEliminar(docenteAEliminar.id)}
         />
       )}
     </main>
