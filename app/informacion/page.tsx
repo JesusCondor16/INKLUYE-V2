@@ -4,6 +4,7 @@ import { Globe } from 'lucide-react';
 import React from 'react';
 import Sidebar from '@/components/Sidebar';
 import styles from '@/styles/Informacion.module.css';
+import { Sigla } from '@/components/Glosario/Glosario';
 
 export default function InformacionPage() {
   return (
@@ -32,17 +33,16 @@ export default function InformacionPage() {
               ¿Qué es Inkluye?
             </h2>
 
+            {/* Frases cortas y palabras comunes (WCAG 2.1 - 3.1.5) */}
             <p>
-              <strong>Inkluye</strong> es un sistema de gestión de syllabus desarrollado
-              para apoyar a las instituciones educativas en la organización, creación y
-              seguimiento de los syllabus de cada curso, de forma centralizada e
-              inclusiva.
+              <strong>Inkluye</strong> es un sistema para manejar el syllabus de cada curso.
+              Con él se prepara, se revisa y se publica el syllabus en un solo lugar.
             </p>
 
             <p>
-              Facilita el trabajo de <strong>directores</strong>, <strong>coordinadores</strong>,{' '}
-              <strong>docentes</strong> y <strong>estudiantes</strong> mediante herramientas
-              accesibles y optimizadas para la gestión académica.
+              Lo usan <strong>directores</strong>, <strong>coordinadores</strong>,{' '}
+              <strong>docentes</strong> y <strong>estudiantes</strong>.
+              Cada uno ve solo las herramientas que necesita.
             </p>
           </section>
 
@@ -52,15 +52,16 @@ export default function InformacionPage() {
             </h2>
 
             <p>
-              Inkluye sigue los lineamientos de <strong>WCAG 2.1 AAA</strong>, garantizando
-              que las personas puedan utilizar la plataforma sin barreras, incluyendo:
+              Inkluye sigue las pautas de accesibilidad <strong><Sigla id="wcag" /> 2.1</strong>,
+              nivel <strong><Sigla id="aaa" /></strong>. Así todas las personas pueden usarlo sin barreras.
+              Por ejemplo:
             </p>
 
             <ul className={styles.list}>
-              <li>Contraste alto y tipografía legible para personas con visión reducida.</li>
-              <li>Compatibilidad con lectores de pantalla y navegación mediante teclado.</li>
-              <li>Estructura semántica clara y jerarquía de encabezados.</li>
-              <li>Enlaces y botones con foco visible y destacado.</li>
+              <li>Colores con mucho contraste y letra fácil de leer.</li>
+              <li>Funciona con lectores de pantalla y solo con el teclado.</li>
+              <li>Títulos ordenados para encontrar rápido cada parte.</li>
+              <li>Se ve claramente en qué enlace o botón está uno.</li>
             </ul>
           </section>
 
@@ -70,8 +71,11 @@ export default function InformacionPage() {
             </h2>
 
             <p>
-              Facilitar la creación, revisión y gestión de syllabus promoviendo la
-              mejora continua, la inclusión y la transparencia en los procesos educativos.
+              Hacer más fácil preparar, revisar y publicar el syllabus.
+              Así todos pueden conocer cada curso, sin importar su discapacidad.
+            </p>
+            <p>
+              ¿Hay alguna palabra que no entiende? Revise el <a href="/glosario">glosario</a>.
             </p>
           </section>
 

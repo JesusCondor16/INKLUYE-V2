@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation'; // ✅ para redirigir
+import { Sigla } from '@/components/Glosario/Glosario';
 import styles from '../styles/HomePage.module.css';
 
 export default function HomePage() {
@@ -69,10 +70,12 @@ export default function HomePage() {
             Bienvenido al Sistema de Gestión de Syllabus - Inkluye
           </h1>
 
+          {/* Frases cortas y palabras comunes (WCAG 2.1 - 3.1.5); siglas con su significado (3.1.4) */}
           <p className={styles.description}>
-            Este sistema está diseñado para facilitar la gestión de syllabus en instituciones educativas,
-            cumpliendo con la normativa <strong>WCAG 2.1 AAA</strong> para garantizar accesibilidad para todas las personas,
-            incluyendo usuarios con discapacidades visuales.
+            Inkluye sirve para preparar, revisar y publicar el syllabus de cada curso.
+            Todas las personas pueden usarlo, también con lector de pantalla o solo con el teclado.
+            Sigue las pautas de accesibilidad <strong><Sigla id="wcag" /> 2.1</strong> en su nivel más alto
+            (<strong><Sigla id="aaa" /></strong>).
           </p>
 
           {/* Navegación principal con label y orden de tabulación lógico.

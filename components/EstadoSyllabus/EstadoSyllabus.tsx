@@ -6,6 +6,7 @@ import styles from './EstadoSyllabus.module.css';
 import { useEstadoSyllabusController } from './EstadoSyllabus.controller';
 import { DESCRIPCION_ESTADO, ETIQUETA_ACCION, ETIQUETA_ESTADO } from './EstadoSyllabus.model';
 import IdiomasSyllabus from '@/components/IdiomasSyllabus/IdiomasSyllabus';
+import { Sigla } from '@/components/Glosario/Glosario';
 
 interface Props {
   cursoId: number;
@@ -49,7 +50,7 @@ export default function EstadoSyllabus({ cursoId, nombreCurso, recargarKey }: Pr
 
           {idiomas.length > 0 && (
             <>
-              <h3 className={styles.subtitle}>PDF generados</h3>
+              <h3 className={styles.subtitle}><Sigla id="pdf" /> generados</h3>
               <IdiomasSyllabus idiomas={idiomas} nombreCurso={nombreCurso} mostrarFechas />
             </>
           )}

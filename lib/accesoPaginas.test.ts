@@ -45,6 +45,7 @@ describe('decidirAcceso — por rol', () => {
     ['/buscar', ['director', 'coordinador', 'docente', 'estudiante']],
     ['/perfil', ['director', 'coordinador', 'docente', 'estudiante']],
     ['/informacion', ['director', 'coordinador', 'docente', 'estudiante']],
+    ['/glosario', ['director', 'coordinador', 'docente', 'estudiante']],
   ];
   const roles = ['director', 'coordinador', 'docente', 'estudiante'] as const;
 

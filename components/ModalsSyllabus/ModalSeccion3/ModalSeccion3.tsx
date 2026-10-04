@@ -4,6 +4,7 @@ import { X } from 'lucide-react';
 import { useModalSeccion3Controller } from './ModalSeccion3.controller';
 import styles from './ModalSeccion3.module.css';
 import { useDialogoAccesible } from '@/hooks/useDialogoAccesible';
+import { AyudaTermino } from '@/components/Glosario/Glosario';
 
 interface ModalSeccion3Props {
   cursoId: number;
@@ -63,6 +64,7 @@ export default function ModalSeccion3({ cursoId, onClose }: ModalSeccion3Props) 
           <h2 className={styles.sectionTitle}>
             5. Capacidades
           </h2>
+          <AyudaTermino id="capacidad" />
 
           {capacidades.map((cap, i) => (
             <section key={i} className={styles.unidad}>
@@ -119,6 +121,7 @@ export default function ModalSeccion3({ cursoId, onClose }: ModalSeccion3Props) 
           <h2 className={styles.sectionTitle}>
             6. Programación de contenidos
           </h2>
+          <AyudaTermino id="programacion" />
 
           {programaciones.map((prog, i) => (
             <section key={i} style={{ marginBottom: '32px' }}>

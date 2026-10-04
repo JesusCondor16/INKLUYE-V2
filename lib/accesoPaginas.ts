@@ -31,6 +31,7 @@ const REGLAS: { prefijo: string; roles: Rol[] }[] = [
   { prefijo: '/buscar', roles: ['director', 'coordinador', 'docente', 'estudiante'] },
   { prefijo: '/perfil', roles: ['director', 'coordinador', 'docente', 'estudiante'] },
   { prefijo: '/informacion', roles: ['director', 'coordinador', 'docente', 'estudiante'] },
+  { prefijo: '/glosario', roles: ['director', 'coordinador', 'docente', 'estudiante'] },
 ];
 
 function coincide(pathname: string, prefijo: string): boolean {

@@ -8,6 +8,7 @@ import {
   User,
   Info,
   ClipboardCheck,
+  BookA,
 } from "lucide-react";
 
 // ✅ Exportamos el tipo para poder usarlo en controladores y vistas
@@ -29,6 +30,8 @@ export default function getMenuByRole(role: string | null): MenuItem[] {
   const buscar = { label: "Buscar Syllabus", path: "/buscar", icon: <Search size={18} /> };
   const perfil = { label: "Mi Perfil", path: "/perfil", icon: <User size={18} /> };
   const info = { label: "Información", path: "/informacion", icon: <Info size={18} /> };
+  // Explica las palabras y siglas del sistema (WCAG 2.1 - 3.1.3 y 3.1.4)
+  const glosario = { label: "Glosario", path: "/glosario", icon: <BookA size={18} /> };
   // Docentes y coordinadores que dictan cursos revisan aqui los syllabus enviados
   const revisar = { label: "Sílabos por revisar", path: "/docente/syllabus", icon: <ClipboardCheck size={18} /> };
 
@@ -41,6 +44,7 @@ export default function getMenuByRole(role: string | null): MenuItem[] {
         buscar,
         perfil,
         info,
+        glosario,
       ];
 
     case "coordinador":
@@ -50,20 +54,22 @@ export default function getMenuByRole(role: string | null): MenuItem[] {
         buscar,
         perfil,
         info,
+        glosario,
       ];
 
     case "docente":
-      return [revisar, buscar, perfil, info];
+      return [revisar, buscar, perfil, info, glosario];
 
     case "estudiante":
       return [
         buscar,
         perfil,
         info,
+        glosario,
       ];
 
     default:
       // Menú por defecto si no hay rol válido
-      return [buscar, perfil, info];
+      return [buscar, perfil, info, glosario];
   }
 }

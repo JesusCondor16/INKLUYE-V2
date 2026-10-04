@@ -6,6 +6,7 @@ import { useModalSeccion4Controller, CATEGORIAS_BIBLIOGRAFIA } from './ModalSecc
 import styles from './ModalSeccion4.module.css';
 import base from '../ModalBase.module.css';
 import { useDialogoAccesible } from '@/hooks/useDialogoAccesible';
+import { AyudaTermino } from '@/components/Glosario/Glosario';
 
 interface ModalSeccion4Props {
   cursoId: number;
@@ -64,6 +65,7 @@ export default function ModalSeccion4({ cursoId, onClose }: ModalSeccion4Props) 
             <h3 id="estrategiaTitulo" className={styles.sectionTitle}>
               7. Estrategia didáctica
             </h3>
+            <AyudaTermino id="estrategia" />
 
             <label htmlFor="estrategiaTextarea" className={styles.visuallyHidden}>
               Estrategia didáctica del curso
@@ -82,6 +84,7 @@ export default function ModalSeccion4({ cursoId, onClose }: ModalSeccion4Props) 
             <h3 id="recursosTitulo" className={styles.sectionTitle}>
               8. Recursos y materiales
             </h3>
+            <AyudaTermino id="recursos" />
 
             <label htmlFor="recursosTextarea" className={styles.visuallyHidden}>
               Recursos y materiales del curso
@@ -100,6 +103,7 @@ export default function ModalSeccion4({ cursoId, onClose }: ModalSeccion4Props) 
             <h3 id="evaluacionTitulo" className={styles.sectionTitle}>
               9. Evaluación
             </h3>
+            <AyudaTermino id="evaluacion" />
 
             <div className={styles.tableWrapper}>
               <table className={styles.table}>
@@ -137,6 +141,7 @@ export default function ModalSeccion4({ cursoId, onClose }: ModalSeccion4Props) 
             <h3 id="bibliografiaTitulo" className={styles.sectionTitle}>
               10. Bibliografía
             </h3>
+            <AyudaTermino id="bibliografia" />
 
             {bibliografia.map((item, index) => {
               const textareaId = `bibliografia-${index}`;

@@ -7,6 +7,7 @@ import base from '../ModalBase.module.css';
 import { useModalSeccion1Controller } from './ModalSeccion1.controller';
 import { Usuario } from './ModalSeccion1.model';
 import { useDialogoAccesible } from '@/hooks/useDialogoAccesible';
+import { AyudaTermino } from '@/components/Glosario/Glosario';
 
 interface ModalSeccion1Props {
   show: boolean;
@@ -201,6 +202,7 @@ export default function ModalSeccion1({ show, onClose, cursoId }: ModalSeccion1P
             <hr className={styles.separator} />
 
             <h3 id="modalDescription">2. Sumilla</h3>
+            <AyudaTermino id="sumilla" />
 
             <textarea
               ref={textareaRef}

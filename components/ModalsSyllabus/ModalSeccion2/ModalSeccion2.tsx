@@ -6,6 +6,7 @@ import styles from './ModalSeccion2.module.css';
 import { useModalSeccion2Controller } from './ModalSeccion2.controller';
 import { Competencia, Logro } from './ModalSeccion2.model';
 import { useDialogoAccesible } from '@/hooks/useDialogoAccesible';
+import { AyudaTermino } from '@/components/Glosario/Glosario';
 
 interface ModalSeccion2Props {
   cursoId: number;
@@ -58,6 +59,8 @@ export default function ModalSeccion2({ cursoId, onClose }: ModalSeccion2Props) 
         {/* BODY */}
         <div className={styles.modalBody}>
 
+          <AyudaTermino id="competencia" />
+
           {/* TABLA COMPETENCIAS */}
           <div className={styles.tableWrapper}>
 
@@ -99,6 +102,7 @@ export default function ModalSeccion2({ cursoId, onClose }: ModalSeccion2Props) 
           <h3 className={styles.sectionTitle}>
             4. Logros de aprendizaje
           </h3>
+          <AyudaTermino id="logro" />
 
           <div className={styles.tableWrapper}>
 

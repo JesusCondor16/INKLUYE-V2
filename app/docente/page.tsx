@@ -3,6 +3,7 @@
 import React from 'react';
 import Sidebar from '@/components/Sidebar';
 import styles from './DocentePage.module.css';
+import { Sigla } from '@/components/Glosario/Glosario';
 
 export default function BienvenidaDocentePage() {
   return (
@@ -36,7 +37,9 @@ export default function BienvenidaDocentePage() {
           </h2>
 
           <p className={styles.lead} style={{ margin: 0 }}>
-            Usa el menú lateral para navegar por tus herramientas. Este panel cumple con la normativa <strong>WCAG 2.1 AAA</strong>.
+            Use el menú de la izquierda para ir a sus herramientas.
+            Esta página sigue las pautas de accesibilidad <strong><Sigla id="wcag" /> 2.1</strong>,
+            nivel <strong><Sigla id="aaa" /></strong>.
           </p>
         </section>
       </main>
