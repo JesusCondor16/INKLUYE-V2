@@ -4,6 +4,8 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   INTERVALO_CONSULTA_MS,
   textoNoLeidas,
+  leerPreferenciaAnuncios,
+  guardarPreferenciaAnuncios,
   type Notificacion,
   type NotificacionesResponse,
 } from './Notificaciones.model';
@@ -14,6 +16,22 @@ export function useNotificacionesController() {
   const [anuncio, setAnuncio] = useState('');
   // null hasta la primera carga: asi solo se anuncian las que lleguen despues, no las de siempre
   const noLeidasPrevias = useRef<number | null>(null);
+  // El usuario puede silenciar los anuncios de notificaciones nuevas (WCAG 2.1 - 2.2.4).
+  // En un ref para que la consulta periodica lea siempre el valor actual
+  const [anunciarNuevas, setAnunciarNuevas] = useState(true);
+  const anunciarRef = useRef(true);
+
+  useEffect(() => {
+    const valor = leerPreferenciaAnuncios();
+    anunciarRef.current = valor;
+    setAnunciarNuevas(valor);
+  }, []);
+
+  const cambiarAnunciarNuevas = useCallback((valor: boolean) => {
+    anunciarRef.current = valor;
+    setAnunciarNuevas(valor);
+    guardarPreferenciaAnuncios(valor);
+  }, []);
 
   const cargar = useCallback(async () => {
     try {
@@ -24,7 +42,8 @@ export function useNotificacionesController() {
       setNoLeidas(data.noLeidas);
 
       const previas = noLeidasPrevias.current;
-      if (previas !== null && data.noLeidas > previas) {
+      // Si el usuario silencio los anuncios, solo cambia el contador visible de la campanita
+      if (previas !== null && data.noLeidas > previas && anunciarRef.current) {
         setAnuncio(`Nueva notificación. ${textoNoLeidas(data.noLeidas)}.`);
       }
       noLeidasPrevias.current = data.noLeidas;
@@ -73,5 +92,13 @@ export function useNotificacionesController() {
     }
   }, []);
 
-  return { notificaciones, noLeidas, anuncio, marcarLeida, marcarTodasLeidas };
+  return {
+    notificaciones,
+    noLeidas,
+    anuncio,
+    marcarLeida,
+    marcarTodasLeidas,
+    anunciarNuevas,
+    cambiarAnunciarNuevas,
+  };
 }

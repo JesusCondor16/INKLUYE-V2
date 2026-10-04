@@ -8,7 +8,15 @@ import { useNotificacionesController } from './Notificaciones.controller';
 
 // Patron "disclosure" de WAI-ARIA: boton con aria-expanded que muestra/oculta el panel
 export default function Notificaciones() {
-  const { notificaciones, noLeidas, anuncio, marcarLeida, marcarTodasLeidas } = useNotificacionesController();
+  const {
+    notificaciones,
+    noLeidas,
+    anuncio,
+    marcarLeida,
+    marcarTodasLeidas,
+    anunciarNuevas,
+    cambiarAnunciarNuevas,
+  } = useNotificacionesController();
   const [abierto, setAbierto] = useState(false);
   const botonRef = useRef<HTMLButtonElement>(null);
   const cerrarRef = useRef<HTMLButtonElement>(null);
@@ -84,6 +92,16 @@ export default function Notificaciones() {
               ))}
             </ul>
           )}
+
+          {/* WCAG 2.1 - 2.2.4 (AAA): el usuario puede suprimir los avisos automaticos */}
+          <label className={styles.preferencia}>
+            <input
+              type="checkbox"
+              checked={anunciarNuevas}
+              onChange={(e) => cambiarAnunciarNuevas(e.target.checked)}
+            />
+            Avisar cuando llegue una notificación nueva
+          </label>
 
           <div className={styles.acciones}>
             {noLeidas > 0 && (
