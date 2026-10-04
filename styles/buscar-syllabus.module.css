@@ -74,25 +74,7 @@
   background: var(--ink-surface);
 }
 
-/* Enlace al PDF: 44x44 minimo (2.5.5) */
-.iconBtn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: var(--ink-touch);
-  min-height: var(--ink-touch);
-  padding: 0.25rem;
-  border: 2px solid transparent;
-  border-radius: var(--ink-radius-sm);
-  color: var(--ink-link);
-  text-decoration: none;
-}
-
-.iconBtn:hover {
-  background: var(--ink-hover-bg);
-  border-color: var(--ink-link);
-}
-
+/* Texto cuando el curso aun no tiene syllabus visible */
 .noIcon {
   color: var(--ink-text-muted);
 }
