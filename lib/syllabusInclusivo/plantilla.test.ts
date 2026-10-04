@@ -123,6 +123,26 @@ describe('construirHtmlSyllabusInclusivo — contenido', () => {
   });
 });
 
+describe('construirHtmlSyllabusInclusivo — escudo de San Marcos', () => {
+  const png = 'data:image/png;base64,iVBORw0KGgo=';
+
+  it('muestra el escudo con texto alternativo (1.1.1)', () => {
+    const h = html(datos({ logoUnmsm: png }));
+    expect(h).toContain(`<img src="${png}" alt="Escudo de la Universidad Nacional Mayor de San Marcos"`);
+  });
+
+  it('sin escudo, el membrete sigue con el nombre de la universidad', () => {
+    const h = html(datos({ logoUnmsm: null }));
+    expect(h).not.toContain('<img');
+    expect(h).toContain('Universidad Nacional Mayor de San Marcos');
+  });
+
+  it('rechaza cualquier valor que no sea una imagen en base64', () => {
+    const h = html(datos({ logoUnmsm: 'javascript:alert(1)' }));
+    expect(h).not.toContain('<img');
+  });
+});
+
 describe('construirHtmlSyllabusInclusivo — seguridad', () => {
   it('escapa el texto de la base: un <script> en la sumilla no se ejecuta', () => {
     const d = datos();

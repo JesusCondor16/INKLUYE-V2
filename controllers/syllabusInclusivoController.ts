@@ -2,6 +2,7 @@
 // "Syllabus inclusivo" (WCAG 2.1 AAA): genera la pagina accesible y su PDF etiquetado,
 // y los entrega solo a quien tiene permiso. La ruta solo traduce a HTTP.
 import fs from 'fs/promises';
+import path from 'path';
 import type { CustomJwtPayload } from '@/lib/authServer';
 import { esCoordinadorDelCurso } from '@/lib/authServer';
 import { puedeVerSyllabus } from '@/lib/syllabusPermisos';
@@ -33,7 +34,13 @@ export async function generarSyllabusInclusivo(
   const datos = await obtenerDatosSyllabusInclusivo(cursoId);
   if (!datos) return { ok: false, status: 404, error: 'Curso no encontrado' };
 
-  const html = construirHtmlSyllabusInclusivo(datos);
+  // Escudo de San Marcos en el membrete (el mismo que usa el PDF de los botones ES/EN/中文)
+  const logo = await fs
+    .readFile(path.join(process.cwd(), 'public', 'images', 'logo-unmsm.png'))
+    .then((b) => `data:image/png;base64,${b.toString('base64')}`)
+    .catch(() => null);
+
+  const html = construirHtmlSyllabusInclusivo({ ...datos, logoUnmsm: logo });
   const pdf = await htmlAPdfEtiquetado(html);
 
   await fs.mkdir(CARPETA_SYLLABUS, { recursive: true });

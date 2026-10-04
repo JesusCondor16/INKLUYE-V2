@@ -111,7 +111,9 @@ dfn{font-style:normal;font-weight:700}
 .hoja{max-width:52rem;margin:1rem auto 0;background:var(--paper);border:1px solid var(--line);border-top:8px solid var(--accent);border-radius:4px;padding:clamp(1.25rem,4vw,3.5rem)}
 .membrete p{margin:0;color:var(--muted);font-size:.95rem}
 .membrete .universidad{color:var(--fg);font-weight:700;letter-spacing:.04em;text-transform:uppercase;font-size:.9rem}
-.membrete{padding-bottom:1.25rem;border-bottom:1px solid var(--line);display:grid;gap:.25rem}
+.membrete{padding-bottom:1.25rem;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+.membrete img{width:72px;height:72px;flex-shrink:0}
+.membrete .textos{display:grid;gap:.25rem;min-width:0}
 h1{font-size:clamp(1.9rem,5vw,2.6rem);margin:1.5rem 0 .4rem}
 h1 .tipo{display:block;font-size:1rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:.4rem}
 .subtitulo{color:var(--muted)}
@@ -302,6 +304,12 @@ export function construirHtmlSyllabusInclusivo(d: DatosSyllabusInclusivo): strin
     ${['pdf'].map((id) => SIGLAS.find((x) => x.id === id)!).map((s) => `<div><dt><abbr>${s.termino}</abbr></dt><dd>${escaparHtml(s.definicion)}</dd></div>`).join('')}
   </dl>`;
 
+  // Escudo de San Marcos (WCAG 2.1 - 1.1.1: texto alternativo). Solo se acepta una imagen PNG/JPEG en base64.
+  const escudo =
+    d.logoUnmsm && /^data:image\/(png|jpeg);base64,[A-Za-z0-9+/=]+$/.test(d.logoUnmsm)
+      ? `<img src="${d.logoUnmsm}" alt="Escudo de la Universidad Nacional Mayor de San Marcos" width="72" height="72">`
+      : '';
+
   const resumen = resumenSencillo(d);
   const fecha = new Date(d.generadoEn).toLocaleDateString('es-PE', { day: 'numeric', month: 'long', year: 'numeric' });
 
@@ -333,8 +341,11 @@ export function construirHtmlSyllabusInclusivo(d: DatosSyllabusInclusivo): strin
 <a class="saltar" href="#contenido">Saltar al contenido del sílabo</a>
 <main id="contenido" class="hoja" tabindex="-1">
   <header class="membrete">
-    <p class="universidad">Universidad Nacional Mayor de San Marcos</p>
-    <p>Facultad de Ingeniería de Sistemas e Informática</p>
+    ${escudo}
+    <div class="textos">
+      <p class="universidad">Universidad Nacional Mayor de San Marcos</p>
+      <p>Facultad de Ingeniería de Sistemas e Informática</p>
+    </div>
   </header>
   <h1><span class="tipo">Sílabo</span>${nombre}</h1>
   <p class="subtitulo">Código <span class="mono">${escaparHtml(c.code)}</span>${c.semester ? ` · Semestre <span class="mono">${escaparHtml(c.semester)}</span>` : ''}${c.cycle ? ` · Ciclo ${escaparHtml(c.cycle)}` : ''}</p>

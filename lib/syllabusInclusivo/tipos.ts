@@ -40,4 +40,6 @@ export interface DatosSyllabusInclusivo {
   bibliografia: { texto: string; categoria: string }[];
   /** Fecha de generacion (ISO); se muestra al pie */
   generadoEn: string;
+  /** Escudo de San Marcos como data URI (lo agrega el controlador); opcional */
+  logoUnmsm?: string | null;
 }

@@ -198,12 +198,15 @@ function sanitizeTextForPdf(s: unknown): string {
 ------------------------------ */
 
 async function renderEncabezado(doc: jsPDF, y: number, pageWidth: number, MARGINS: Margins, lang: SyllabusLang): Promise<number> {
+  // Escudo de San Marcos centrado arriba, dentro de la hoja.
+  // Antes se dibujaba en y - 30 (con y = 15 mm quedaba en -15 mm): salia cortado por arriba.
+  const W = 24, H = 24;
   try {
     const logo = await loadImageAsBase64('/images/logo-unmsm.png');
-    const W = 30, H = 30;
-    doc.addImage(logo, 'PNG', pageWidth / 2 - W / 2, y - 30, W, H);
+    doc.addImage(logo, 'PNG', pageWidth / 2 - W / 2, y, W, H);
+    y += H; // el texto empieza debajo del escudo
   } catch {
-    // no hacemos nada si falla la carga de imagen
+    // sin escudo, el encabezado empieza directamente con el texto
   }
 
   doc.setFont('helvetica', 'normal');
