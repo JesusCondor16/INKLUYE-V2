@@ -12,7 +12,12 @@ const atkinson = Atkinson_Hyperlegible({
 });
 
 export const metadata: Metadata = {
-  title: "Inkluye", // 🏷️ Título en la pestaña
+  // Cada pagina define su titulo y se muestra como "Mis cursos asignados · Inkluye" (WCAG 2.4.2).
+  // Antes todas las pestanas decian solo "Inkluye".
+  title: {
+    template: "%s · Inkluye",
+    default: "Inkluye — Sistema de gestión de syllabus",
+  },
   description: "Sistema de Gestión de Syllabus - Inkluye",
   icons: {
     icon: "/inkluye.png", // 🖼️ Ruta del logo
