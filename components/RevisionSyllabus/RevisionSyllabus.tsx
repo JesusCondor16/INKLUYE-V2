@@ -6,11 +6,23 @@ import { useRevisionSyllabusController } from './RevisionSyllabus.controller';
 import type { SyllabusPendiente } from './RevisionSyllabus.model';
 import ModalDevolverSyllabus from './ModalDevolverSyllabus';
 import IdiomasSyllabus from '@/components/IdiomasSyllabus/IdiomasSyllabus';
+import ModalCerrarSesion from '@/components/ModalCerrarSesion/ModalCerrarSesion';
 
 export default function RevisionSyllabus() {
   const { pendientes, loading, procesandoId, mensaje, error, publicar, devolver } =
     useRevisionSyllabusController();
   const [cursoADevolver, setCursoADevolver] = useState<SyllabusPendiente | null>(null);
+  // WCAG 2.1 - 3.3.6 (AAA): publicar se confirma antes (los estudiantes lo veran de inmediato)
+  const [cursoAPublicar, setCursoAPublicar] = useState<SyllabusPendiente | null>(null);
+
+  const confirmarPublicar = async () => {
+    if (!cursoAPublicar) return;
+    const curso = cursoAPublicar;
+    setCursoAPublicar(null);
+    await publicar(curso);
+    // La fila desaparece de la lista, asi que el foco vuelve al titulo de la pagina
+    document.getElementById('page-title')?.focus();
+  };
   // Boton que abrio el modal, para devolverle el foco al cerrarlo (WCAG 2.4.3)
   const disparadorRef = useRef<HTMLButtonElement | null>(null);
 
@@ -82,7 +94,7 @@ export default function RevisionSyllabus() {
                     <button
                       type="button"
                       className={styles.btnPrimario}
-                      onClick={() => publicar(c)}
+                      onClick={() => setCursoAPublicar(c)}
                       disabled={procesandoId === c.id}
                       aria-label={`Publicar syllabus de ${c.name}`}
                     >
@@ -111,6 +123,18 @@ export default function RevisionSyllabus() {
           enviando={procesandoId === cursoADevolver.id}
           onConfirmar={confirmarDevolver}
           onClose={cerrarDevolver}
+        />
+      )}
+
+      {cursoAPublicar && (
+        <ModalCerrarSesion
+          id="modal-confirmar-publicar"
+          isOpen
+          title="Publicar syllabus"
+          description={`El syllabus de ${cursoAPublicar.name} quedará visible para todos los estudiantes. ¿Desea publicarlo?`}
+          textoConfirmar="Sí, publicar"
+          onCancel={() => setCursoAPublicar(null)}
+          onConfirm={confirmarPublicar}
         />
       )}
     </>

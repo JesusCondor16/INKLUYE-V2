@@ -1,5 +1,7 @@
 'use client';
 
+import { useState } from 'react';
+import ModalCerrarSesion from '@/components/ModalCerrarSesion/ModalCerrarSesion';
 import styles from './EstadoSyllabus.module.css';
 import { useEstadoSyllabusController } from './EstadoSyllabus.controller';
 import { DESCRIPCION_ESTADO, ETIQUETA_ACCION, ETIQUETA_ESTADO } from './EstadoSyllabus.model';
@@ -20,6 +22,8 @@ const CLASE_ESTADO = {
 export default function EstadoSyllabus({ cursoId, nombreCurso, recargarKey }: Props) {
   const { estado, historial, idiomas, loading, enviando, mensaje, error, enviarADocentes } =
     useEstadoSyllabusController(cursoId, recargarKey);
+  // WCAG 2.1 - 3.3.6 (AAA): el envio se confirma antes de ejecutarse
+  const [confirmarEnvio, setConfirmarEnvio] = useState(false);
 
   return (
     <section className={styles.panel} aria-labelledby="estado-syllabus-title">
@@ -54,7 +58,7 @@ export default function EstadoSyllabus({ cursoId, nombreCurso, recargarKey }: Pr
             <button
               type="button"
               className={styles.btn}
-              onClick={enviarADocentes}
+              onClick={() => setConfirmarEnvio(true)}
               disabled={enviando}
               aria-busy={enviando}
             >
@@ -87,6 +91,20 @@ export default function EstadoSyllabus({ cursoId, nombreCurso, recargarKey }: Pr
             ))}
           </ol>
         </>
+      )}
+      {confirmarEnvio && (
+        <ModalCerrarSesion
+          id="modal-confirmar-envio"
+          isOpen
+          title="Enviar syllabus a revisión"
+          description={`Se enviará el syllabus de ${nombreCurso} a los docentes del curso. Mientras esté en revisión no podrá enviarlo de nuevo. ¿Desea continuar?`}
+          textoConfirmar="Sí, enviar"
+          onCancel={() => setConfirmarEnvio(false)}
+          onConfirm={() => {
+            setConfirmarEnvio(false);
+            enviarADocentes();
+          }}
+        />
       )}
     </section>
   );

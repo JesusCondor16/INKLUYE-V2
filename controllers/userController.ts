@@ -74,6 +74,14 @@ export const userController = {
 
       console.error('❌ Error en userController.create:', error);
 
+      // WCAG 2.1 - 3.3.3: si se conoce la causa, se dice como corregirla
+      if (error instanceof Error && error.message === 'El correo ya está registrado') {
+        return NextResponse.json(
+          { error: 'El correo ya está registrado. Use un correo distinto' },
+          { status: 409 }
+        );
+      }
+
       return NextResponse.json(
         { error: 'Error al crear usuario' },
         { status: 400 }

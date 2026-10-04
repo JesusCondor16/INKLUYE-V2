@@ -11,6 +11,9 @@ import ModalSeccion3 from "@/components/ModalsSyllabus/ModalSeccion3/ModalSeccio
 import ModalSeccion4 from "@/components/ModalsSyllabus/ModalSeccion4/ModalSeccion4";
 import { useSyllabusController } from "@/controllers/useSyllabusController";
 import EstadoSyllabus from "@/components/EstadoSyllabus/EstadoSyllabus";
+import ModalCerrarSesion from "@/components/ModalCerrarSesion/ModalCerrarSesion";
+
+const NOMBRE_IDIOMA = { es: "español", en: "inglés", zh: "chino" } as const;
 
 export default function SyllabusCursoPage() {
   const params = useParams();
@@ -19,6 +22,8 @@ export default function SyllabusCursoPage() {
   const { curso, loading, error, loadCurso, generarPDF, generating, aviso } = useSyllabusController();
   // Error al generar, mostrado junto a los botones (antes: alert())
   const [errorGeneracion, setErrorGeneracion] = useState<string | null>(null);
+  // WCAG 2.1 - 3.3.6 (AAA): generar reemplaza el PDF y devuelve el syllabus a borrador; se confirma antes
+  const [idiomaAGenerar, setIdiomaAGenerar] = useState<"es" | "en" | "zh" | null>(null);
   const [modal, setModal] = useState({ s1: false, s2: false, s3: false, s4: false });
   // Se incrementa tras generar un PDF para que el panel de estado vuelva a consultar (regenerar lo deja en borrador)
   const [recargarEstado, setRecargarEstado] = useState(0);
@@ -107,17 +112,17 @@ export default function SyllabusCursoPage() {
 
         {/* Iconos SVG en vez de emojis (el lector leia "libro azul", "bandera de China") */}
         <div className="mt-3 d-flex flex-wrap gap-2">
-          <button type="button" className={styles.btn} onClick={() => handleGenerar("es")} disabled={generating || !curso}>
+          <button type="button" className={styles.btn} onClick={() => setIdiomaAGenerar("es")} disabled={generating || !curso}>
             <FileDown size={18} aria-hidden="true" focusable={false} />
             {generating ? "Generando..." : "Generar y abrir syllabus (ES)"}
           </button>
 
-          <button type="button" className={styles.btn} onClick={() => handleGenerar("en")} disabled={generating || !curso}>
+          <button type="button" className={styles.btn} onClick={() => setIdiomaAGenerar("en")} disabled={generating || !curso}>
             <FileDown size={18} aria-hidden="true" focusable={false} />
             {generating ? "Generando..." : "Generar y abrir syllabus (EN)"}
           </button>
 
-          <button type="button" className={styles.btn} onClick={() => handleGenerar("zh")} disabled={generating || !curso}>
+          <button type="button" className={styles.btn} onClick={() => setIdiomaAGenerar("zh")} disabled={generating || !curso}>
             <FileDown size={18} aria-hidden="true" focusable={false} />
             {generating ? "Generando..." : <>Generar y abrir syllabus (<span lang="zh">中文</span>)</>}
           </button>
@@ -126,6 +131,22 @@ export default function SyllabusCursoPage() {
         {/* Avisos del generador: el error con role="alert", la traduccion no disponible con role="status" */}
         {errorGeneracion && <div className={styles.errorBox} role="alert">{errorGeneracion}</div>}
         {aviso && !errorGeneracion && <div className={styles.statusBox} role="status">{aviso}</div>}
+
+        {idiomaAGenerar && (
+          <ModalCerrarSesion
+            id="modal-confirmar-generar"
+            isOpen
+            title="Generar syllabus"
+            description={`Se generará el PDF en ${NOMBRE_IDIOMA[idiomaAGenerar]} y reemplazará al anterior en ese idioma. El syllabus volverá a estado Borrador: si ya estaba publicado, los estudiantes dejarán de verlo hasta que se envíe y publique otra vez. ¿Desea continuar?`}
+            textoConfirmar="Sí, generar"
+            onCancel={() => setIdiomaAGenerar(null)}
+            onConfirm={() => {
+              const lang = idiomaAGenerar;
+              setIdiomaAGenerar(null);
+              handleGenerar(lang);
+            }}
+          />
+        )}
 
         <EstadoSyllabus cursoId={cursoId} nombreCurso={curso?.name ?? "este curso"} recargarKey={recargarEstado} />
 
