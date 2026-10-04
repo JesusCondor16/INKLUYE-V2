@@ -21,7 +21,7 @@ const CLASE_ESTADO = {
 };
 
 export default function EstadoSyllabus({ cursoId, nombreCurso, recargarKey }: Props) {
-  const { estado, historial, idiomas, loading, enviando, mensaje, error, enviarADocentes } =
+  const { estado, historial, idiomas, inclusivo, loading, enviando, mensaje, error, enviarADocentes } =
     useEstadoSyllabusController(cursoId, recargarKey);
   // WCAG 2.1 - 3.3.6 (AAA): el envio se confirma antes de ejecutarse
   const [confirmarEnvio, setConfirmarEnvio] = useState(false);
@@ -48,10 +48,10 @@ export default function EstadoSyllabus({ cursoId, nombreCurso, recargarKey }: Pr
           </p>
           <p className={styles.descripcion}>{DESCRIPCION_ESTADO[estado]}</p>
 
-          {idiomas.length > 0 && (
+          {(idiomas.length > 0 || inclusivo.length > 0) && (
             <>
               <h3 className={styles.subtitle}><Sigla id="pdf" /> generados</h3>
-              <IdiomasSyllabus idiomas={idiomas} nombreCurso={nombreCurso} mostrarFechas />
+              <IdiomasSyllabus idiomas={idiomas} inclusivo={inclusivo} nombreCurso={nombreCurso} mostrarFechas />
             </>
           )}
 

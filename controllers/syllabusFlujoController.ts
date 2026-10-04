@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
 import type { CustomJwtPayload } from '@/lib/authServer';
 import { evaluarTransicion, esAccionFlujo, type AccionFlujo } from '@/lib/syllabusFlujo';
 import { syllabusFlujoModel, type NuevaNotificacion } from '@/models/syllabusFlujoModel';
-import { idiomasDisponibles } from '@/lib/syllabusArchivos';
+import { idiomasDisponibles, inclusivoDisponible } from '@/lib/syllabusArchivos';
 
 type ContextoCurso = NonNullable<Awaited<ReturnType<typeof syllabusFlujoModel.obtenerContextoCurso>>>;
 
@@ -78,6 +78,7 @@ export const syllabusFlujoController = {
         pdfUrl: c.syllabus?.pdfUrl ?? null,
         enviadoEn: c.syllabus?.updatedAt ?? null,
         idiomas: idiomasDisponibles(c.id).map(({ lang, url }) => ({ lang, url })),
+        inclusivo: inclusivoDisponible(c.id).map(({ formato, url }) => ({ formato, url })),
       }));
       return NextResponse.json(pendientes, { status: 200 });
     } catch (error: unknown) {
@@ -100,12 +101,17 @@ export const syllabusFlujoController = {
       if (!autorizado) return NextResponse.json({ error: 'No autorizado' }, { status: 403 });
 
       if (!curso.syllabus) {
-        return NextResponse.json({ estado: null, historial: [], idiomas: [] }, { status: 200 });
+        return NextResponse.json({ estado: null, historial: [], idiomas: [], inclusivo: [] }, { status: 200 });
       }
 
       const historial = await syllabusFlujoModel.obtenerHistorial(curso.syllabus.id);
       return NextResponse.json(
-        { estado: curso.syllabus.estado, historial, idiomas: idiomasDisponibles(courseId) },
+        {
+          estado: curso.syllabus.estado,
+          historial,
+          idiomas: idiomasDisponibles(courseId),
+          inclusivo: inclusivoDisponible(courseId),
+        },
         { status: 200 },
       );
     } catch (error: unknown) {

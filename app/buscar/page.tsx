@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Sidebar from "@/components/Sidebar";
 import styles from "@/styles/buscar-syllabus.module.css";
-import IdiomasSyllabus, { type EnlaceIdioma } from "@/components/IdiomasSyllabus/IdiomasSyllabus";
+import IdiomasSyllabus, { type EnlaceIdioma, EnlaceInclusivo } from "@/components/IdiomasSyllabus/IdiomasSyllabus";
 
 interface Usuario {
   id?: number;
@@ -24,6 +24,7 @@ interface Curso {
   user?: Usuario | null;
   cursodocente?: CursoDocente[];
   idiomas: EnlaceIdioma[];
+  inclusivo: EnlaceInclusivo[];
 }
 
 export default function BuscarSyllabusPage() {
@@ -47,7 +48,7 @@ export default function BuscarSyllabusPage() {
         }
 
         // El servidor solo envia syllabusUrl si este usuario puede ver el PDF (segun el estado del syllabus)
-        const mapped: Curso[] = (data.data || []).map((c: Curso & { syllabusIdiomas?: EnlaceIdioma[] }) => ({
+        const mapped: Curso[] = (data.data || []).map((c: Curso & { syllabusIdiomas?: EnlaceIdioma[]; syllabusInclusivo?: EnlaceInclusivo[] }) => ({
           id: c.id,
           code: c.code,
           name: c.name,
@@ -57,6 +58,7 @@ export default function BuscarSyllabusPage() {
           user: c.user ?? null,
           cursodocente: c.cursodocente ?? [],
           idiomas: c.syllabusIdiomas ?? [],
+          inclusivo: c.syllabusInclusivo ?? [],
         }));
 
         if (!mounted) return;
@@ -122,8 +124,8 @@ export default function BuscarSyllabusPage() {
                   <td>{c.user?.name ?? '—'}</td>
                   <td>{safeDocentesNames(c.cursodocente)}</td>
                   <td>
-                    {c.idiomas.length > 0 ? (
-                      <IdiomasSyllabus idiomas={c.idiomas} nombreCurso={c.name} />
+                    {c.idiomas.length > 0 || c.inclusivo.length > 0 ? (
+                      <IdiomasSyllabus idiomas={c.idiomas} inclusivo={c.inclusivo} nombreCurso={c.name} />
                     ) : (
                       <span className={styles.noIcon}>No disponible</span>
                     )}

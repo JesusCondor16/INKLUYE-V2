@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useParams } from "next/navigation";
-import { FileDown } from "lucide-react";
+import { Accessibility, FileDown } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import styles from "@/styles/coordinador.module.css";
 import ModalSeccion1 from "@/components/ModalsSyllabus/ModalSeccion1/ModalSeccion1";
@@ -19,7 +19,11 @@ export default function SyllabusCursoPage() {
   const params = useParams();
   const cursoId = Number(params?.id);
 
-  const { curso, loading, error, loadCurso, generarPDF, generating, aviso } = useSyllabusController();
+  const { curso, loading, error, loadCurso, generarPDF, generating, aviso, generarInclusivo, generandoInclusivo } =
+    useSyllabusController();
+  // Syllabus inclusivo: confirmacion (3.3.6) y resultado anunciado (4.1.3)
+  const [confirmarInclusivo, setConfirmarInclusivo] = useState(false);
+  const [resultadoInclusivo, setResultadoInclusivo] = useState<{ ok: boolean; texto: string } | null>(null);
   // Error al generar, mostrado junto a los botones (antes: alert())
   const [errorGeneracion, setErrorGeneracion] = useState<string | null>(null);
   // WCAG 2.1 - 3.3.6 (AAA): generar reemplaza el PDF y devuelve el syllabus a borrador; se confirma antes
@@ -126,7 +130,52 @@ export default function SyllabusCursoPage() {
             <FileDown size={18} aria-hidden="true" focusable={false} />
             {generating ? "Generando..." : <>Generar y abrir syllabus (<span lang="zh">中文</span>)</>}
           </button>
+
+          {/* Version que cumple WCAG 2.1 AAA: pagina accesible + PDF etiquetado (PDF/UA) */}
+          <button
+            type="button"
+            className={styles.btn}
+            // aria-disabled y no disabled: al volver del dialogo el foco queda en este boton mientras genera
+            // (un boton deshabilitado pierde el foco y el lector de pantalla se desubica, WCAG 2.4.3)
+            onClick={() => {
+              if (!generating && !generandoInclusivo) setConfirmarInclusivo(true);
+            }}
+            disabled={!curso}
+            aria-disabled={generating || generandoInclusivo}
+            aria-busy={generandoInclusivo}
+          >
+            <Accessibility size={18} aria-hidden="true" focusable={false} />
+            {generandoInclusivo ? "Generando syllabus inclusivo..." : "Generar syllabus inclusivo"}
+          </button>
         </div>
+
+        {resultadoInclusivo && (
+          <div className={resultadoInclusivo.ok ? styles.statusBox : styles.errorBox} role={resultadoInclusivo.ok ? "status" : "alert"}>
+            {resultadoInclusivo.texto}
+          </div>
+        )}
+
+        {confirmarInclusivo && (
+          <ModalCerrarSesion
+            id="modal-confirmar-inclusivo"
+            isOpen
+            title="Generar syllabus inclusivo"
+            description="Se creará una versión accesible del syllabus: una página web y un PDF preparado para lectores de pantalla. Reemplazará a la versión inclusiva anterior y el syllabus volverá a estado Borrador. ¿Desea continuar?"
+            textoConfirmar="Sí, generar"
+            onCancel={() => setConfirmarInclusivo(false)}
+            onConfirm={async () => {
+              setConfirmarInclusivo(false);
+              setResultadoInclusivo(null);
+              const r = await generarInclusivo();
+              setResultadoInclusivo(
+                r.ok
+                  ? { ok: true, texto: "Syllabus inclusivo generado. Puede abrir la página o el PDF accesible en «PDF generados»." }
+                  : { ok: false, texto: `No se pudo generar el syllabus inclusivo: ${r.error}` },
+              );
+              if (r.ok) setRecargarEstado((n) => n + 1);
+            }}
+          />
+        )}
 
         {/* Avisos del generador: el error con role="alert", la traduccion no disponible con role="status" */}
         {errorGeneracion && <div className={styles.errorBox} role="alert">{errorGeneracion}</div>}

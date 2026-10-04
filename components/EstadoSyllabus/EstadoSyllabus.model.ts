@@ -1,5 +1,5 @@
 // components/EstadoSyllabus/EstadoSyllabus.model.ts
-import type { EnlaceIdioma } from '@/components/IdiomasSyllabus/IdiomasSyllabus';
+import type { EnlaceIdioma, EnlaceInclusivo } from '@/components/IdiomasSyllabus/IdiomasSyllabus';
 
 export type EstadoSyllabus = 'BORRADOR' | 'ENVIADO_DOCENTE' | 'PUBLICADO';
 export type AccionSyllabus = 'GENERADO' | 'ENVIADO' | 'DEVUELTO' | 'PUBLICADO';
@@ -16,6 +16,7 @@ export interface EstadoSyllabusResponse {
   estado: EstadoSyllabus | null;
   historial: HistorialSyllabusItem[];
   idiomas: EnlaceIdioma[];
+  inclusivo: EnlaceInclusivo[];
 }
 
 export const ETIQUETA_ESTADO: Record<EstadoSyllabus, string> = {

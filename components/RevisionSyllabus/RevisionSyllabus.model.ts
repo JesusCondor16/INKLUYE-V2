@@ -1,5 +1,5 @@
 // components/RevisionSyllabus/RevisionSyllabus.model.ts
-import type { EnlaceIdioma } from '@/components/IdiomasSyllabus/IdiomasSyllabus';
+import type { EnlaceIdioma, EnlaceInclusivo } from '@/components/IdiomasSyllabus/IdiomasSyllabus';
 
 export interface SyllabusPendiente {
   id: number;
@@ -9,6 +9,7 @@ export interface SyllabusPendiente {
   pdfUrl: string | null;
   enviadoEn: string | null;
   idiomas: EnlaceIdioma[];
+  inclusivo: EnlaceInclusivo[];
 }
 
 export const MAX_OBSERVACION = 2000;

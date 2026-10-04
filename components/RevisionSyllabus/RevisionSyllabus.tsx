@@ -85,8 +85,8 @@ export default function RevisionSyllabus() {
                   ) : '—'}
                 </td>
                 <td>
-                  {c.idiomas.length > 0 ? (
-                    <IdiomasSyllabus idiomas={c.idiomas} nombreCurso={c.name} />
+                  {c.idiomas.length > 0 || c.inclusivo?.length > 0 ? (
+                    <IdiomasSyllabus idiomas={c.idiomas} inclusivo={c.inclusivo ?? []} nombreCurso={c.name} />
                   ) : 'No disponible'}
                 </td>
                 <td>

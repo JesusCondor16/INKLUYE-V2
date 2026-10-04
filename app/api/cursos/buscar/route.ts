@@ -4,7 +4,7 @@ import type { EstadoSyllabus } from "@prisma/client";
 import { cursoModel } from "@/models/cursoModel";
 import { obtenerUsuarioDesdeTokenServer } from "@/lib/authServer";
 import { puedeVerSyllabus } from "@/lib/syllabusPermisos";
-import { idiomasDisponibles } from "@/lib/syllabusArchivos";
+import { idiomasDisponibles, inclusivoDisponible } from "@/lib/syllabusArchivos";
 
 // Tipado de la estructura que devuelve cursoModel
 type CursoRaw = {
@@ -66,6 +66,8 @@ export async function GET(req: NextRequest) {
         syllabusUrl: visible ? c.syllabus?.pdfUrl ?? null : null,
         // Enlaces por idioma (ES/EN/ZH) que existan, solo si el usuario puede verlos
         syllabusIdiomas: visible ? idiomasDisponibles(c.id).map(({ lang, url }) => ({ lang, url })) : [],
+        // Syllabus inclusivo (pagina accesible y PDF etiquetado), con el mismo permiso
+        syllabusInclusivo: visible ? inclusivoDisponible(c.id).map(({ formato, url }) => ({ formato, url })) : [],
       };
     });
 

@@ -200,6 +200,7 @@ export function useSyllabusController() {
   // Aviso cuando no se pudo traducir y se genero en espanol (antes: alert())
   const [aviso, setAviso] = useState<string | null>(null);
   const [generating, setGenerating] = useState(false);
+  const [generandoInclusivo, setGenerandoInclusivo] = useState(false);
 
   // ======================================================
   // CARGAR CURSO
@@ -363,6 +364,25 @@ export function useSyllabusController() {
     }
   }, [curso]);
 
+  // ======================================================
+  // SYLLABUS INCLUSIVO (WCAG 2.1 AAA): el servidor arma la pagina accesible
+  // y el PDF etiquetado. No usa `error` para no reemplazar toda la pagina si falla.
+  // ======================================================
+  const generarInclusivo = useCallback(async (): Promise<{ ok: true } | { ok: false; error: string }> => {
+    if (!curso?.id) return { ok: false, error: 'El curso todavía no terminó de cargar.' };
+    setGenerandoInclusivo(true);
+    try {
+      const res = await fetch(`/api/cursos/${curso.id}/syllabus-inclusivo`, { method: 'POST' });
+      const data: { error?: string } = await res.json().catch(() => ({}));
+      if (!res.ok) return { ok: false, error: data.error ?? 'No se pudo generar el syllabus inclusivo.' };
+      return { ok: true };
+    } catch {
+      return { ok: false, error: 'No se pudo conectar con el servidor. Intente nuevamente.' };
+    } finally {
+      setGenerandoInclusivo(false);
+    }
+  }, [curso]);
+
   return {
     curso,
     loading,
@@ -371,5 +391,7 @@ export function useSyllabusController() {
     generarPDF: generarPDFController,
     generating,
     aviso,
+    generarInclusivo,
+    generandoInclusivo,
   };
 }
