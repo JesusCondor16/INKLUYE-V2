@@ -15,8 +15,18 @@
 //
 // Sin esas variables el sistema sigue funcionando: solo se omiten los correos
 // (las notificaciones dentro de Inkluye se crean igual).
+import fs from 'fs';
+import path from 'path';
 import nodemailer, { type Transporter } from 'nodemailer';
-import type { Correo } from './plantillas';
+import { CID_LOGO, type Correo } from './plantillas';
+
+// Logo pequeño (96 px, ~7 KB) que va adjunto dentro del correo y se muestra en el encabezado.
+// Si el archivo no existe, el correo se envia igual (el encabezado muestra el nombre "Inkluye").
+const RUTA_LOGO = path.join(process.cwd(), 'public', 'images', 'inkluye-correo.png');
+
+function adjuntosLogo() {
+  return fs.existsSync(RUTA_LOGO) ? [{ filename: 'inkluye.png', path: RUTA_LOGO, cid: CID_LOGO }] : [];
+}
 
 export interface DestinoCorreo {
   para: string;
@@ -72,6 +82,7 @@ export async function enviarCorreos(todos: DestinoCorreo[]): Promise<number> {
   if (destinos.length === 0) return 0;
 
   const remitente = process.env.CORREO_REMITENTE ?? process.env.SMTP_USER;
+  const adjuntos = adjuntosLogo();
   const resultados = await Promise.allSettled(
     destinos.map(({ para, correo }) =>
       obtenerTransporte().sendMail({
@@ -80,6 +91,7 @@ export async function enviarCorreos(todos: DestinoCorreo[]): Promise<number> {
         subject: correo.asunto,
         text: correo.texto,
         html: correo.html,
+        attachments: adjuntos,
       }),
     ),
   );

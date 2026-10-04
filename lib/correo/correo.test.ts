@@ -1,4 +1,5 @@
-import { construirCorreoFlujo, type DatosCorreoFlujo } from './plantillas';
+import fs from 'fs';
+import { construirCorreoFlujo, CID_LOGO, type DatosCorreoFlujo } from './plantillas';
 
 // nodemailer simulado: ningun correo sale de verdad durante las pruebas
 const sendMail = jest.fn();
@@ -21,7 +22,7 @@ describe('construirCorreoFlujo', () => {
     expect(c.asunto).toBe('Syllabus por revisar: 202W0901 - DESARROLLO DE TESIS I');
     expect(c.texto).toContain('Hola, Luzmila Pro:');
     expect(c.texto).toContain('Revisar el syllabus en Inkluye: http://localhost:3000/docente/syllabus');
-    expect(c.html).toContain('<html lang="es">');
+    expect(c.html).toContain('<html lang="es"');
     expect(c.html).toContain('>Revisar el syllabus en Inkluye</a>');
   });
 
@@ -30,6 +31,27 @@ describe('construirCorreoFlujo', () => {
     expect(c.asunto).toContain('devuelto con observaciones');
     expect(c.texto).toContain('Observaciones:\nActualizar la bibliografía.');
     expect(c.html).toContain('<h2');
+  });
+
+  it('dice el estado con texto (no solo con color) y qué debe hacer la persona', () => {
+    const c = construirCorreoFlujo(base);
+    expect(c.texto).toContain('Estado: Por revisar');
+    expect(c.texto).toContain('Qué sigue:');
+    expect(c.html).toContain('Estado: Por revisar');
+  });
+
+  it('el logo tiene texto alternativo y el nombre de la marca también va como texto', () => {
+    const c = construirCorreoFlujo(base);
+    expect(c.html).toContain(`src="cid:${CID_LOGO}"`);
+    expect(c.html).toContain('alt="Logo de Inkluye"');
+    expect(c.html).toMatch(/>Inkluye<\/p>/);
+  });
+
+  it('las tablas de diseño no se anuncian como tablas de datos', () => {
+    const c = construirCorreoFlujo(base);
+    const tablas = c.html.match(/<table[^>]*>/g) ?? [];
+    expect(tablas.length).toBeGreaterThan(0);
+    for (const t of tablas) expect(t).toContain('role="presentation"');
   });
 
   it('las observaciones solo se muestran al devolver', () => {
@@ -78,14 +100,17 @@ describe('enviarCorreos', () => {
     expect(sendMail).not.toHaveBeenCalled();
   });
 
-  it('con configuración envía texto y HTML a cada destinatario', async () => {
+  it('con configuración envía texto y HTML a cada destinatario, con el logo adjunto', async () => {
     Object.assign(process.env, { SMTP_HOST: 'smtp.test', SMTP_USER: 'inkluye@unmsm.edu.pe', SMTP_PASS: 'x' });
     sendMail.mockResolvedValue({});
+    jest.spyOn(fs, 'existsSync').mockReturnValue(true);
     const { enviarCorreos } = await import('./enviar');
     await expect(enviarCorreos([{ para: 'l.pro@unmsm.edu.pe', correo }])).resolves.toBe(1);
     expect(sendMail).toHaveBeenCalledWith(
       expect.objectContaining({ to: 'l.pro@unmsm.edu.pe', subject: correo.asunto, text: correo.texto, html: correo.html }),
     );
+    expect(sendMail.mock.calls[0][0].attachments).toEqual([expect.objectContaining({ cid: CID_LOGO })]);
+    jest.restoreAllMocks();
   });
 
   it('con CORREO_PERMITIDOS solo envía a esas direcciones (candado de pruebas)', async () => {
