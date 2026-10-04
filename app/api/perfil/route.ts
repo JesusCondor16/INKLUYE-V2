@@ -1,30 +1,20 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { verifyToken } from '@/lib/jwt';
+import { obtenerUsuarioDesdeTokenServer } from '@/lib/authServer';
 
-interface DecodedToken {
-  id: number | string;
-  [key: string]: unknown;
-}
-
-export async function GET(req: Request) {
+// Devuelve el usuario de la sesion actual.
+// Lee el token de la cookie httpOnly, igual que el resto de rutas
+// (antes lo leia de un header Authorization armado desde localStorage)
+export async function GET(req: NextRequest) {
   try {
-    const authHeader = req.headers.get('authorization');
-    const token = authHeader?.split(' ')[1];
-
-    if (!token) {
-      return NextResponse.json({ error: 'No se encontró token de autenticación.' }, { status: 401 });
-    }
-
-    const decoded = verifyToken(token) as DecodedToken | null;
-    if (!decoded || typeof decoded !== 'object' || !('id' in decoded)) {
-      return NextResponse.json({ error: 'Token inválido o expirado.' }, { status: 401 });
+    const usuario = obtenerUsuarioDesdeTokenServer(req);
+    if (!usuario) {
+      return NextResponse.json({ error: 'Sesión no iniciada o expirada.' }, { status: 401 });
     }
 
     const user = await prisma.user.findUnique({
-      where: { id: Number(decoded.id) },
-      // Antes solo pedia name y email: el rol nunca llegaba y la pagina mostraba "N/A"
-      select: { name: true, email: true, role: true },
+      where: { id: Number(usuario.id) },
+      select: { id: true, name: true, email: true, role: true },
     });
 
     if (!user) return NextResponse.json({ error: 'Usuario no encontrado.' }, { status: 404 });

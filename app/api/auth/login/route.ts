@@ -27,13 +27,17 @@ export async function POST(request: Request) {
     const res = NextResponse.json({
       ok: true,
       message: "Autenticación exitosa",
+      // A donde ir segun el rol (lo calcula authController): la pantalla de login ya no
+      // necesitara decodificar el token
+      redirectTo: result.to ?? null,
+      // TEMPORAL: se quita en la fase 3b, cuando ninguna pantalla lea el token desde JavaScript
       token: result.token,
     });
 
     res.cookies.set("token", result.token, {
       httpOnly: true,
       path: "/",
-      maxAge: 2 * 60 * 60,
+      maxAge: 60 * 60, // igual que la expiracion del JWT (1h en lib/jwt.ts); antes 2h
       sameSite: "lax",
       secure: process.env.NODE_ENV === "production",
     });
